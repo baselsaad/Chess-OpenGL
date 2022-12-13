@@ -21,7 +21,8 @@ project "Chess-Game"
 		"../OpenGL-Core/src",
 		"../OpenGL-Core/Dependencies",
 		"../OpenGL-Core/%{IncludeDir.glm}",
-		"../OpenGL-Core/%{IncludeDir.GLEW}"
+		"../OpenGL-Core/%{IncludeDir.GLEW}",
+		"../OpenGL-Core/%{IncludeDir.GLFW}"
 	}
 
 	links
