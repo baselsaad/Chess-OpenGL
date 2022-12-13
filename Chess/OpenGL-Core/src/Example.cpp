@@ -10,8 +10,8 @@
 #include "Renderer/Shader.h"
 #include "Renderer/Texture.h"
 
-#include "Tools/Colors.h"
-#include "Tools/Timer.h"
+#include "Utilities/Colors.h"
+#include "Utilities/Timer.h"
 
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"

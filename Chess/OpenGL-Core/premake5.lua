@@ -18,6 +18,9 @@ project "OpenGL-Core"
 		"Dependencies/stb_image/**.cpp",
 		"Dependencies/glm/**.hpp",
 		"Dependencies/glm/**.inl",
+		"Dependencies/spdlog/inlcude/spdlog/spdlog.h",
+		"Dependencies/spdlog/inlcude/spdlog/fmt/ostr.h",
+		"Dependencies/spdlog/inlcude/spdlog/sinks/stdout_color_sinks.h"
 	}
 
 	defines
