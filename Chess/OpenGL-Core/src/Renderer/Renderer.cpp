@@ -5,15 +5,16 @@
 #include "Shader.h"
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
+#include "Window.h"
+#include "Renderer\Debug.h"
 
-
-
-Renderer::Renderer(GLFWwindow* window)
-	: m_WindowHandle(window)
+Renderer::Renderer(OpenGLWindow* win)
+	: m_Window(win)
 {
+	ASSERT(m_Window, "m_Window should not be null!");
 }
 
-void Renderer::Draw(const VertexArray& vb, const IndexBuffer& ib) const
+void Renderer::Draw(const VertexArray& vb, const IndexBuffer& ib)
 {
 	// because we generate and bind the buffer outside the loop, OpenGL knows which buffer should be drawn
 	vb.Bind();
@@ -21,8 +22,10 @@ void Renderer::Draw(const VertexArray& vb, const IndexBuffer& ib) const
 	glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
 }
 
-void Renderer::OnUpdate(const VertexArray& vb, const IndexBuffer& ib, Shader& shader)
+void Renderer::OnUpdate(const VertexArray& vb, const IndexBuffer& ib, Shader& shader) 
 {
+	m_Window->Clear();
+
 	// 4:3 Aspect ratio
 	// 2.0 * 2 = 4
 	// 1.5 * 2 = 3
@@ -50,20 +53,7 @@ void Renderer::OnUpdate(const VertexArray& vb, const IndexBuffer& ib, Shader& sh
 		}
 	}
 
-}
-
-void Renderer::Clear() const
-{
-	glClear(GL_COLOR_BUFFER_BIT);
-}
-
-void Renderer::Swap() const
-{
-	/* Swap front and back buffers */
-	glfwSwapBuffers(m_WindowHandle);
-
-	/* Poll for and process events */
-	glfwPollEvents();
+	m_Window->Swap();
 }
 
 void Renderer::AddNewQuad(Texture* texture)

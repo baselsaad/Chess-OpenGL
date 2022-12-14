@@ -11,6 +11,7 @@ class VertexArray;
 class IndexBuffer;
 class Shader;
 struct GLFWwindow;
+class OpenGLWindow;
 
 static const glm::vec3 DEFAULT_TRANSFORM(200, 200, 0);
 
@@ -40,20 +41,19 @@ struct Quad
 class Renderer
 {
 public:
-	Renderer(GLFWwindow* window);
+	Renderer(OpenGLWindow* win);
+	~Renderer() = default;
 
 public:
-	void Draw(const VertexArray& vb, const IndexBuffer& ib) const;
+	void Draw(const VertexArray& vb, const IndexBuffer& ib);
 	void OnUpdate(const VertexArray& vb, const IndexBuffer& ib, Shader& shader);
-
-	void Clear() const;
-	void Swap() const;
 
 	void AddNewQuad(Texture* texture);
 
 	inline size_t GetDrawCalls() const { return m_Quads.size(); }
+
 private:
-	GLFWwindow* m_WindowHandle;
+	OpenGLWindow* m_Window;
 	std::vector<Quad> m_Quads;
 };
 

@@ -10,7 +10,3 @@ void Debug::Init()
 	s_Logger = spdlog::stdout_color_mt("GLCORE");
 	s_Logger->set_level(spdlog::level::trace);
 }
-
-
-
-

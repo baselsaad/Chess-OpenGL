@@ -17,7 +17,7 @@ Texture::Texture(const std::string& path)
 	stbi_set_flip_vertically_on_load(1);
 
 	m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_BitsPerPixel, 4);
-	CHECK(m_LocalBuffer != nullptr, "Can not load the image, Check the path: " + m_FilePath);
+	ASSERT(m_LocalBuffer != nullptr, "Can not load the image, Check the path: " + m_FilePath);
 
 	GL_CALL(glGenTextures(1, &m_RendererID));
 	GL_CALL(glBindTexture(GL_TEXTURE_2D, m_RendererID));

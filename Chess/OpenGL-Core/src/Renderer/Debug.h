@@ -1,14 +1,14 @@
 #pragma once
-#include <iostream>
+#include "Utilities\Log.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#define ASSERT(x) if (!(x)) __debugbreak();
+#define CHECK(x) if (!(x)) __debugbreak();
 
-#define CHECK(x, Msg)								\
+#define ASSERT(x, Msg)								\
 		if (!(x))									\
 		{											\
-			std::cout<< "\n"<< Msg << std::endl;	\
+			ASSERT_ERROR(Msg);						\
 			__debugbreak();							\
 		}
 
@@ -16,7 +16,7 @@
 #define GL_CALL(x)									\
 	GlClearErros();									\
 	x;												\
-	ASSERT(GlLogCall(#x, __FILE__, __LINE__))
+	CHECK(GlLogCall(#x, __FILE__, __LINE__))
 
 static void GlClearErros()
 {
@@ -27,12 +27,11 @@ static bool GlLogCall(const char* functionName, const char* fileName, int line)
 {
 	while (GLenum error = glGetError())
 	{
-		std::cout << fileName << ": " << functionName << " at Line (" << line << ")" << std::endl;
-		printf("OpenGL-Error: %.6x (%d)", error, error);
+		Debug::Error("{0} : {1} at Line ({0})",fileName,functionName,line);
+		Debug::Error("OpenGL-Error: {0} {1}",error,error);
 
 		return false;
 	}
-
 
 	return true;
 }
@@ -50,11 +49,11 @@ static void OpenGLMessageCallback(
 
 	switch (severity)
 	{
-		case GL_DEBUG_SEVERITY_HIGH:         std::cout << "CRITICAL: " << message << std::endl;		return;
-		case GL_DEBUG_SEVERITY_MEDIUM:       std::cout << "ERROR: " << message << std::endl;		return;
-		case GL_DEBUG_SEVERITY_LOW:          std::cout << "WARN: " << message << std::endl;			return;
-		case GL_DEBUG_SEVERITY_NOTIFICATION: /*std::cout << "TRACE: " << message << std::endl;*/	return;
+		case GL_DEBUG_SEVERITY_HIGH:			Debug::Critical(message);		return;
+		case GL_DEBUG_SEVERITY_MEDIUM:			Debug::Error(message);			return;
+		case GL_DEBUG_SEVERITY_LOW:				Debug::Warn(message);			return;
+		case GL_DEBUG_SEVERITY_NOTIFICATION:	Debug::Log(message);			return;
 	}
 
-	ASSERT(false);
+	ASSERT(false, "Unkown severity!!");
 }

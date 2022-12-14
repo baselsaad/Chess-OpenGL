@@ -1,6 +1,5 @@
 #pragma once
 
-#pragma once
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
 
@@ -44,3 +43,7 @@ public:
 private:
 	static std::shared_ptr<spdlog::logger> s_Logger;
 };
+
+
+
+#define ASSERT_ERROR(...)		::Debug::GetLogger()->error(__VA_ARGS__);
