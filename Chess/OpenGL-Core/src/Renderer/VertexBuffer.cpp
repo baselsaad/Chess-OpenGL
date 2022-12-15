@@ -1,11 +1,14 @@
 #include "pch.h"
 #include "VertexBuffer.h"
 
+#include "Debug.h"
 #include "Renderer.h"
 
 
 VertexBuffer::VertexBuffer(const void* data, uint32_t size)
 {
+	ASSERT(sizeof(uint32_t) == sizeof(GLuint), "");
+
 	// Vertex-Buffer
 	const int buffersCount = 1;
 	glGenBuffers(buffersCount, &m_RendererID);

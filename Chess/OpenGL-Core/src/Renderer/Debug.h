@@ -27,8 +27,8 @@ static bool GlLogCall(const char* functionName, const char* fileName, int line)
 {
 	while (GLenum error = glGetError())
 	{
-		Debug::Error("{0} : {1} at Line ({0})",fileName,functionName,line);
-		Debug::Error("OpenGL-Error: {0} {1}",error,error);
+		Debug::Error("{0} : {1} at Line ({0})", fileName, functionName, line);
+		Debug::Error("OpenGL-Error: {0} {1}", error, error);
 
 		return false;
 	}
@@ -56,4 +56,9 @@ static void OpenGLMessageCallback(
 	}
 
 	ASSERT(false, "Unkown severity!!");
+}
+
+static void GLFWErrorCallback(int error, const char* desc)
+{
+	Debug::Error("Error {0}: {1}", error, desc);
 }

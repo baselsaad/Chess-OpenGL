@@ -41,7 +41,7 @@ struct Quad
 class Renderer
 {
 public:
-	Renderer(OpenGLWindow* win);
+	Renderer() = default;
 	~Renderer() = default;
 
 public:
@@ -53,7 +53,6 @@ public:
 	inline size_t GetDrawCalls() const { return m_Quads.size(); }
 
 private:
-	OpenGLWindow* m_Window;
 	std::vector<Quad> m_Quads;
 };
 

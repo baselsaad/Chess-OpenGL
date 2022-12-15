@@ -21,7 +21,7 @@ class OpenGLWindow
 public:
 	OpenGLWindow() = default;
 	OpenGLWindow(const WindowData& data);
-	~OpenGLWindow();
+	virtual ~OpenGLWindow();
 
 public:
 	void Clear();
@@ -29,10 +29,19 @@ public:
 
 	void SetVsync(bool enable);
 
-	inline const GLFWwindow* GetWindowHandle() { return m_WindowHandle; }
+	inline  GLFWwindow* GetWindowHandle() { return m_WindowHandle; }
 	inline const GLFWwindow* GetWindowHandle() const { return m_WindowHandle; }
+
+	inline void SetWindowWidth(int width) {m_Width = width;}
+	inline void SetWindowHeight(int height) {m_Height = height;}
+
+	inline int GetWindowWidth() const { return m_Width; }
+	inline int GetWindowHeight() const { return m_Height; }
+
+	operator GLFWwindow*() const { return m_WindowHandle; }
 
 private:
 	GLFWwindow* m_WindowHandle;
+	int m_Width, m_Height;
 };
 

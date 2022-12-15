@@ -4,12 +4,14 @@
 
 
 OpenGLWindow::OpenGLWindow(const WindowData& data)
+	: m_Width(data.Width), m_Height(data.Height)
 {
 	m_WindowHandle = OpenGLContext::CreateOpenGLContext(data.Width, data.Height, data.Title);
 }
 
 OpenGLWindow::~OpenGLWindow()
 {
+	OpenGLContext::ShutDown();
 }
 
 void OpenGLWindow::Clear()
@@ -54,7 +56,8 @@ namespace OpenGLContext
 		GLenum state = glewInit();//glewInit should be called after a valid OpenGL rendering context has been created
 
 		// Set Callback error message
-		glDebugMessageCallback(OpenGLMessageCallback, nullptr);
+		//glDebugMessageCallback(OpenGLMessageCallback, nullptr); shows unnecessarily messages
+		glfwSetErrorCallback(GLFWErrorCallback);
 
 		// GPU driver and OpenGL Information
 		Debug::Info("OpenGL Info:");

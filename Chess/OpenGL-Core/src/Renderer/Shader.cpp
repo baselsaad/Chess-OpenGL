@@ -11,7 +11,7 @@ Shader::Shader(const std::string& filePath)
 	: m_FilePath(filePath), m_RendererID(0)
 {
 
-	Shaders shadersSource = ParaseShader("res/shaders/Basic.shader");
+	Shaders shadersSource = ParaseShader(m_FilePath);
 	m_RendererID = CreateShader(shadersSource.FragmentShader, shadersSource.VertexShader);
 }
 
