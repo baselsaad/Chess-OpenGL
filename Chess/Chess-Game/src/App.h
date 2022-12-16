@@ -3,6 +3,7 @@
 class OpenGLWindow;
 class Event;
 enum class EventType;
+class GLFWWindow;
 
 class Application
 {
@@ -23,7 +24,9 @@ public:
 	void OnMouseReleased(Event& event);
 	void OnMouseMove(Event& event);
 
-	void BindActionEvent(EventType inputEvent, EventFuncType&& func);
+	template<typename T>
+	void BindActionEvent(EventType inputEvent, T* obj, void(T::* ptrFunc)(Event&));
+
 	void OnEvent(Event& event);
 
 private:

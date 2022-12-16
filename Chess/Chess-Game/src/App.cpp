@@ -40,11 +40,11 @@ void Application::Run()
 	s_Running = true;
 	InitEventSystem();
 
-	BindActionEvent(EventType::CloseWindow, std::bind(&Application::OnClose, this, std::placeholders::_1));
-	BindActionEvent(EventType::ResizeWindow, std::bind(&Application::OnResizeWindow, this, std::placeholders::_1));
+	BindActionEvent(EventType::CloseWindow, this, &Application::OnClose);
+	BindActionEvent(EventType::ResizeWindow, this, &Application::OnResizeWindow);
 
-	BindActionEvent(EventType::MouseButtonPressed, std::bind(&Application::OnMousePressed, this, std::placeholders::_1));
-	BindActionEvent(EventType::MouseButtonReleased, std::bind(&Application::OnMouseReleased, this, std::placeholders::_1));
+	BindActionEvent(EventType::MouseButtonPressed, this, &Application::OnMousePressed);
+	BindActionEvent(EventType::MouseButtonReleased, this, &Application::OnMouseReleased);
 
 	while (s_Running)
 	{
@@ -52,6 +52,7 @@ void Application::Run()
 
 		//Render
 		{
+
 		}
 
 		m_Window->Swap();
@@ -177,9 +178,10 @@ void Application::OnMouseMove(Event& event)
 	//Debug::Warn("X: {0}, Y : {1}", e->GetXPos(), e->GetYPos());
 }
 
-void Application::BindActionEvent(EventType inputEvent, EventFuncType&& func)
+template<typename T>
+void Application::BindActionEvent(EventType inputEvent, T* object, void(T::* functionPointer)(Event&))
 {
-	m_BindFunctions[inputEvent] = std::move(func);
+	m_BindFunctions[inputEvent] = [&object, functionPointer](Event& e) { (object->*functionPointer)(e); };
 }
 
 void Application::OnEvent(Event& event)
