@@ -23,7 +23,7 @@ public:
 	void OnMouseReleased(Event& event);
 	void OnMouseMove(Event& event);
 
-	void BindActionEvent();
+	void BindActionEvent(EventType inputEvent, EventFuncType&& func);
 	void OnEvent(Event& event);
 
 private:

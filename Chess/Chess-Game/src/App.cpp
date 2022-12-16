@@ -17,7 +17,6 @@
 #include "Event.h"
 
 static bool s_Running = false;
-#define BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
 Application::Application()
 {
@@ -41,32 +40,11 @@ void Application::Run()
 	s_Running = true;
 	InitEventSystem();
 
-	m_BindFunctions[EventType::CloseWindow] = BIND_EVENT_FN(Application::OnClose);
-	m_BindFunctions[EventType::ResizeWindow] = BIND_EVENT_FN(Application::OnResizeWindow);
+	BindActionEvent(EventType::CloseWindow, std::bind(&Application::OnClose, this, std::placeholders::_1));
+	BindActionEvent(EventType::ResizeWindow, std::bind(&Application::OnResizeWindow, this, std::placeholders::_1));
 
-	m_BindFunctions[EventType::MouseButtonePressed] = BIND_EVENT_FN(Application::OnMousePressed);
-	m_BindFunctions[EventType::MouseButtoneReleased] = BIND_EVENT_FN(Application::OnMouseReleased);
-	m_BindFunctions[EventType::MouseMove] = BIND_EVENT_FN(Application::OnMouseMove);
-
-	// VertexBuffer
-	VertexBuffer vertexBuffer(Defaults::positions, Defaults::PositionsSize * sizeof(float));
-
-	VertexBufferLayout layout;
-	layout.Push<float>(2);
-	layout.Push<float>(2);
-
-	// VertexArray
-	VertexArray vertexArray;
-	vertexArray.AddBuffer(vertexBuffer, layout);
-
-	//IndexBuffer
-	IndexBuffer indexBuffer(Defaults::indices, Defaults::IndicesCount);
-
-	// Shaders
-	Shader shader("res/shaders/Color.shader");
-	shader.Bind();
-
-	Renderer renderer;
+	BindActionEvent(EventType::MouseButtonPressed, std::bind(&Application::OnMousePressed, this, std::placeholders::_1));
+	BindActionEvent(EventType::MouseButtonReleased, std::bind(&Application::OnMouseReleased, this, std::placeholders::_1));
 
 	while (s_Running)
 	{
@@ -74,16 +52,6 @@ void Application::Run()
 
 		//Render
 		{
-			shader.Bind();
-
-			const glm::mat4 proj = glm::ortho(0.0f, (float)m_Window->GetWindowWidth(), 0.0f, (float)m_Window->GetWindowHeight(), -1.0f, 1.0f);
-			const glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-			glm::mat4 model = glm::translate(glm::mat4(1.0f), DEFAULT_TRANSFORM);
-			glm::mat4 mvp = proj * view * model;
-			shader.SetUniformMat4f("u_MVP", mvp);
-			shader.SetUniform4f("u_Color", Colors::White.R, Colors::White.G, Colors::White.B, Colors::White.Alpha);
-
-			renderer.Draw(vertexArray, indexBuffer);
 		}
 
 		m_Window->Swap();
@@ -93,7 +61,7 @@ void Application::Run()
 
 void Application::InitEventSystem()
 {
-	m_EventCallback = BIND_EVENT_FN(Application::OnEvent);
+	m_EventCallback = [this](Event& e) { OnEvent(e); };
 	glfwSetWindowUserPointer(*m_Window, &m_EventCallback);
 
 	// Window Close 
@@ -126,18 +94,20 @@ void Application::InitEventSystem()
 		auto callback = [](GLFWwindow* window, int button, int action, int mods)
 		{
 			auto& func = *(std::function<void(Event&)>*)glfwGetWindowUserPointer(window);
+			double outX, outY;
+			glfwGetCursorPos(window, &outX, &outY);
 
 			switch (action)
 			{
 				case GLFW_PRESS:
 				{
-					MouseButtonPressedEvent event(button);
+					MouseButtonPressedEvent event(button, outX, outY);
 					func(event);
 					break;
 				}
 				case GLFW_RELEASE:
 				{
-					MouseButtonReleasedEvent event(button);
+					MouseButtonReleasedEvent event(button, outX, outY);
 					func(event);
 					break;
 				}
@@ -164,14 +134,14 @@ void Application::InitEventSystem()
 
 void Application::OnClose(Event& event)
 {
-	ASSERT(event.GetEventType() == EventType::CloseWindow, "Wrong Categroy!!");
+	ASSERT(event.GetEventType() == EventType::CloseWindow, "Wrong Event Type!!");
 
 	s_Running = false;
 }
 
 void Application::OnResizeWindow(Event& event)
 {
-	ASSERT(event.GetEventType() == EventType::ResizeWindow, "Wrong Categroy!!");
+	ASSERT(event.GetEventType() == EventType::ResizeWindow, "Wrong Event Type!!");
 	ResizeWindowEvent* e = static_cast<ResizeWindowEvent*>(&event);
 
 	glViewport(0, 0, e->GetWidth(), e->GetHeight());
@@ -184,26 +154,32 @@ void Application::OnResizeWindow(Event& event)
 
 void Application::OnMousePressed(Event& event)
 {
-	ASSERT(event.GetEventType() == EventType::MouseButtonePressed, "Wrong Categroy!!");
+	ASSERT(event.GetEventType() == EventType::MouseButtonPressed, "Wrong Event Type!!");
 
-	MouseButtonPressedEvent* pressed = static_cast<MouseButtonPressedEvent*>(&event);
-	//Debug::Warn("MousePressed {0}", pressed->GetButton());
+	MouseButtonPressedEvent* pressedButton = static_cast<MouseButtonPressedEvent*>(&event);
+
+	Debug::Warn("MouseButton Pressed on X:{0}, Y:{1}", pressedButton->GetXPosition(), pressedButton->GetYPosition());
 }
 
 void Application::OnMouseReleased(Event& event)
 {
-	ASSERT(event.GetEventType() == EventType::MouseButtoneReleased, "Wrong Categroy!!");
+	ASSERT(event.GetEventType() == EventType::MouseButtonReleased, "Wrong Event Type!!");
 
-	MouseButtonReleasedEvent* pressed = static_cast<MouseButtonReleasedEvent*>(&event);
-	//Debug::Warn("MouseButtonReleasedEvent");
+	MouseButtonReleasedEvent* releasedButton = static_cast<MouseButtonReleasedEvent*>(&event);
+	Debug::Error("MouseButton Released on X:{0}, Y:{1}", releasedButton->GetXPosition(), releasedButton->GetYPosition());
 }
 
 void Application::OnMouseMove(Event& event)
 {
-	ASSERT(event.GetEventType() == EventType::MouseMove, "Wrong Categroy!!");
+	ASSERT(event.GetEventType() == EventType::MouseMove, "Wrong Event Type!!");
 
 	MouseMoveEvent* e = static_cast<MouseMoveEvent*>(&event);
 	//Debug::Warn("X: {0}, Y : {1}", e->GetXPos(), e->GetYPos());
+}
+
+void Application::BindActionEvent(EventType inputEvent, EventFuncType&& func)
+{
+	m_BindFunctions[inputEvent] = std::move(func);
 }
 
 void Application::OnEvent(Event& event)

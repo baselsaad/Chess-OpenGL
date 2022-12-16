@@ -10,8 +10,9 @@ enum class EventType
 {
 	CloseWindow = 0,
 	ResizeWindow,
-	MouseButtonePressed,
-	MouseButtoneReleased,
+	MouseButtonEvent,
+	MouseButtonPressed,
+	MouseButtonReleased,
 	MouseMove
 };
 
@@ -53,11 +54,14 @@ private:
 
 };
 
-class MouseButtonPressedEvent : public Event
+class MouseButtonEvent : public Event
 {
-
 public:
-	MouseButtonPressedEvent(int button)
+	using Super = MouseButtonEvent;
+
+	MouseButtonEvent(int button, double x, double y)
+		: m_XPosition(x)
+		, m_YPosition(y)
 	{
 		switch (button)
 		{
@@ -69,44 +73,62 @@ public:
 
 	virtual EventType GetEventType() override
 	{
-		return EventType::MouseButtonePressed;
+		return EventType::MouseButtonEvent;
 	}
 
-	inline MouseButtonType GetButton() { return m_ButtonType; }
+	inline MouseButtonType GetButtonType() { return m_ButtonType; }
 
+	inline double GetXPosition() { return m_XPosition; }
+	inline double GetYPosition() { return m_YPosition; }
 
 private:
 	MouseButtonType m_ButtonType;
+	double m_XPosition;
+	double m_YPosition;
 };
 
-class MouseButtonReleasedEvent : public Event
+class MouseButtonPressedEvent : public MouseButtonEvent
 {
-
 public:
-	MouseButtonReleasedEvent(int button)
+	MouseButtonPressedEvent(int btn, double x, double y)
+		: Super(btn, x, y)
 	{
-
 	}
 
 	virtual EventType GetEventType() override
 	{
-		return EventType::MouseButtoneReleased;
+		return EventType::MouseButtonPressed;
+	}
+};
+
+class MouseButtonReleasedEvent : public MouseButtonEvent
+{
+
+public:
+	MouseButtonReleasedEvent(int btn, double x, double y)
+		: Super(btn, x, y)
+	{
 	}
 
+	virtual EventType GetEventType() override
+	{
+		return EventType::MouseButtonReleased;
+	}
 };
+
 
 class MouseMoveEvent : public Event
 {
 
 public:
-	MouseMoveEvent(float xPos, float yPos)
+	MouseMoveEvent(double xPos, double yPos)
 		: m_XPosition(xPos)
 		, m_YPosition(yPos)
 	{
 	}
 
-	inline float GetXPos() const { return m_XPosition; }
-	inline float GetYPos() const { return m_YPosition; }
+	inline double GetXPos() const { return m_XPosition; }
+	inline double GetYPos() const { return m_YPosition; }
 
 	virtual EventType GetEventType() override
 	{
@@ -115,5 +137,5 @@ public:
 
 
 private:
-	float m_XPosition, m_YPosition;
+	double m_XPosition, m_YPosition;
 };
