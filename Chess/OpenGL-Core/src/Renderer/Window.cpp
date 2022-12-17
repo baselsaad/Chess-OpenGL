@@ -11,7 +11,8 @@ OpenGLWindow::OpenGLWindow(const WindowData& data)
 
 OpenGLWindow::~OpenGLWindow()
 {
-	OpenGLContext::ShutDown();
+	glfwDestroyWindow(m_WindowHandle);
+	glfwTerminate();
 }
 
 void OpenGLWindow::Clear()
@@ -67,11 +68,4 @@ namespace OpenGLContext
 
 		return window;
 	}
-
-
-	void ShutDown()
-	{
-		glfwTerminate();
-	}
-
 }
