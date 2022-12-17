@@ -11,8 +11,3 @@ void PlayerInput::OnEvent(Event& e)
 	}
 }
 
-void PlayerInput::BindActionEvent(EventType inputEvent, EventFuncType&& func)
-{
-	m_BindFunctions[inputEvent] = func;
-}
-

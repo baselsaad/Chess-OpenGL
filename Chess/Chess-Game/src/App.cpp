@@ -36,8 +36,8 @@ Application::Application()
 
 	m_Window = std::make_shared<OpenGLWindow>(data);
 
-	m_PlayerInput->BindActionEvent(EventType::CloseWindow, BIND_FUN(this, Application::OnClose));
-	m_PlayerInput->BindActionEvent(EventType::ResizeWindow, BIND_FUN(this, Application::OnResizeWindow));
+	m_PlayerInput->BindActionEvent(EventType::CloseWindow, this, &Application::OnClose);
+	m_PlayerInput->BindActionEvent(EventType::ResizeWindow, this, &Application::OnResizeWindow);
 }
 
 Application::~Application()

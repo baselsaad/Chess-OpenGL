@@ -13,13 +13,12 @@ void Game::SetupPlayerInput(PlayerInput* input)
 {
 	ASSERT(input, "input can not be null!!");
 
-	input->BindActionEvent(EventType::MouseButtonPressed, BIND_FUN(this, Game::OnMousePressed));
-	input->BindActionEvent(EventType::MouseButtonReleased, BIND_FUN(this, Game::OnMouseReleased));
+	input->BindActionEvent(EventType::MouseButtonPressed, this, &Game::OnMousePressed);
+	input->BindActionEvent(EventType::MouseButtonReleased, this, &Game::OnMouseReleased);
 }
 
 void Game::OnUpdate(float deltaTime)
 {
-	Debug::Info("DeltaTime: {0}", deltaTime);
 }
 
 void Game::OnMousePressed(Event& event)
