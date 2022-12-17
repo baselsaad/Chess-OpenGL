@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "VertexArray.h"
 
-#include "Debug.h"
+#include "Utilities\Debug.h"
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 

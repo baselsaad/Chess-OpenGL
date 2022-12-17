@@ -1,5 +1,5 @@
 #pragma once
-#include "Renderer/Debug.h"
+#include "Utilities\Debug.h"
 
 namespace Defaults
 {

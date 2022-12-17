@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Window.h"
-#include "Renderer\Debug.h"
+#include "Utilities\Debug.h"
 
 
 OpenGLWindow::OpenGLWindow(const WindowData& data)

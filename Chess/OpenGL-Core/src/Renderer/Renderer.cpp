@@ -6,7 +6,7 @@
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include "Window.h"
-#include "Renderer\Debug.h"
+#include "Utilities\Debug.h"
 
 void Renderer::Draw(const VertexArray& vb, const IndexBuffer& ib)
 {

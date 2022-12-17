@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Shader.h"
 
-#include "Debug.h"
+#include "Utilities\Debug.h"
 
 
 #include <fstream>

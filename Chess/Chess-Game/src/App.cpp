@@ -1,7 +1,14 @@
 #include "pch.h"
 #include "App.h"
 
+#include "Event.h"
+#include "PlayerInput.h"
+#include "Game.h"
+
 #include "Utilities\Log.h"
+#include "Utilities\Colors.h"
+#include "Utilities\Debug.h"
+
 #include "Renderer\Window.h"
 #include "Renderer\Renderer.h"
 #include "Renderer\Shader.h"
@@ -11,14 +18,14 @@
 #include "Renderer\VertexBufferLayout.h"
 #include "Renderer\IndexBuffer.h"
 #include "Renderer\OpenGL.h"
-#include "Utilities\Colors.h"
+
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
-#include "Event.h"
 
 static bool s_Running = false;
 
 Application::Application()
+	: m_PlayerInput(std::make_shared<PlayerInput>())
 {
 	Debug::Init(); // Init Logging Console
 
@@ -28,39 +35,68 @@ Application::Application()
 	data.Title = "Chess";
 
 	m_Window = std::make_shared<OpenGLWindow>(data);
+
+	m_PlayerInput->BindActionEvent(EventType::CloseWindow, BIND_FUN(this, Application::OnClose));
+	m_PlayerInput->BindActionEvent(EventType::ResizeWindow, BIND_FUN(this, Application::OnResizeWindow));
 }
 
 Application::~Application()
 {
-	Debug::Log("End ...");
 }
 
 void Application::Run()
 {
 	s_Running = true;
-	InitEventSystem();
+	SetupEventCallback();
 
-	BindActionEvent(EventType::CloseWindow, this, &Application::OnClose);
-	BindActionEvent(EventType::ResizeWindow, this, &Application::OnResizeWindow);
-
-	BindActionEvent(EventType::MouseButtonPressed, this, &Application::OnMousePressed);
-	BindActionEvent(EventType::MouseButtonReleased, this, &Application::OnMouseReleased);
+	Game* game = new Game();
+	game->SetupPlayerInput(m_PlayerInput.get());
 
 	while (s_Running)
 	{
+		float now = glfwGetTime() * 1000.0f;
+		float frameTime = now - m_LastFrameTime;
+		m_LastFrameTime = now;
+
 		m_Window->Clear();
 
 		//Render
 		{
-
+			game->OnUpdate(frameTime);
 		}
 
 		m_Window->Swap();
 	}
 
+	delete game;
 }
 
-void Application::InitEventSystem()
+void Application::OnEvent(Event& event)
+{
+	m_PlayerInput->OnEvent(event);
+}
+
+void Application::OnClose(Event& event)
+{
+	ASSERT(event.GetEventType() == EventType::CloseWindow, "Wrong Event Type!!");
+
+	s_Running = false;
+}
+
+void Application::OnResizeWindow(Event& event)
+{
+	ASSERT(event.GetEventType() == EventType::ResizeWindow, "Wrong Event Type!!");
+	ResizeWindowEvent* e = static_cast<ResizeWindowEvent*>(&event);
+
+	glViewport(0, 0, e->GetWidth(), e->GetHeight());
+
+	m_Window->SetWindowWidth(e->GetWidth());
+	m_Window->SetWindowHeight(e->GetHeight());
+
+	//Debug::Error("OnResizeWindow");
+}
+
+void Application::SetupEventCallback()
 {
 	m_EventCallback = [this](Event& e) { OnEvent(e); };
 	glfwSetWindowUserPointer(*m_Window, &m_EventCallback);
@@ -133,63 +169,3 @@ void Application::InitEventSystem()
 
 }
 
-void Application::OnClose(Event& event)
-{
-	ASSERT(event.GetEventType() == EventType::CloseWindow, "Wrong Event Type!!");
-
-	s_Running = false;
-}
-
-void Application::OnResizeWindow(Event& event)
-{
-	ASSERT(event.GetEventType() == EventType::ResizeWindow, "Wrong Event Type!!");
-	ResizeWindowEvent* e = static_cast<ResizeWindowEvent*>(&event);
-
-	glViewport(0, 0, e->GetWidth(), e->GetHeight());
-
-	m_Window->SetWindowWidth(e->GetWidth());
-	m_Window->SetWindowHeight(e->GetHeight());
-
-	//Debug::Error("OnResizeWindow");
-}
-
-void Application::OnMousePressed(Event& event)
-{
-	ASSERT(event.GetEventType() == EventType::MouseButtonPressed, "Wrong Event Type!!");
-
-	MouseButtonPressedEvent* pressedButton = static_cast<MouseButtonPressedEvent*>(&event);
-
-	Debug::Warn("MouseButton Pressed on X:{0}, Y:{1}", pressedButton->GetXPosition(), pressedButton->GetYPosition());
-}
-
-void Application::OnMouseReleased(Event& event)
-{
-	ASSERT(event.GetEventType() == EventType::MouseButtonReleased, "Wrong Event Type!!");
-
-	MouseButtonReleasedEvent* releasedButton = static_cast<MouseButtonReleasedEvent*>(&event);
-	Debug::Error("MouseButton Released on X:{0}, Y:{1}", releasedButton->GetXPosition(), releasedButton->GetYPosition());
-}
-
-void Application::OnMouseMove(Event& event)
-{
-	ASSERT(event.GetEventType() == EventType::MouseMove, "Wrong Event Type!!");
-
-	MouseMoveEvent* e = static_cast<MouseMoveEvent*>(&event);
-	//Debug::Warn("X: {0}, Y : {1}", e->GetXPos(), e->GetYPos());
-}
-
-template<typename T>
-void Application::BindActionEvent(EventType inputEvent, T* object, void(T::* functionPointer)(Event&))
-{
-	m_BindFunctions[inputEvent] = [&object, functionPointer](Event& e) { (object->*functionPointer)(e); };
-}
-
-void Application::OnEvent(Event& event)
-{
-	auto finder = m_BindFunctions.find(event.GetEventType());
-	if (finder != m_BindFunctions.end())
-	{
-		auto& func = finder->second;
-		func(event);
-	}
-}

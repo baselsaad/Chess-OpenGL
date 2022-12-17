@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Texture.h"
 #include "stb_image.h"
-#include "Debug.h"
+#include "Utilities\Debug.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

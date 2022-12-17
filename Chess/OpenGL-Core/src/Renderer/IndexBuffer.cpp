@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "IndexBuffer.h"
-#include "Debug.h"
+#include "Utilities\Debug.h"
 
 
 IndexBuffer::IndexBuffer(const uint32_t* data, uint32_t count)

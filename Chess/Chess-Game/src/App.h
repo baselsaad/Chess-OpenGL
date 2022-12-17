@@ -1,39 +1,36 @@
 #pragma once
 
 class OpenGLWindow;
-class Event;
-enum class EventType;
 class GLFWWindow;
+class PlayerInput;
+
+enum class EventType;
+class Event;
 
 class Application
 {
-	using EventFuncType = std::function<void(Event&)>;
-
 public:
+
+	using EventFuncType = std::function<void(Event&)>;
 	Application();
 	~Application();
 
 public:
 	void Run();
-	void InitEventSystem();
+	void SetupEventCallback();
 
 	void OnClose(Event& event);
 	void OnResizeWindow(Event& event);
-
-	void OnMousePressed(Event& event);
-	void OnMouseReleased(Event& event);
-	void OnMouseMove(Event& event);
-
-	template<typename T>
-	void BindActionEvent(EventType inputEvent, T* obj, void(T::* ptrFunc)(Event&));
 
 	void OnEvent(Event& event);
 
 private:
 	std::shared_ptr<OpenGLWindow> m_Window;
+	std::shared_ptr<PlayerInput> m_PlayerInput;
+
 	EventFuncType m_EventCallback;
 
-	std::unordered_map<EventType, EventFuncType> m_BindFunctions;
+	float m_LastFrameTime = 0.0f;
 };
 
 extern bool s_Running;

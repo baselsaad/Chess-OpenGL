@@ -1,5 +1,12 @@
 #pragma once
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#define BIND_FUN(obj, fun)											\
+[&] (auto&&... args)												\
+{																	\
+	obj->fun(std::forward<decltype(args)>(args)...);				\
+}
 
 enum class MouseButtonType
 {
@@ -139,3 +146,4 @@ public:
 private:
 	double m_XPosition, m_YPosition;
 };
+
