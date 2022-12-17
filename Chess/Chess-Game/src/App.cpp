@@ -54,7 +54,7 @@ void Application::Run()
 
 	while (s_Running)
 	{
-		float now = glfwGetTime() * 1000.0f;
+		float now = (float)glfwGetTime() * 1000.0f;
 		float frameTime = now - m_LastFrameTime;
 		m_LastFrameTime = now;
 
