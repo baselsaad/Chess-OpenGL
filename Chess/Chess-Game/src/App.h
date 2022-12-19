@@ -6,6 +6,7 @@ class PlayerInput;
 
 enum class EventType;
 class Event;
+class Game;
 
 class Application
 {
@@ -16,17 +17,18 @@ public:
 	~Application();
 
 public:
+	void OnStart();
 	void Run();
 	void SetupEventCallback();
+	void OnDestroy();
 
 	void OnClose(Event& event);
 	void OnResizeWindow(Event& event);
 
-	void OnEvent(Event& event);
-
 private:
-	std::shared_ptr<OpenGLWindow> m_Window;
-	std::shared_ptr<PlayerInput> m_PlayerInput;
+	std::unique_ptr<OpenGLWindow> m_Window;
+	std::unique_ptr<PlayerInput> m_PlayerInput;
+	Game* m_GameLayer;
 
 	EventFuncType m_EventCallback;
 

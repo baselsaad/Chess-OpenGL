@@ -13,8 +13,11 @@ public:
 	~Game() = default;
 
 public:
-	void SetupPlayerInput(PlayerInput* input);
+	void OnStart();
+	void OnRender();
 	void OnUpdate(float deltaTime);
+	void SetupPlayerInput(PlayerInput* input);
+	void OnDestroy();
 
 	void OnMousePressed(Event& event);
 	void OnMouseReleased(Event& event);

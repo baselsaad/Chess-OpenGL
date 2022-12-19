@@ -12,7 +12,7 @@ public:
 	template<typename...Args>
 	static void Log(const Args&... args)
 	{
-		Debug::GetLogger()->trace(args ...);
+		Debug::GetLogger()->info(args ...);
 	}
 
 	template<typename...Args>

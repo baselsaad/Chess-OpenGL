@@ -25,61 +25,75 @@
 static bool s_Running = false;
 
 Application::Application()
-	: m_PlayerInput(std::make_shared<PlayerInput>())
 {
-	Debug::Init(); // Init Logging Console
-
 	WindowData data;
 	data.Width = 960;
 	data.Height = 540;
 	data.Title = "Chess";
 
-	m_Window = std::make_shared<OpenGLWindow>(data);
-
-	m_PlayerInput->BindActionEvent(EventType::CloseWindow, this, &Application::OnClose);
-	m_PlayerInput->BindActionEvent(EventType::ResizeWindow, this, &Application::OnResizeWindow);
+	m_Window = std::make_unique<OpenGLWindow>(data);
+	m_PlayerInput = std::make_unique<PlayerInput>();
 }
 
 Application::~Application()
 {
 }
 
+void Application::OnStart()
+{
+	SetupEventCallback();
+	s_Running = true;
+
+	m_PlayerInput->BindActionEvent(EventType::CloseWindow, this, &Application::OnClose);
+	m_PlayerInput->BindActionEvent(EventType::ResizeWindow, this, &Application::OnResizeWindow);
+
+	m_GameLayer = new Game();
+	m_GameLayer->OnStart();
+	m_GameLayer->SetupPlayerInput(m_PlayerInput.get());
+}
+
 void Application::Run()
 {
-	s_Running = true;
-	SetupEventCallback();
+	//OnStart
+	{
+		OnStart();
+		ASSERT(m_GameLayer, "m_GameLayer obj can not be null!");
+	}
 
-	Game* game = new Game();
-	game->SetupPlayerInput(m_PlayerInput.get());
-
+	//OnUpdate (Game Loop)
 	while (s_Running)
 	{
 		float now = (float)glfwGetTime() * 1000.0f;
 		float frameTime = now - m_LastFrameTime;
 		m_LastFrameTime = now;
 
+		m_Window->PollEvents();
 		m_Window->Clear();
 
 		//Render
 		{
-			game->OnUpdate(frameTime);
+			m_GameLayer->OnUpdate(frameTime); 
+			m_GameLayer->OnRender();
 		}
 
 		m_Window->Swap();
 	}
 
-	delete game;
+	//OnDestroy
+	{
+		OnDestroy();
+	}
 }
 
-void Application::OnEvent(Event& event)
+void Application::OnDestroy()
 {
-	m_PlayerInput->OnEvent(event);
+	m_GameLayer->OnDestroy();
+	delete m_GameLayer;
 }
 
 void Application::OnClose(Event& event)
 {
 	ASSERT(event.GetEventType() == EventType::CloseWindow, "Wrong Event Type!!");
-
 	s_Running = false;
 }
 
@@ -98,7 +112,7 @@ void Application::OnResizeWindow(Event& event)
 
 void Application::SetupEventCallback()
 {
-	m_EventCallback = [this](Event& e) { OnEvent(e); };
+	m_EventCallback = [this](Event& e) { m_PlayerInput->OnEvent(e); };
 	glfwSetWindowUserPointer(*m_Window, &m_EventCallback);
 
 	// Window Close 
@@ -168,4 +182,3 @@ void Application::SetupEventCallback()
 	}
 
 }
-

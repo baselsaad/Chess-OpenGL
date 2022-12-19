@@ -6,7 +6,7 @@
 
 Game::Game()
 {
-	m_EntityPool.resize(500);
+	m_EntityPool.resize(24);
 }
 
 void Game::SetupPlayerInput(PlayerInput* input)
@@ -17,8 +17,23 @@ void Game::SetupPlayerInput(PlayerInput* input)
 	input->BindActionEvent(EventType::MouseButtonReleased, this, &Game::OnMouseReleased);
 }
 
+void Game::OnStart()
+{
+	Debug::Info("OnStart");
+}
+
+void Game::OnRender()
+{
+}
+
 void Game::OnUpdate(float deltaTime)
 {
+
+}
+
+void Game::OnDestroy()
+{
+	Debug::Log("OnDestroy");
 }
 
 void Game::OnMousePressed(Event& event)
@@ -27,7 +42,7 @@ void Game::OnMousePressed(Event& event)
 
 	MouseButtonPressedEvent* pressedButton = static_cast<MouseButtonPressedEvent*>(&event);
 
-	Debug::Warn("MouseButton Pressed on X:{0}, Y:{1}", pressedButton->GetXPosition(), pressedButton->GetYPosition());
+	Debug::Log("MouseButton Pressed on X:{0}, Y:{1}", pressedButton->GetXPosition(), pressedButton->GetYPosition());
 }
 
 void Game::OnMouseReleased(Event& event)
@@ -35,7 +50,7 @@ void Game::OnMouseReleased(Event& event)
 	ASSERT(event.GetEventType() == EventType::MouseButtonReleased, "Wrong Event Type!!");
 
 	MouseButtonReleasedEvent* releasedButton = static_cast<MouseButtonReleasedEvent*>(&event);
-	Debug::Error("MouseButton Released on X:{0}, Y:{1}", releasedButton->GetXPosition(), releasedButton->GetYPosition());
+	Debug::Log("MouseButton Released on X:{0}, Y:{1}", releasedButton->GetXPosition(), releasedButton->GetYPosition());
 }
 
 void Game::OnMouseMove(Event& event)

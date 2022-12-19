@@ -6,7 +6,13 @@ std::shared_ptr<spdlog::logger> Debug::s_Logger;
 
 void Debug::Init()
 {
-	spdlog::set_pattern("%^[%T] %n: %v%$");
+
+#if DIST
+	// (Date) (Thread) (LogLvel) [Message]
+	spdlog::set_pattern("%^[%d-%m-%Y %S:%M:%H] [%n] [%t] [%l]: %v%$");
+#else
+	spdlog::set_pattern("%^[%n] [%t] [%l]: %v%$");
+#endif
+
 	s_Logger = spdlog::stdout_color_mt("Chess-Log");
-	s_Logger->set_level(spdlog::level::trace);
 }

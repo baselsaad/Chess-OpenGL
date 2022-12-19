@@ -22,11 +22,14 @@ void OpenGLWindow::Clear()
 
 void OpenGLWindow::Swap()
 {
-	/* Poll for and process events */
-	glfwPollEvents();
-
 	/* Swap front and back buffers */
 	glfwSwapBuffers(m_WindowHandle);
+}
+
+void OpenGLWindow::PollEvents()
+{
+	/* Poll for and process events */
+	glfwPollEvents();
 }
 
 void OpenGLWindow::SetVsync(bool enable)

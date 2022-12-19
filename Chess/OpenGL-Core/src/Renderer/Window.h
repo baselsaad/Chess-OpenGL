@@ -26,6 +26,7 @@ public:
 public:
 	void Clear();
 	void Swap();
+	void PollEvents();
 
 	void SetVsync(bool enable);
 
