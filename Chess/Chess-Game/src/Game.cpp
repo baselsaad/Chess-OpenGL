@@ -52,6 +52,7 @@ void Game::OnStart()
 	m_Renderer.AddNewQuad(&RedQuad);
 }
 
+//Testing
 static Quad* s_SelectedQuad = nullptr;
 static float s_PressedX = 0.0f;
 static float s_PressedY = 0.0f;
