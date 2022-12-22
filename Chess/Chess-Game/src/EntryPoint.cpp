@@ -1,7 +1,6 @@
 #include "pch.h"
-#include "Renderer\OpenGL.h"
-#include "Utilities\Debug.h"
 #include "App.h"
+#include "Utilities\Debug.h"
 
 static bool s_AppRunning = true;
 

@@ -33,7 +33,6 @@ public:
 private:
 	std::vector<Entity*> m_EntityPool;
 
-	Renderer m_Renderer;
 	VertexArray m_VertexArray;
 	VertexBuffer m_VertexBuffer;
 	VertexBufferLayout m_Layout;

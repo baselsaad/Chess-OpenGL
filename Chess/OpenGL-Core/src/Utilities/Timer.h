@@ -1,5 +1,5 @@
 #pragma once
-#include "Renderer\OpenGL.h"
+#include "Renderer\Defaults.h"
 
 
 class Timer

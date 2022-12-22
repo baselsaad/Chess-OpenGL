@@ -55,6 +55,8 @@ void Shader::SetUniformMat4f(const char* name, const glm::mat4& matrix)
 Shaders Shader::ParaseShader(const std::string& filePath)
 {
 	std::ifstream stream(filePath);
+	ASSERT(stream.is_open(), "Can not find the shader file path: "+filePath);
+
 	enum class ParsingState
 	{
 		None = -1, Vertex = 0, Fragment = 1
@@ -104,6 +106,7 @@ uint32_t Shader::CompileShader(uint32_t type, const std::string& source)
 		std::cout << message;
 		GL_CALL(glDeleteShader(id));
 
+		ASSERT(false, "failed to compile the shader!");
 		return 0;
 	}
 

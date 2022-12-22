@@ -7,18 +7,16 @@ struct Quad;
 class Renderer
 {
 public:
-	Renderer() = default;
-	~Renderer() = default;
+	Renderer() = delete;
+	Renderer(const Renderer&) = delete;
+	~Renderer() = delete;
 
 public:
-	void Draw(const VertexArray& vb, const IndexBuffer& ib);
-	void OnUpdate(const VertexArray& va, const VertexBuffer& vb, const IndexBuffer& ib, Shader& shader);
+	static void Draw(const VertexArray& vb, const IndexBuffer& ib);
+	inline size_t GetDrawCalls() const { return s_DrawCalls; }
 
-	void AddNewQuad(Quad* quad);
-
-	inline size_t GetDrawCalls() const { return m_Quads.size(); }
 private:
-	std::vector<Quad*> m_Quads;
+	static int s_DrawCalls;
 };
 
 

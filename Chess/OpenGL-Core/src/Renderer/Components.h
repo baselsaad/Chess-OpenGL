@@ -27,27 +27,25 @@ struct TransformComponent
 
 };
 
-struct Quad
+struct SpriteSheetComponent
 {
-	TransformComponent Transform;
 	Texture* Sprite;
 	Colors::RGBA Color;
 
-	Quad(const TransformComponent& transform, Texture* texture = nullptr, Colors::RGBA color = Colors::White)
-		: Transform(transform)
-		, Sprite(texture)
+	SpriteSheetComponent() = default;
+	SpriteSheetComponent(const SpriteSheetComponent&) = default;
+
+	SpriteSheetComponent(Texture* texture = nullptr, Colors::RGBA color = Colors::White)
+		: Sprite(texture)
 		, Color(color)
 	{
 	}
 
-	Quad(const TransformComponent& transform, Colors::RGBA color = Colors::White)
-		: Transform(transform)
-		, Sprite(nullptr)
+	SpriteSheetComponent(Colors::RGBA color = Colors::White)
+		: Sprite(nullptr)
 		, Color(color)
 	{
 	}
 
 	bool BindTexture();
-	bool IsInQuad(int x, int y);
-	
 };
