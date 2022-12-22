@@ -1,42 +1,35 @@
 #include "pch.h"
 #include "App.h"
 
+
 #include "Event.h"
 #include "PlayerInput.h"
 #include "Game.h"
+#include "Renderer\Defaults.h"
 
 #include "Utilities\Log.h"
 #include "Utilities\Colors.h"
 #include "Utilities\Debug.h"
 
-#include "Renderer\Window.h"
-#include "Renderer\Renderer.h"
-#include "Renderer\Shader.h"
-#include "Renderer\Texture.h"
-#include "Renderer\VertexArray.h"
-#include "Renderer\VertexBuffer.h"
-#include "Renderer\VertexBufferLayout.h"
-#include "Renderer\IndexBuffer.h"
-#include "Renderer\OpenGL.h"
-
-#include "glm.hpp"
-#include "gtc/matrix_transform.hpp"
 
 static bool s_Running = false;
 
 Application::Application()
+	: m_GameLayer(nullptr)
 {
 	WindowData data;
-	data.Width = 960;
-	data.Height = 540;
+	data.Width = Defaults::WINDOW_WIDTH;
+	data.Height = Defaults::WINDOW_HEIGHT;
 	data.Title = "Chess";
 
-	m_Window = std::make_unique<OpenGLWindow>(data);
-	m_PlayerInput = std::make_unique<PlayerInput>();
+	m_Window = new OpenGLWindow(data);
+	m_PlayerInput = new PlayerInput();
 }
 
 Application::~Application()
 {
+	delete m_Window;
+	delete m_PlayerInput;
 }
 
 void Application::OnStart()
@@ -47,9 +40,9 @@ void Application::OnStart()
 	m_PlayerInput->BindActionEvent(EventType::CloseWindow, this, &Application::OnClose);
 	m_PlayerInput->BindActionEvent(EventType::ResizeWindow, this, &Application::OnResizeWindow);
 
-	m_GameLayer = new Game();
+	m_GameLayer = new Game(m_Window->GetWindowHeight(), m_Window->GetWindowWidth());
 	m_GameLayer->OnStart();
-	m_GameLayer->SetupPlayerInput(m_PlayerInput.get());
+	m_GameLayer->SetupPlayerInput(m_PlayerInput);
 }
 
 void Application::Run()
@@ -67,12 +60,12 @@ void Application::Run()
 		float frameTime = now - m_LastFrameTime;
 		m_LastFrameTime = now;
 
-		m_Window->PollEvents();
 		m_Window->Clear();
+		m_Window->PollEvents();
 
 		//Render
 		{
-			m_GameLayer->OnUpdate(frameTime); 
+			m_GameLayer->OnUpdate(frameTime);
 			m_GameLayer->OnRender();
 		}
 
@@ -107,7 +100,7 @@ void Application::OnResizeWindow(Event& event)
 	m_Window->SetWindowWidth(e->GetWidth());
 	m_Window->SetWindowHeight(e->GetHeight());
 
-	//Debug::Error("OnResizeWindow");
+	m_GameLayer->UpdateWindowResolution(m_Window->GetWindowHeight(), m_Window->GetWindowWidth());
 }
 
 void Application::SetupEventCallback()

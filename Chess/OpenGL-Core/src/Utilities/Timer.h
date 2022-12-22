@@ -1,8 +1,5 @@
 #pragma once
-#include <chrono>
-#include <vector>
-#include <functional>
-#include "Renderer/Renderer.h"
+#include "Renderer\OpenGL.h"
 
 
 class Timer
@@ -46,7 +43,6 @@ public:
 
 	inline float ElapsedTimeInMili() const { return m_ElapsedTime; }
 	inline float ElapsedTimeInSecound() const { return m_ElapsedTime / 1000.0f; }
-	inline double GetTime() { return glfwGetTime(); }
 
 	//************************************
 	// Parameter: rate		- updateRate in Sec

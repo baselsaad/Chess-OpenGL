@@ -23,13 +23,11 @@ enum class EventType
 	MouseMove
 };
 
-
 class Event
 {
 public:
 	virtual EventType GetEventType() = 0;
 };
-
 
 class CloseWindowEvent : public Event
 {
@@ -142,8 +140,8 @@ public:
 		return EventType::MouseMove;
 	}
 
-
 private:
-	double m_XPosition, m_YPosition;
+	double m_XPosition;
+	double m_YPosition;
 };
 

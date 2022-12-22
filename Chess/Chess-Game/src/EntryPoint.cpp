@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "Renderer\OpenGL.h"
 #include "Utilities\Debug.h"
 #include "App.h"
 

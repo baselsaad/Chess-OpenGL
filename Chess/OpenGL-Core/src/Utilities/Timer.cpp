@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Timer.h"
-#include <iostream>
+
 
 #define MAX_SIZE 2
 

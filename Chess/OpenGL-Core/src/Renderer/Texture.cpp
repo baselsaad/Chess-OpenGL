@@ -1,10 +1,5 @@
 #include "pch.h"
-#include "Texture.h"
 #include "stb_image.h"
-#include "Utilities\Debug.h"
-
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 
 Texture::Texture(const std::string& path)
 	: m_RendererID(0)

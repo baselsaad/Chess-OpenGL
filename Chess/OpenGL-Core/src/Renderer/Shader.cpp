@@ -1,16 +1,10 @@
 #include "pch.h"
-#include "Shader.h"
-
 #include "Utilities\Debug.h"
 
-
-#include <fstream>
-#include <sstream>
 
 Shader::Shader(const std::string& filePath)
 	: m_FilePath(filePath), m_RendererID(0)
 {
-
 	Shaders shadersSource = ParaseShader(m_FilePath);
 	m_RendererID = CreateShader(shadersSource.FragmentShader, shadersSource.VertexShader);
 }
@@ -44,6 +38,12 @@ void Shader::SetUniform1f(const char* name, float v0)
 void Shader::SetUniform4f(const char* name, float v0, float v1, float v2, float v3)
 {
 	GL_CALL(glUniform4f(GetUniformLocation(name), v0, v1, v2, v3));
+}
+
+void Shader::SetUniform4f(const char* name, const Colors::RGBA& color)
+{
+	using namespace Colors;
+	GL_CALL(glUniform4f(GetUniformLocation(name), color.R, color.G, color.B, color.Alpha));
 }
 
 

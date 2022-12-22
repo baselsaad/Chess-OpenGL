@@ -26,8 +26,8 @@ public:
 	void OnResizeWindow(Event& event);
 
 private:
-	std::unique_ptr<OpenGLWindow> m_Window;
-	std::unique_ptr<PlayerInput> m_PlayerInput;
+	OpenGLWindow* m_Window;
+	PlayerInput* m_PlayerInput;
 	Game* m_GameLayer;
 
 	EventFuncType m_EventCallback;
