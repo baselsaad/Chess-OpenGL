@@ -1,66 +1,45 @@
 #pragma once
-#include "Renderer\Defaults.h"
 
 
-class Timer
-{
+class Timer {
 
 public:
-	using Lambda = std::function<void()>;
 	Timer();
+	Timer(const char* name);
+	~Timer();
 
-	struct CallbackTimersContainer
-	{
-		float Rate;
-		Lambda CallBack;
-
-		std::chrono::time_point<std::chrono::steady_clock> StartTime = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<float> LastFrameTime;
-
-		CallbackTimersContainer(const float& rate, const Lambda& lambdaCallback)
-			: Rate(rate)
-			, CallBack(lambdaCallback)
-			, LastFrameTime(std::chrono::duration<float>())
-		{
-		}
-
-		void Update()
-		{
-			LastFrameTime = std::chrono::high_resolution_clock::now() - StartTime;
-			float currentRate = LastFrameTime.count();
-
-			if (currentRate >= Rate)
-			{
-				CallBack();
-				StartTime = std::chrono::high_resolution_clock::now();// set new Timer
-			}
-		}
-
-	};
-
+public:
 	void StartTimer() const;
 	void StopTimer() const;
 
 	inline float ElapsedTimeInMili() const { return m_ElapsedTime; }
 	inline float ElapsedTimeInSecound() const { return m_ElapsedTime / 1000.0f; }
 
-	//************************************
-	// Parameter: rate		- updateRate in Sec
-	// Parameter: callback	- callback function 
-	//************************************
-	size_t SetCallBackTimer(float rate, const Lambda& callback);
-
-	void ClearCallBackTimer(int id);
-
-public:
-	std::vector<CallbackTimersContainer> CallbacksVec;
-
 private:
 	static const int INVALID = -1;
 	mutable float m_ElapsedTime;
 	mutable bool m_IsTimerStarted;
+
 	mutable std::chrono::time_point<std::chrono::steady_clock> m_Start;
 	mutable std::chrono::time_point<std::chrono::steady_clock> m_End;
 	mutable std::chrono::duration<float> m_Duration;
+
+	const char* m_Name;
 };
 
+/**
+ * From: https://github.com/TheCherno/Hazel/blob/master/Hazel/src/Hazel/Debug/Instrumentor.h
+ */
+#if defined (__FUNCTION__)
+#define FUNC_NAME __FUNCTION__
+#else
+#define FUNC_NAME "__FUNCTION__ not supported in your Compiler"
+#endif
+
+#if (UE_BUILD_SHIPPING || UE_BUILD_TEST)
+#define SCOPE_TIMER_NAME(name)
+#define SCOPE_TIMER()
+#else 
+#define SCOPE_TIMER_NAME(name) Timer timer(name)
+#define SCOPE_TIMER() SCOPE_TIMER_NAME(FUNC_NAME)
+#endif

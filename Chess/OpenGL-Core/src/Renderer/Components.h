@@ -1,7 +1,7 @@
 #pragma once
 #include "vec3.hpp"
-#include "mat4x4.hpp"
-#include "gtx\transform.hpp"
+#include <gtc/matrix_transform.hpp>
+#include <gtx/quaternion.hpp>
 
 class Texutre;
 namespace Colors { struct RGBA; };
@@ -13,12 +13,13 @@ struct TransformComponent
 
 	TransformComponent() = default;
 	TransformComponent(const TransformComponent&) = default;
-	TransformComponent(const glm::vec3& translation)
-		: Translation(translation)
+
+	TransformComponent(const glm::vec3& translation = glm::vec3(1.0f), const glm::vec3& scale = glm::vec3(1.0f))
+		: Translation(translation), Scale(scale)
 	{
 	}
 
-	glm::mat4 GetTransform() const
+	glm::mat4 GetTransformationMatrix() const
 	{
 		return glm::translate(glm::mat4(1.0f), Translation) //Location
 			* glm::mat4(1.0f) //Rotation

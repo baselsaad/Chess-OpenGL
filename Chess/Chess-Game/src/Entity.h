@@ -11,7 +11,7 @@ public:
 	Entity(const TransformComponent& transform, const SpriteSheetComponent& sprite);
 
 public:
-	bool IsInBox(int x, int y);
+	bool IsInBound(int x, int y);
 
 	inline TransformComponent& GetTransformComponent() { return m_Transform; }
 	inline SpriteSheetComponent& GetSpriteSheetComponent() { return m_Sprite; }

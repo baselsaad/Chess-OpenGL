@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "App.h"
 
-
 #include "Event.h"
 #include "PlayerInput.h"
 #include "Game.h"
@@ -10,7 +9,7 @@
 #include "Utilities\Log.h"
 #include "Utilities\Colors.h"
 #include "Utilities\Debug.h"
-
+#include "Utilities\Timer.h"
 
 static bool s_Running = false;
 
@@ -18,11 +17,13 @@ Application::Application()
 	: m_GameLayer(nullptr)
 {
 	WindowData data;
-	data.Width = Defaults::WINDOW_WIDTH;
+	data.Width =  Defaults::WINDOW_WIDTH;
 	data.Height = Defaults::WINDOW_HEIGHT;
 	data.Title = "Chess";
 
 	m_Window = new OpenGLWindow(data);
+	m_Window->SetVsync(false);
+
 	m_PlayerInput = new PlayerInput();
 }
 
@@ -47,6 +48,7 @@ void Application::OnStart()
 
 void Application::Run()
 {
+
 	//OnStart
 	{
 		OnStart();

@@ -16,12 +16,12 @@ Texture::Texture(const std::string& path)
 
 	GL_CALL(glGenTextures(1, &m_RendererID));
 	GL_CALL(glBindTexture(GL_TEXTURE_2D, m_RendererID));
-	
-	GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-	GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-	
-	GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-	GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+
+	glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_LocalBuffer));
 	UnBind();
@@ -67,4 +67,9 @@ void Texture::EnableBlending() const
 void Texture::DisableBlending()
 {
 	GL_CALL(glDisable(GL_BLEND));
+}
+
+void Texture::DisableTexturing()
+{
+	glDisable(GL_TEXTURE_2D);
 }

@@ -1,6 +1,7 @@
 #pragma once
+#include "Entity.h"
 
-class Entity;
+
 class PlayerInput;
 class Event;
 class Renderer;
@@ -29,16 +30,24 @@ public:
 	void OnMouseMove(Event& event);
 
 	void UpdateWindowResolution(int height, int width);
+	void DrawBackground();
+	void AdjustBackgroundImage();
 
 private:
-	std::vector<Entity*> m_EntityPool;
-
-	VertexArray m_VertexArray;
-	VertexBuffer m_VertexBuffer;
-	VertexBufferLayout m_Layout;
-	IndexBuffer m_IndexBuffer;
-	Shader m_Shader;
-
 	int m_WindowHeight, m_WindowWidth;
+	glm::mat4 m_ProjectionView;
+
+	std::vector<Entity> m_EntityPool;
+
+	// Move to entity rendering container
+	VertexArray m_VertexArray;
+	VertexBuffer m_EntityVB;
+	VertexBufferLayout m_EntityLayout;
+	IndexBuffer m_EntityIB;
+	Shader m_EntityShader;
+	Texture m_TextureTest;
+
+	Texture m_BackgroundTexture;
+	Entity m_BackgroundImage;
 };
 

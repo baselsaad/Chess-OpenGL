@@ -31,9 +31,9 @@ OpenGLWindow::OpenGLWindow(const WindowData& data)
 
 	// GPU driver and OpenGL Information
 	Debug::Info("OpenGL Info:");
-	Debug::Info("  Vendor: {0}", glGetString(GL_VENDOR));
-	Debug::Info("  GPU: {0}", glGetString(GL_RENDERER));
-	Debug::Info("  OpenGL-Version: {0}", glGetString(GL_VERSION));
+	Debug::Info(" Vendor: {0}", glGetString(GL_VENDOR));
+	Debug::Info(" GPU: {0}", glGetString(GL_RENDERER));
+	Debug::Info(" OpenGL-Version: {0}", glGetString(GL_VERSION));
 }
 
 OpenGLWindow::~OpenGLWindow()
@@ -45,6 +45,7 @@ OpenGLWindow::~OpenGLWindow()
 void OpenGLWindow::Clear()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 }
 
 void OpenGLWindow::Swap()

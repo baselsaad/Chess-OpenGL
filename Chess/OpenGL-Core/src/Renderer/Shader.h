@@ -13,6 +13,7 @@ struct Shaders
 class Shader
 {
 public:
+	Shader() = default;
 	Shader(const std::string& filePath);
 	~Shader();
 

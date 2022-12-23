@@ -2,8 +2,8 @@
 
 namespace Defaults
 {
-	static constexpr int WINDOW_WIDTH = 960;
-	static constexpr int WINDOW_HEIGHT = 540;
+	static constexpr int WINDOW_WIDTH = 700;
+	static constexpr int WINDOW_HEIGHT = 700;
 
 	static constexpr float MIN_POSITION_OFFSET = 0.0f;
 	static constexpr float MAX_POSITION_OFFSET = 100.0f;
@@ -18,9 +18,9 @@ namespace Defaults
 	static constexpr float Positions[PositionsCount] =
 	{
 		  // Positions										// Texture Coords
-		  MIN_POSITION_OFFSET,   MIN_POSITION_OFFSET,		1.0f, 1.0f, // 0 bottom_left 
+		  MIN_POSITION_OFFSET,   MIN_POSITION_OFFSET,		0.0f, 0.0f, // 0 bottom_left 
 		  MAX_POSITION_OFFSET,	 MIN_POSITION_OFFSET,		1.0f, 0.0f, // 1 bottom_right
-		  MAX_POSITION_OFFSET,	 MAX_POSITION_OFFSET,		0.0f, 0.0f, // 2 top_right
+		  MAX_POSITION_OFFSET,	 MAX_POSITION_OFFSET,		1.0f, 1.0f, // 2 top_right
 		  MIN_POSITION_OFFSET,   MAX_POSITION_OFFSET,		0.0f, 1.0f  // 3 top_left
 	};
 
