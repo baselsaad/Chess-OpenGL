@@ -10,6 +10,7 @@ class VertexArray;
 class VertexBufferLayout;
 class IndexBuffer;
 class Shader;
+class DeltaTime;
 
 class Game
 {
@@ -21,7 +22,7 @@ public:
 public:
 	void OnStart();
 	void OnRender();
-	void OnUpdate(float deltaTime);
+	void OnUpdate(const DeltaTime& deltaTime);
 	void SetupPlayerInput(PlayerInput* input);
 	void OnDestroy();
 
@@ -29,9 +30,11 @@ public:
 	void OnMouseReleased(Event& event);
 	void OnMouseMove(Event& event);
 
-	void UpdateWindowResolution(int height, int width);
+	void UpdateWindowSize(int height, int width);
 	void DrawBackground();
 	void AdjustBackgroundImage();
+
+	void DrawEntites();
 
 private:
 	int m_WindowHeight, m_WindowWidth;
@@ -45,9 +48,10 @@ private:
 	VertexBufferLayout m_EntityLayout;
 	IndexBuffer m_EntityIB;
 	Shader m_EntityShader;
-	Texture m_TextureTest;
 
+	Texture m_TextureTest;
 	Texture m_BackgroundTexture;
+
 	Entity m_BackgroundImage;
 };
 

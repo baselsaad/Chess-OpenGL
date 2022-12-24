@@ -13,8 +13,8 @@ public:
 
 public:
 	static void Draw(const VertexArray& vb, const IndexBuffer& ib);
-	inline size_t GetDrawCalls() const { return s_DrawCalls; }
-
+	static void ResetStats() { s_DrawCalls = 0; }
+	static size_t GetDrawCalls() { return s_DrawCalls; }
 private:
 	static int s_DrawCalls;
 };

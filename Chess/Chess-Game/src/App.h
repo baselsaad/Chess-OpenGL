@@ -1,8 +1,10 @@
 #pragma once
+#include "Utilities\DeltaTime.h"
 
 class OpenGLWindow;
 class GLFWWindow;
 class PlayerInput;
+class DeltaTime;
 
 enum class EventType;
 class Event;
@@ -31,8 +33,7 @@ private:
 	Game* m_GameLayer;
 
 	EventFuncType m_EventCallback;
-
-	float m_LastFrameTime = 0.0f;
+	DeltaTime m_DeltaTime;
 };
 
 extern bool s_Running;

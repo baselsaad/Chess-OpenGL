@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Game.h"
 
+#include "Utilities\DeltaTime.h"
 #include "Renderer\Defaults.h"
 #include "Utilities\Log.h"
 #include "Utilities\Debug.h"
@@ -52,20 +53,72 @@ void Game::OnStart()
 	m_VertexArray.AddBuffer(m_EntityVB, m_EntityLayout);
 
 	AdjustBackgroundImage();
-	m_EntityPool.emplace_back(Entity(TransformComponent({ 0.0f,0.0f,0.0f }), SpriteSheetComponent(&m_TextureTest)));
+	m_EntityPool.emplace_back(Entity(TransformComponent({ 0.0f,0.0f,0.0f }, { 0.75f,0.75f,1.0f }), SpriteSheetComponent(&m_TextureTest)));
 }
 
-void Game::OnUpdate(float deltaTime)
+void Game::OnUpdate(const DeltaTime& deltaTime)
 {
+	Debug::Warn("FPS: {0}", deltaTime.GetFramePerSecounds());
 }
 
 void Game::OnRender()
 {
 	DrawBackground();
+	DrawEntites();
+}
+
+void Game::OnDestroy()
+{
+}
+
+void Game::DrawBackground()
+{
+	glm::mat4 model = m_BackgroundImage.GetTransformComponent().GetTransformationMatrix();
+	glm::mat4 mvp = m_ProjectionView * model;
+
+	m_EntityShader.Bind();
+	m_EntityShader.SetUniformMat4f("u_MVP", mvp);
+	m_BackgroundImage.GetSpriteSheetComponent().BindTexture();
+	m_EntityShader.SetUniform1i("u_Texture", 0);
+
+	Renderer::Draw(m_VertexArray, m_EntityIB);
+}
+
+void Game::AdjustBackgroundImage()
+{
+	// Centering Calculation based on (0.0 , 0.0) position
+	// so make sure every time we adjust the backgroundimage to set the x,y to 0
+	m_BackgroundImage.GetTranslation().x = 0.0f;
+	m_BackgroundImage.GetTranslation().y = 0.0f;
+
+	// Calculate the Scale for the background entity to fit to the window
+	float xNewScale = m_WindowWidth / (Defaults::MAX_POSITION_OFFSET);
+	float yNewScale = m_WindowHeight / (Defaults::MAX_POSITION_OFFSET);
+
+	m_BackgroundImage.GetScale().x = xNewScale;
+	m_BackgroundImage.GetScale().y = yNewScale;
+
+	// center of the window
+	float windowCenterX = (float)m_WindowWidth / 2.0f;
+	float windowCenterY = (float)m_WindowHeight / 2.0f;
+
+	// center of the quad
+	float quadCenterX = (Defaults::MAX_POSITION_OFFSET / 2.0f) * xNewScale;
+	float quadCenterY = (Defaults::MAX_POSITION_OFFSET / 2.0f) * yNewScale;
+
+	float offsetX = windowCenterX - quadCenterX;
+	float offsetY = windowCenterY - quadCenterY;
+
+	m_BackgroundImage.GetTranslation().x += offsetX;
+	m_BackgroundImage.GetTranslation().y += offsetY;
+}
+
+void Game::DrawEntites()
+{
+	m_EntityShader.Bind();
 
 	for (int i = 0; i < m_EntityPool.size(); i++)
 	{
-		m_EntityShader.Bind();
 		Entity& entity = m_EntityPool[i];
 
 		glm::mat4 model = entity.GetTransformComponent().GetTransformationMatrix();
@@ -86,17 +139,13 @@ void Game::OnRender()
 	}
 }
 
-void Game::OnDestroy()
-{
-}
-
 void Game::OnMousePressed(Event& event)
 {
 	ASSERT(event.GetEventType() == EventType::MouseButtonPressed, "Wrong Event Type!!");
 	MouseButtonPressedEvent* pressedButton = static_cast<MouseButtonPressedEvent*>(&event);
 
 	s_PressedX = pressedButton->GetXPosition();
-	s_PressedY = m_WindowHeight - pressedButton->GetYPosition();
+	s_PressedY = m_WindowHeight - pressedButton->GetYPosition();// Mouse Position beginn from TOP-Left, but it should be from Bottom-Left
 
 	//TODO: grid system
 	for (auto& entity : m_EntityPool)
@@ -135,55 +184,13 @@ void Game::OnMouseMove(Event& event)
 	s_PressedY = m_WindowHeight - e->GetYPos();
 }
 
-void Game::UpdateWindowResolution(int height, int width)
+void Game::UpdateWindowSize(int height, int width)
 {
 	m_WindowHeight = height;
 	m_WindowWidth = width;
 
 	const glm::mat4 proj = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
-	m_ProjectionView = proj * glm::mat4(1.0f);;
+	m_ProjectionView = proj * glm::mat4(1.0f); // proj * view
 
 	AdjustBackgroundImage();
-}
-
-void Game::DrawBackground()
-{
-	glm::mat4 model = m_BackgroundImage.GetTransformComponent().GetTransformationMatrix();
-	glm::mat4 mvp = m_ProjectionView * model;
-
-	m_EntityShader.Bind();
-	m_EntityShader.SetUniformMat4f("u_MVP", mvp);
-	m_BackgroundImage.GetSpriteSheetComponent().BindTexture();
-	m_EntityShader.SetUniform1i("u_Texture", 0);
-
-	Renderer::Draw(m_VertexArray, m_EntityIB);
-}
-
-void Game::AdjustBackgroundImage()
-{
-	// Centering Calculation based on (0.0 , 0.0) position
-	// so make sure every time we adjust the backgroundimage to set the x,y to 0
-	m_BackgroundImage.GetTranslation().x = 0.0f;
-	m_BackgroundImage.GetTranslation().y = 0.0f;
-
-	// Calculate the Scale for the background entity to fit to the window
-	float xNewScale = m_WindowWidth  / (Defaults::MAX_POSITION_OFFSET);
-	float yNewScale = m_WindowHeight / (Defaults::MAX_POSITION_OFFSET);
-
-	m_BackgroundImage.GetScale().x = xNewScale;
-	m_BackgroundImage.GetScale().y = yNewScale;
-
-	// center of the window
-	float windowCenterX = (float)m_WindowWidth / 2;
-	float windowCenterY = (float)m_WindowHeight / 2;
-
-	// center of the quad
-	float quadCenterX = (Defaults::MAX_POSITION_OFFSET / 2) * xNewScale;
-	float quadCenterY = (Defaults::MAX_POSITION_OFFSET / 2) * yNewScale;
-
-	float offsetX = windowCenterX - quadCenterX;
-	float offsetY = windowCenterY - quadCenterY;
-
-	m_BackgroundImage.GetTranslation().x += offsetX;
-	m_BackgroundImage.GetTranslation().y += offsetY;
 }

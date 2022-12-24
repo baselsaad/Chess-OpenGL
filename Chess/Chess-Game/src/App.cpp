@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "App.h"
 
+
 #include "Event.h"
 #include "PlayerInput.h"
 #include "Game.h"
@@ -22,7 +23,7 @@ Application::Application()
 	data.Title = "Chess";
 
 	m_Window = new OpenGLWindow(data);
-	m_Window->SetVsync(false);
+	m_Window->SetVsync(true);
 
 	m_PlayerInput = new PlayerInput();
 }
@@ -58,17 +59,17 @@ void Application::Run()
 	//OnUpdate (Game Loop)
 	while (s_Running)
 	{
-		float now = (float)glfwGetTime() * 1000.0f;
-		float frameTime = now - m_LastFrameTime;
-		m_LastFrameTime = now;
+		m_DeltaTime.Update();
+		Renderer::ResetStats();
 
 		m_Window->Clear();
 		m_Window->PollEvents();
 
 		//Render
 		{
-			m_GameLayer->OnUpdate(frameTime);
+			m_GameLayer->OnUpdate(m_DeltaTime);
 			m_GameLayer->OnRender();
+			//Debug::Warn("Draw Calls {0}", Renderer::GetDrawCalls());
 		}
 
 		m_Window->Swap();
@@ -102,7 +103,7 @@ void Application::OnResizeWindow(Event& event)
 	m_Window->SetWindowWidth(e->GetWidth());
 	m_Window->SetWindowHeight(e->GetHeight());
 
-	m_GameLayer->UpdateWindowResolution(m_Window->GetWindowHeight(), m_Window->GetWindowWidth());
+	m_GameLayer->UpdateWindowSize(m_Window->GetWindowHeight(), m_Window->GetWindowWidth());
 }
 
 void Application::SetupEventCallback()
