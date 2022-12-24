@@ -21,20 +21,24 @@ public:
 
 	void SetVsync(bool enable);
 
-	inline  GLFWwindow* GetWindowHandle() { return m_WindowHandle; }
-	inline const GLFWwindow* GetWindowHandle() const { return m_WindowHandle; }
+	inline  GLFWwindow* GetWindowHandle() { return m_Window; }
+	inline const GLFWwindow* GetWindowHandle() const { return m_Window; }
 
 	inline void SetWindowWidth(int width) { m_Width = width; }
 	inline void SetWindowHeight(int height) { m_Height = height; }
 
 	inline int GetWindowWidth() const { return m_Width; }
 	inline int GetWindowHeight() const { return m_Height; }
+	inline float GetAspectRatio() const { return m_Width / m_Height;}
 
-	operator GLFWwindow* () const { return m_WindowHandle; }
+	operator GLFWwindow* () const { return m_Window; }
 
 private:
-	GLFWwindow* m_WindowHandle;
+	void HandleErrorMessages();
+	void PrintGpuInformation();
+
+private:
+	GLFWwindow* m_Window;
 	int m_Width, m_Height;
-	float m_AspectRatio;
 };
 

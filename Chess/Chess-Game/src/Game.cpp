@@ -58,7 +58,7 @@ void Game::OnStart()
 
 void Game::OnUpdate(const DeltaTime& deltaTime)
 {
-	Debug::Warn("FPS: {0}", deltaTime.GetFramePerSecounds());
+	//Debug::Warn("FPS: {0}", deltaTime.GetFramePerSecounds());
 }
 
 void Game::OnRender()
@@ -81,7 +81,7 @@ void Game::DrawBackground()
 	m_BackgroundImage.GetSpriteSheetComponent().BindTexture();
 	m_EntityShader.SetUniform1i("u_Texture", 0);
 
-	Renderer::Draw(m_VertexArray, m_EntityIB);
+	Renderer::Get().Draw(m_VertexArray, m_EntityIB);
 }
 
 void Game::AdjustBackgroundImage()
@@ -135,7 +135,7 @@ void Game::DrawEntites()
 			m_EntityShader.SetUniform4f("u_Color", entity.GetSpriteSheetComponent().Color);
 		}
 
-		Renderer::Draw(m_VertexArray, m_EntityIB);
+		Renderer::Get().Draw(m_VertexArray, m_EntityIB);
 	}
 }
 

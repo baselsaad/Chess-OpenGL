@@ -24,6 +24,7 @@ Application::Application()
 
 	m_Window = new OpenGLWindow(data);
 	m_Window->SetVsync(true);
+	Renderer::Init();
 
 	m_PlayerInput = new PlayerInput();
 }
@@ -60,7 +61,7 @@ void Application::Run()
 	while (s_Running)
 	{
 		m_DeltaTime.Update();
-		Renderer::ResetStats();
+		Renderer::Get().ResetStats();
 
 		m_Window->Clear();
 		m_Window->PollEvents();
@@ -69,7 +70,7 @@ void Application::Run()
 		{
 			m_GameLayer->OnUpdate(m_DeltaTime);
 			m_GameLayer->OnRender();
-			//Debug::Warn("Draw Calls {0}", Renderer::GetDrawCalls());
+			//Debug::Warn("Draw Calls {0}", Renderer::Get().GetDrawCalls());
 		}
 
 		m_Window->Swap();

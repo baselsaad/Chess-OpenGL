@@ -8,6 +8,5 @@ bool SpriteSheetComponent::BindTexture()
 		return false;
 
 	Sprite->Bind(0);
-	Sprite->EnableBlending();
 	return true;
 }

@@ -36,7 +36,6 @@ static bool GlLogCall(const char* functionName, const char* fileName, int line)
 	return true;
 }
 
-
 static void OpenGLMessageCallback(
 	unsigned source,
 	unsigned type,
@@ -52,7 +51,7 @@ static void OpenGLMessageCallback(
 		case GL_DEBUG_SEVERITY_HIGH:			Debug::Critical(message);		return;
 		case GL_DEBUG_SEVERITY_MEDIUM:			Debug::Error(message);			return;
 		case GL_DEBUG_SEVERITY_LOW:				Debug::Warn(message);			return;
-		case GL_DEBUG_SEVERITY_NOTIFICATION:	Debug::Log(message);			return;
+		case GL_DEBUG_SEVERITY_NOTIFICATION:	return;
 	}
 
 	ASSERT(false, "Unkown severity!!");

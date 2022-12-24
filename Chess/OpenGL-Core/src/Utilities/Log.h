@@ -46,4 +46,4 @@ private:
 
 
 
-#define ASSERT_ERROR(...)		::Debug::GetLogger()->error(__VA_ARGS__);
+#define ASSERT_ERROR(...)		Debug::GetLogger()->error(__VA_ARGS__);
