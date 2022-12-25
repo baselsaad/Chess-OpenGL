@@ -1,7 +1,7 @@
 #pragma once
-#include "vec3.hpp"
-#include <gtc/matrix_transform.hpp>
-#include <gtx/quaternion.hpp>
+#include "glm/vec3.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/quaternion.hpp"
 
 class Texutre;
 namespace Colors { struct RGBA; };

@@ -1,5 +1,5 @@
 #pragma once
-#include "mat4x4.hpp"
+#include "glm/mat4x4.hpp"
 
 //Forward declaration
 namespace Colors { struct RGBA;};

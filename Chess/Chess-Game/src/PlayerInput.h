@@ -16,9 +16,10 @@ public:
 	inline void BindActionEvent(EventType inputEvent, T* obj, void (T::* func)(MethodParameter&))
 	{
 		static_assert(std::is_base_of<Event, MethodParameter>::value, "Parameter Type of the Method must be derived from Event!!");
-		m_BindFunctions[inputEvent] = [obj, func](Event& e) { (obj->*func)(static_cast<MethodParameter&>(e)); };
+
+		m_BoundFunctions[inputEvent] = [obj, func](Event& e) { (obj->*func)(static_cast<MethodParameter&>(e)); };
 	}
 
 private:
-	std::unordered_map<EventType, EventFuncType> m_BindFunctions;
+	std::unordered_map<EventType, EventFuncType> m_BoundFunctions;
 };

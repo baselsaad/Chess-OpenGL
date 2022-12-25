@@ -50,14 +50,12 @@ void Application::OnStart()
 
 void Application::Run()
 {
-
-	//OnStart
+	// OnStart
 	{
 		OnStart();
-		ASSERT(m_GameLayer, "m_GameLayer obj can not be null!");
 	}
 
-	//OnUpdate (Game Loop)
+	// OnUpdate (Game Loop)
 	while (s_Running)
 	{
 		m_DeltaTime.Update();
@@ -66,16 +64,13 @@ void Application::Run()
 		m_Window->Clear();
 		m_Window->PollEvents();
 
-		//Render
-		{
-			m_GameLayer->OnUpdate(m_DeltaTime);
-			m_GameLayer->OnRender();
-		}
+		m_GameLayer->OnUpdate(m_DeltaTime);
+		m_GameLayer->OnRender();
 
 		m_Window->Swap();
 	}
 
-	//OnDestroy
+	// OnDestroy
 	{
 		OnDestroy();
 	}

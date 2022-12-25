@@ -3,8 +3,8 @@
 
 void PlayerInput::OnEvent(Event& e)
 {
-	auto finder = m_BindFunctions.find(e.GetEventType());
-	if (finder != m_BindFunctions.end())
+	auto finder = m_BoundFunctions.find(e.GetEventType());
+	if (finder != m_BoundFunctions.end())
 	{
 		auto& func = finder->second;
 		func(e);
