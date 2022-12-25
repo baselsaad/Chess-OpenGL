@@ -12,10 +12,11 @@ public:
 public:
 	void OnEvent(Event& e);
 
-	template<typename T>
-	inline void BindActionEvent(EventType inputEvent, T* obj, void (T::* func)(Event&))
+	template<typename T, typename MethodParameter>
+	inline void BindActionEvent(EventType inputEvent, T* obj, void (T::* func)(MethodParameter&))
 	{
-		m_BindFunctions[inputEvent] = [obj, func](Event& e) { (obj->*func)(e); };
+		static_assert(std::is_base_of<Event, MethodParameter>::value, "Parameter Type of the Method must be derived from Event!!");
+		m_BindFunctions[inputEvent] = [obj, func](Event& e) { (obj->*func)(static_cast<MethodParameter&>(e)); };
 	}
 
 private:

@@ -8,6 +8,8 @@ class DeltaTime;
 
 enum class EventType;
 class Event;
+class ResizeWindowEvent;
+class CloseWindowEvent;
 class Game;
 
 class Application
@@ -24,8 +26,8 @@ public:
 	void SetupEventCallback();
 	void OnDestroy();
 
-	void OnClose(Event& event);
-	void OnResizeWindow(Event& event);
+	void OnClose(CloseWindowEvent& event);
+	void OnResizeWindow(ResizeWindowEvent& event);
 
 private:
 	OpenGLWindow* m_Window;

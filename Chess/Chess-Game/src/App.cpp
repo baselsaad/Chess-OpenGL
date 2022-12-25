@@ -18,7 +18,7 @@ Application::Application()
 	: m_GameLayer(nullptr)
 {
 	WindowData data;
-	data.Width =  Defaults::WINDOW_WIDTH;
+	data.Width = Defaults::WINDOW_WIDTH;
 	data.Height = Defaults::WINDOW_HEIGHT;
 	data.Title = "Chess";
 
@@ -70,7 +70,6 @@ void Application::Run()
 		{
 			m_GameLayer->OnUpdate(m_DeltaTime);
 			m_GameLayer->OnRender();
-			//Debug::Warn("Draw Calls {0}", Renderer::Get().GetDrawCalls());
 		}
 
 		m_Window->Swap();
@@ -88,21 +87,17 @@ void Application::OnDestroy()
 	delete m_GameLayer;
 }
 
-void Application::OnClose(Event& event)
+void Application::OnClose(CloseWindowEvent& event)
 {
-	ASSERT(event.GetEventType() == EventType::CloseWindow, "Wrong Event Type!!");
 	s_Running = false;
 }
 
-void Application::OnResizeWindow(Event& event)
+void Application::OnResizeWindow(ResizeWindowEvent& event)
 {
-	ASSERT(event.GetEventType() == EventType::ResizeWindow, "Wrong Event Type!!");
-	ResizeWindowEvent* e = static_cast<ResizeWindowEvent*>(&event);
+	glViewport(0, 0, event.GetWidth(), event.GetHeight());
 
-	glViewport(0, 0, e->GetWidth(), e->GetHeight());
-
-	m_Window->SetWindowWidth(e->GetWidth());
-	m_Window->SetWindowHeight(e->GetHeight());
+	m_Window->SetWindowWidth(event.GetWidth());
+	m_Window->SetWindowHeight(event.GetHeight());
 
 	m_GameLayer->UpdateWindowSize(m_Window->GetWindowHeight(), m_Window->GetWindowWidth());
 }

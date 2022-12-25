@@ -28,8 +28,7 @@ Game::Game(int height, int width)
 	constexpr int totalPieces = 32;
 	m_EntityPool.reserve(totalPieces);
 
-	const glm::mat4 proj = glm::ortho(0.0f, (float)m_WindowWidth, 0.0f, (float)m_WindowHeight, -1.0f, 1.0f);
-	m_ProjectionView = proj * glm::mat4(1.0f);
+	CalculateProjectionViewMatrix();
 }
 
 Game::Game()
@@ -58,7 +57,7 @@ void Game::OnStart()
 
 void Game::OnUpdate(const DeltaTime& deltaTime)
 {
-	//Debug::Warn("FPS: {0}", deltaTime.GetFramePerSecounds());
+
 }
 
 void Game::OnRender()
@@ -120,32 +119,28 @@ void Game::DrawEntites()
 	for (int i = 0; i < m_EntityPool.size(); i++)
 	{
 		Entity& entity = m_EntityPool[i];
-
 		glm::mat4 model = entity.GetTransformComponent().GetTransformationMatrix();
 		glm::mat4 mvp = m_ProjectionView * model;
 		m_EntityShader.SetUniformMat4f("u_MVP", mvp);
 
-		if (entity.GetSpriteSheetComponent().Sprite != nullptr)
-		{
-			entity.GetSpriteSheetComponent().BindTexture();
-			m_EntityShader.SetUniform1i("u_Texture", 0);
-		}
-		else
-		{
-			m_EntityShader.SetUniform4f("u_Color", entity.GetSpriteSheetComponent().Color);
-		}
+		entity.GetSpriteSheetComponent().BindTexture();
+		m_EntityShader.SetUniform1i("u_Texture", 0);
+		//m_EntityShader.SetUniform4f("u_Color", Colors::White);
 
 		Renderer::Get().Draw(m_VertexArray, m_EntityIB);
 	}
 }
 
-void Game::OnMousePressed(Event& event)
+void Game::CalculateProjectionViewMatrix()
 {
-	ASSERT(event.GetEventType() == EventType::MouseButtonPressed, "Wrong Event Type!!");
-	MouseButtonPressedEvent* pressedButton = static_cast<MouseButtonPressedEvent*>(&event);
+	const glm::mat4 proj = glm::ortho(0.0f, (float)m_WindowWidth, 0.0f, (float)m_WindowHeight, -1.0f, 1.0f);
+	m_ProjectionView = proj * glm::mat4(1.0f); // proj * view (Camera Pos(1.0f,1.0f))
+}
 
-	s_PressedX = pressedButton->GetXPosition();
-	s_PressedY = m_WindowHeight - pressedButton->GetYPosition();// Mouse Position beginn from TOP-Left, but it should be from Bottom-Left
+void Game::OnMousePressed(MouseButtonPressedEvent& event)
+{
+	s_PressedX = event.GetXPosition();
+	s_PressedY = m_WindowHeight - event.GetYPosition();// Mouse Position beginn from TOP-Left, but it should be from Bottom-Left
 
 	//TODO: grid system
 	for (auto& entity : m_EntityPool)
@@ -155,33 +150,27 @@ void Game::OnMousePressed(Event& event)
 	}
 }
 
-void Game::OnMouseReleased(Event& event)
+void Game::OnMouseReleased(MouseButtonReleasedEvent& event)
 {
-	ASSERT(event.GetEventType() == EventType::MouseButtonReleased, "Wrong Event Type!!");
-	MouseButtonReleasedEvent* releasedButton = static_cast<MouseButtonReleasedEvent*>(&event);
-
 	s_SelectedEntity = nullptr;
 	s_PressedX = 0.0f;
 	s_PressedY = 0.0f;
 }
 
-void Game::OnMouseMove(Event& event)
+void Game::OnMouseMove(MouseMoveEvent& event)
 {
 	if (s_SelectedEntity == nullptr)
 		return;
 
-	ASSERT(event.GetEventType() == EventType::MouseMove, "Wrong Event Type!!");
-	MouseMoveEvent* e = static_cast<MouseMoveEvent*>(&event);
-
-	double xOffset = (e->GetXPos() - s_PressedX);
-	double yOffset = ((m_WindowHeight - e->GetYPos()) - s_PressedY);
+	double xOffset = (event.GetXPos() - s_PressedX);
+	double yOffset = ((m_WindowHeight - event.GetYPos()) - s_PressedY);
 
 	auto& location = s_SelectedEntity->GetTranslation();
 	location.x += (float)xOffset;
 	location.y += (float)yOffset;
 
-	s_PressedX = e->GetXPos();
-	s_PressedY = m_WindowHeight - e->GetYPos();
+	s_PressedX = event.GetXPos();
+	s_PressedY = m_WindowHeight - event.GetYPos();
 }
 
 void Game::UpdateWindowSize(int height, int width)
@@ -189,8 +178,6 @@ void Game::UpdateWindowSize(int height, int width)
 	m_WindowHeight = height;
 	m_WindowWidth = width;
 
-	const glm::mat4 proj = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
-	m_ProjectionView = proj * glm::mat4(1.0f); // proj * view
-
+	CalculateProjectionViewMatrix();
 	AdjustBackgroundImage();
 }
