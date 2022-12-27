@@ -22,6 +22,16 @@ namespace Colors
 			, Alpha(rgba.Alpha)
 		{
 		}
+
+
+		bool operator==(const RGBA& other)
+		{
+			return 
+				R == other.R 
+				&& G == other.G
+				&& B == other.B
+				&& Alpha == other.Alpha;
+		}
 	};
 
 

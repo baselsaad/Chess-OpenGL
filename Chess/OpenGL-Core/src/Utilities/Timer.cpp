@@ -2,16 +2,13 @@
 #include "Timer.h"
 #include "Debug.h"
 
-
-
-Timer::Timer() 
-	: m_IsTimerStarted(false) 
-	, m_Name("Unknown")
+Timer::Timer()
+	: m_Name("Unknown")
 {
 }
 
 Timer::Timer(const char* name)
-	 : m_Name(name)
+	: m_Name(name)
 {
 	StartTimer();
 }
@@ -31,18 +28,10 @@ void Timer::StartTimer() const
 void Timer::StopTimer() const
 {
 	m_End = std::chrono::high_resolution_clock::now();
+	ASSERT(m_IsTimerStarted, "You have to start the timer first!");
 
-	if (m_IsTimerStarted) 
-	{
-		m_Duration = m_End - m_Start;
-		m_ElapsedTime = m_Duration.count() * 1000.0f;
-		m_IsTimerStarted = false;
-	}
-	else 
-	{
-		// throw exception
-		m_ElapsedTime = INVALID;
-	}
-
+	m_Duration = m_End - m_Start;
+	m_ElapsedTime = m_Duration.count() * 1000.0f;
+	m_IsTimerStarted = false;
 }
 

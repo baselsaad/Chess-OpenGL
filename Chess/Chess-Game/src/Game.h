@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+#include "Grid.h"
 
 class PlayerInput;
 class Event;
@@ -14,6 +15,7 @@ class OpenGLWindow;
 class MouseButtonPressedEvent;
 class MouseButtonReleasedEvent;
 class MouseMoveEvent;
+class Grid;
 
 class Game
 {
@@ -33,17 +35,19 @@ public:
 	void OnMouseReleased(MouseButtonReleasedEvent& event);
 	void OnMouseMove(MouseMoveEvent& event);
 
-	void UpdateWindowSize(int height, int width);
+	void UpdateViewport(int width, int height);
+	void CalculateProjectionViewMatrix(); 
 
 	void DrawBackground();
 	void AdjustBackgroundImage();
 
+	//+64 DrawCalls
+	void DrawBackgroundManually();
+
 	void DrawEntites();
 
-	void CalculateProjectionViewMatrix(); 
-
 private:
-	int m_WindowHeight, m_WindowWidth;
+	glm::vec2 m_Viewport;
 	glm::mat4 m_ProjectionView;
 	std::vector<Entity> m_EntityPool;
 
@@ -59,5 +63,6 @@ private:
 	Texture m_BackgroundTexture;
 
 	Entity m_BackgroundImage;
+	Grid m_GridSystem;
 };
 

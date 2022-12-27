@@ -18,7 +18,7 @@ public:
 private:
 	static const int INVALID = -1;
 	mutable float m_ElapsedTime;
-	mutable bool m_IsTimerStarted;
+	mutable bool m_IsTimerStarted = false;
 
 	mutable std::chrono::time_point<std::chrono::steady_clock> m_Start;
 	mutable std::chrono::time_point<std::chrono::steady_clock> m_End;

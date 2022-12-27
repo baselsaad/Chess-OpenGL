@@ -33,6 +33,7 @@ Application::~Application()
 {
 	delete m_Window;
 	delete m_PlayerInput;
+	delete m_GameLayer;
 }
 
 void Application::OnStart()
@@ -63,10 +64,12 @@ void Application::Run()
 
 		m_Window->Clear();
 		m_Window->PollEvents();
-
-		m_GameLayer->OnUpdate(m_DeltaTime);
-		m_GameLayer->OnRender();
-
+		{
+			m_GameLayer->OnUpdate(m_DeltaTime);
+			m_GameLayer->OnRender();
+			//Debug::Log("DrawCalls {0}", Renderer::Get().GetDrawCalls());
+			//Debug::Log("FPS {0}", m_DeltaTime.GetFramePerSecounds());
+		}
 		m_Window->Swap();
 	}
 
@@ -79,7 +82,6 @@ void Application::Run()
 void Application::OnDestroy()
 {
 	m_GameLayer->OnDestroy();
-	delete m_GameLayer;
 }
 
 void Application::OnClose(CloseWindowEvent& event)
@@ -94,12 +96,12 @@ void Application::OnResizeWindow(ResizeWindowEvent& event)
 	m_Window->SetWindowWidth(event.GetWidth());
 	m_Window->SetWindowHeight(event.GetHeight());
 
-	m_GameLayer->UpdateWindowSize(m_Window->GetWindowHeight(), m_Window->GetWindowWidth());
+	m_GameLayer->UpdateViewport(event.GetWidth(), event.GetHeight());
 }
 
 void Application::SetupEventCallback()
 {
-	m_EventCallback = [this](Event& e) { m_PlayerInput->OnEvent(e); };
+	m_EventCallback = [this](Event& e) -> void { m_PlayerInput->OnEvent(e); };
 	glfwSetWindowUserPointer(*m_Window, &m_EventCallback);
 
 	// Window Close 
@@ -119,7 +121,6 @@ void Application::SetupEventCallback()
 		auto callback = [](GLFWwindow* window, int width, int height)
 		{
 			auto& func = *(std::function<void(Event&)>*)glfwGetWindowUserPointer(window);
-
 			ResizeWindowEvent event(width, height);
 			func(event);
 		};
@@ -129,7 +130,7 @@ void Application::SetupEventCallback()
 
 	// Mouse Buttons
 	{
-		auto callback = [](GLFWwindow* window, int button, int action, int mods)
+		auto callback = [](GLFWwindow* window, int button, int action, int mods) 
 		{
 			auto& func = *(std::function<void(Event&)>*)glfwGetWindowUserPointer(window);
 			double outX, outY;
