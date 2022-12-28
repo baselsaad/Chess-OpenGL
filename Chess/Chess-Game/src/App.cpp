@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "App.h"
 
-
 #include "Event.h"
 #include "PlayerInput.h"
 #include "Game.h"

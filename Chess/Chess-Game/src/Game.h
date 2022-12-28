@@ -49,7 +49,6 @@ public:
 private:
 	glm::vec2 m_Viewport;
 	glm::mat4 m_ProjectionView;
-	std::vector<Entity> m_EntityPool;
 
 	// Move to entity rendering container
 	VertexArray m_VertexArray;
@@ -63,6 +62,6 @@ private:
 	Texture m_BackgroundTexture;
 
 	Entity m_BackgroundImage;
-	Chessboard m_GridSystem;
+	Chessboard m_Chessboard;
 };
 

@@ -13,12 +13,11 @@
 // Mouse Drag and Drop
 struct DragAndDrop
 {
-	Entity* SelectedEntity = nullptr;
+	glm::vec3 OrginalPosition;
 	double PressedX = 0.0f;
 	double PressedY = 0.0f;
-	int EntityGridID = Chessboard::INVALID_ID;
+	int EntityID = Chessboard::INVALID_ID;
 };
-
 static DragAndDrop s_DragDropData;
 
 Game::Game(int height, int width)
@@ -30,9 +29,6 @@ Game::Game(int height, int width)
 	, m_BackgroundTexture("res/textures/background.png")
 	, m_BackgroundImage(TransformComponent({ 0.0f,0.0f,0.0f }), SpriteSheetComponent(&m_BackgroundTexture))
 {
-	constexpr int totalPieces = 32;
-	m_EntityPool.reserve(totalPieces);
-
 	CalculateProjectionViewMatrix();
 }
 
@@ -50,18 +46,17 @@ void Game::SetupPlayerInput(PlayerInput* input)
 	input->BindActionEvent(EventType::MouseMove, this, &Game::OnMouseMove);
 }
 
-
 void Game::OnStart()
 {
 	m_EntityLayout.Push<float>(2);
 	m_EntityLayout.Push<float>(2);
 	m_VertexArray.AddBuffer(m_EntityVB, m_EntityLayout);
 
-	m_GridSystem.SetViewPort(m_Viewport);
+	m_Chessboard.SetViewPort(m_Viewport);
 	AdjustBackgroundImage();
 
-	m_EntityPool.emplace_back(Entity(TransformComponent({ 0.0f,0.0f,0.0f }, { 75.0f,75.0f,1.0f }), SpriteSheetComponent(&m_TextureTest)));
-	m_GridSystem.AddNewChessPiece(&m_EntityPool[0], 0, 5);
+	m_Chessboard.AddNewChessPiece(m_TextureTest, 0, 0);
+	m_Chessboard.AddNewChessPiece(m_TextureTest, 1, 0);
 }
 
 void Game::OnUpdate(const DeltaTime& deltaTime)
@@ -163,11 +158,12 @@ void Game::DrawBackgroundManually()
 
 void Game::DrawEntites()
 {
+	const auto& entityPool = m_Chessboard.GetChessPieces();
 	m_EntityShader.Bind();
 
-	for (int i = 0; i < m_EntityPool.size(); i++)
+	for (int i = 0; i < entityPool.size(); i++)
 	{
-		Entity& entity = m_EntityPool[i];
+		const Entity& entity = entityPool[i];
 		glm::mat4 model = entity.GetTransformComponent().GetTransformationMatrix();
 		glm::mat4 mvp = m_ProjectionView * model;
 		m_EntityShader.SetUniformMat4f("u_MVP", mvp);
@@ -192,36 +188,39 @@ void Game::OnMousePressed(MouseButtonPressedEvent& event)
 
 	//Debug::Log("X: {0}, Y: {1}", s_PressedX, s_PressedY);
 
-	m_GridSystem.GetEntity(s_DragDropData.PressedX, s_DragDropData.PressedY
-		, s_DragDropData.EntityGridID, &s_DragDropData.SelectedEntity);
+	s_DragDropData.EntityID = m_Chessboard.GetEntityID(s_DragDropData.PressedX, s_DragDropData.PressedY);
+
+	// copy the location in case the move was invalid, so we set it back 
+	if (s_DragDropData.EntityID != Chessboard::INVALID_ID)
+		s_DragDropData.OrginalPosition = m_Chessboard.GetEntityLocation(s_DragDropData.EntityID);
+
 }
 
 void Game::OnMouseReleased(MouseButtonReleasedEvent& event)
 {
-	if (s_DragDropData.SelectedEntity != nullptr)
+	if (s_DragDropData.EntityID != Chessboard::INVALID_ID)
 	{
-		const auto& Posititon = s_DragDropData.SelectedEntity->GetTransformComponent().GetCenterPositionInScreenSpace();
-		m_GridSystem.MoveEntityToNewCell(s_DragDropData.SelectedEntity, s_DragDropData.EntityGridID, Posititon);
+		const float& x = s_DragDropData.PressedX;
+		const float& y = s_DragDropData.PressedY;
+
+		glm::vec2 targetLocation = m_Chessboard.HasEntity(x, y) ? s_DragDropData.OrginalPosition : glm::vec2(x, y);
+		m_Chessboard.MoveEntityToCell(s_DragDropData.EntityID, targetLocation);
 	}
 
 	// reset
-	s_DragDropData.SelectedEntity = nullptr;
 	s_DragDropData.PressedX = 0.0f;
 	s_DragDropData.PressedY = 0.0f;
-	s_DragDropData.EntityGridID = Chessboard::INVALID_ID;
+	s_DragDropData.EntityID = Chessboard::INVALID_ID;
 }
 
 void Game::OnMouseMove(MouseMoveEvent& event)
 {
-	if (s_DragDropData.SelectedEntity == nullptr)
+	if (s_DragDropData.EntityID == Chessboard::INVALID_ID)
 		return;
 
-	double xOffset = (event.GetXPosition() - s_DragDropData.PressedX);
-	double yOffset = ((m_Viewport.y - event.GetYPosition()) - s_DragDropData.PressedY);
-
-	auto& entityLocation = s_DragDropData.SelectedEntity->GetTranslation();
-	entityLocation.x += (float)xOffset;
-	entityLocation.y += (float)yOffset;
+	float xOffset = event.GetXPosition() - s_DragDropData.PressedX;
+	float yOffset = (m_Viewport.y - event.GetYPosition()) - s_DragDropData.PressedY;
+	m_Chessboard.MoveEntityByOffset(s_DragDropData.EntityID, xOffset, yOffset);
 
 	s_DragDropData.PressedX = event.GetXPosition();
 	s_DragDropData.PressedY = m_Viewport.y - event.GetYPosition();
@@ -232,7 +231,7 @@ void Game::UpdateViewport(int width, int height)
 	m_Viewport.x = (float)width;
 	m_Viewport.y = (float)height;
 
-	m_GridSystem.SetViewPort(m_Viewport);
+	m_Chessboard.SetViewPort(m_Viewport);
 	CalculateProjectionViewMatrix();
 	AdjustBackgroundImage();
 }

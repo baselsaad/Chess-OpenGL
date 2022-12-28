@@ -32,8 +32,8 @@ struct TransformComponent
 	{
 		return glm::vec2
 		(
-			Translation.x + ((Defaults::MAX_POSITION_OFFSET * Scale.x) / 2.0f), 
-			Translation.y + ((Defaults::MAX_POSITION_OFFSET * Scale.y) / 2.0f)  
+			Translation.x + ((Defaults::MAX_POSITION_OFFSET * Scale.x) / 2.0f),
+			Translation.y + ((Defaults::MAX_POSITION_OFFSET * Scale.y) / 2.0f)
 		);
 	}
 
@@ -60,4 +60,5 @@ struct SpriteSheetComponent
 	}
 
 	bool BindTexture();
+	bool BindTexture() const;
 };

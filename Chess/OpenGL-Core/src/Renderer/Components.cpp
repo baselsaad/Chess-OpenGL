@@ -1,7 +1,15 @@
 #include "pch.h"
 
+bool SpriteSheetComponent::BindTexture() 
+{
+	if (Sprite == nullptr)
+		return false;
 
-bool SpriteSheetComponent::BindTexture()
+	Sprite->Bind(0);
+	return true;
+}
+
+bool SpriteSheetComponent::BindTexture() const
 {
 	if (Sprite == nullptr)
 		return false;

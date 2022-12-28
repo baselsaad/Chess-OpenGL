@@ -1,69 +1,83 @@
 #include "pch.h"
-#include "Chessboard.h"
 #include "Entity.h"
-#include "Renderer\Defaults.h"
+
+#include "Chessboard.h"
+
 
 Chessboard::Chessboard(const glm::vec2& viewportResolution, int rowsCount, int columnsCount)
-	: m_Rows(rowsCount), m_Columns(columnsCount), m_ViewportResolution(viewportResolution)
+	: m_Rows(rowsCount)
+	, m_Columns(columnsCount)
+	, m_ViewportResolution(viewportResolution)
 {
 	m_Cells.resize(rowsCount * columnsCount);
+	m_EntityPool.reserve(32);
 }
 
 Chessboard::~Chessboard()
 {
 }
 
-void Chessboard::AddNewChessPiece(Entity* piece, int rowIndex, int colIndex)
+void Chessboard::AddNewChessPiece(Texture& test, int rowIndex, int colIndex)
 {
 	ASSERT(rowIndex >= 0 && rowIndex < m_Rows, "row Index is out of range!");
-	ASSERT(colIndex >= 0 && colIndex < m_Columns, "colIndex Index is out of range!");
+	ASSERT(colIndex >= 0 && colIndex < m_Columns, "column Index is out of range!");
+
+	Entity& entity = m_EntityPool.emplace_back(Entity(TransformComponent({ 0.0f,0.0f,0.0f }, { 75.0f,75.0f,1.0f }), SpriteSheetComponent(&test)));
 
 	int index = colIndex * m_Rows + rowIndex;
-	MoveEntityToNewCell(piece, index, GetCellPosition(rowIndex + 1, colIndex + 1));
+	m_Cells[index].ChessPiece = &entity;
+	MoveEntityToCell(index, GetCellPosition(rowIndex + 1, colIndex + 1));
 }
 
-void Chessboard::GetEntity(double mouseX, double mouseY, int& outGridID, Entity** outEntity)
+int Chessboard::GetEntityID(double mouseX, double mouseY)
 {
 	int index = GetCellIndex(mouseX, mouseY);
 
 	if (!m_Cells[index].HasEntity())
-	{
-		*outEntity = nullptr;
-		outGridID = Chessboard::INVALID_ID;
-		return;
-	}
+		return Chessboard::INVALID_ID;
 
-	*outEntity = m_Cells[index].ChessPiece;
-	outGridID = index;
+	return index;
 }
 
-void Chessboard::MoveEntityToNewCell(Entity* entity, int oldID, const glm::vec2& newPosition)
+bool Chessboard::HasEntity(double mouseX, double mouseY)
 {
-	glm::vec2 outPosition;
-	int outCellIndex = 0;
-	ComputeCorrectCellPosition(newPosition, outPosition, outCellIndex);
+	return GetEntityID(mouseX, mouseY) != Chessboard::INVALID_ID;
+}
 
+void Chessboard::MoveEntityToCell(int entityID, const glm::vec2& newPosition)
+{
+	ASSERT(entityID >= 0 && entityID < m_Cells.size(), "Invalid Entity ID!!");
+
+	Entity* entity = m_Cells[entityID].ChessPiece;
+
+	// Get Cell Center-Position
+	glm::vec2 outCellPosition;
+	int outTargetCell = 0;
+	ComputeCorrectCellPosition(newPosition, outCellPosition, outTargetCell);
+
+	// Translate Entity
 	auto& translation = entity->GetTranslation();
 	auto& entityOrgin = entity->GetTransformComponent().GetCenterPositionInScreenSpace();
+	translation.x += outCellPosition.x - entityOrgin.x;
+	translation.y += outCellPosition.y - entityOrgin.y;
 
-	translation.x += outPosition.x - entityOrgin.x;
-	translation.y += outPosition.y - entityOrgin.y;
-
-	m_Cells[oldID].ResetData();
-	m_Cells[outCellIndex].ChessPiece = entity;
+	// Add Entity to Cell and delte old one 
+	m_Cells[entityID].ResetData();
+	m_Cells[outTargetCell].ChessPiece = entity;
 }
 
+//TODO: Another way to computer
 void Chessboard::ComputeCorrectCellPosition(const glm::vec2& screenSpacePosition, glm::vec2& outCellPosition, int& outNewIndex)
 {
 	glm::vec2 indices = GetRowAndColumn(screenSpacePosition.x, screenSpacePosition.y);
-	indices += 1.0f; // Start from 1 to 8 so can know which cell is wanted by multiplication
+	outNewIndex = indices.y * m_Rows + indices.x;
 
+	// Start from 1 to 8 so can know which cell is wanted by multiplication
+	indices += 1.0f;
 	const glm::vec2 center = GetCellPosition(indices.x, indices.y);
 
 	outCellPosition.x = center.x;
 	outCellPosition.y = center.y;
-
-	outNewIndex = GetCellIndex(center.x, center.y);
 }
 
 int Chessboard::GetCellIndex(double mouseX, double mouseY)
@@ -101,4 +115,19 @@ const glm::vec2 Chessboard::GetCellPosition(int row, int column)
 	float centerPosY = selectedTopPosition - (colHeight / 2.0f);
 
 	return glm::vec2(centerPosX, centerPosY);
+}
+
+void Chessboard::MoveEntityByOffset(const int& entityID, const float& xOffset, const float& yOffset)
+{
+	ASSERT(entityID >= 0 && entityID < m_Cells.size(), "Invalid Entity ID!!");
+
+	auto& entityLocation = m_Cells[entityID].ChessPiece->GetTranslation();
+	entityLocation.x += xOffset;
+	entityLocation.y += yOffset;
+}
+
+void Chessboard::MoveEntityToNewPosition(const int& entityID, const glm::vec3& positionOffset)
+{
+	ASSERT(entityID >= 0 && entityID < m_Cells.size(), "Invalid Entity ID!!");
+	m_Cells[entityID].ChessPiece->SetTranslation(positionOffset);
 }
