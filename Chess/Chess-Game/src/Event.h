@@ -8,7 +8,7 @@
 	obj->fun(std::forward<decltype(args)>(args)...);				\
 }
 
-enum class MouseButtonType
+enum class MouseButtonKey
 {
 	Left = GLFW_MOUSE_BUTTON_LEFT, Right = GLFW_MOUSE_BUTTON_RIGHT, UnSupported
 };
@@ -70,9 +70,9 @@ public:
 	{
 		switch (button)
 		{
-			case GLFW_MOUSE_BUTTON_LEFT:	m_ButtonType = MouseButtonType::Left;			break;
-			case GLFW_MOUSE_BUTTON_RIGHT:	m_ButtonType = MouseButtonType::Right;			break;
-			default:						m_ButtonType = MouseButtonType::UnSupported;	break;
+			case GLFW_MOUSE_BUTTON_LEFT:	m_ButtonType = MouseButtonKey::Left;			break;
+			case GLFW_MOUSE_BUTTON_RIGHT:	m_ButtonType = MouseButtonKey::Right;			break;
+			default:						m_ButtonType = MouseButtonKey::UnSupported;	break;
 		}
 	}
 
@@ -81,13 +81,13 @@ public:
 		return EventType::MouseButtonEvent;
 	}
 
-	inline MouseButtonType GetButtonType() { return m_ButtonType; }
+	inline MouseButtonKey GetButtonType() { return m_ButtonType; }
 
 	inline double GetXPosition() { return m_XPosition; }
 	inline double GetYPosition() { return m_YPosition; }
 
 private:
-	MouseButtonType m_ButtonType;
+	MouseButtonKey m_ButtonType;
 	double m_XPosition;
 	double m_YPosition;
 };
@@ -132,8 +132,8 @@ public:
 	{
 	}
 
-	inline double GetXPos() const { return m_XPosition; }
-	inline double GetYPos() const { return m_YPosition; }
+	inline double GetXPosition() const { return m_XPosition; }
+	inline double GetYPosition() const { return m_YPosition; }
 
 	virtual EventType GetEventType() override
 	{

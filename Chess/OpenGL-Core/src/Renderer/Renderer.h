@@ -15,11 +15,13 @@ public:
 	static void Init();
 
 	void Draw(const VertexArray& vb, const IndexBuffer& ib);
-	void ResetStats() { s_Instance.s_DrawCalls = 0; }
-	size_t GetDrawCalls() { return s_Instance.s_DrawCalls; }
+	void ResetStats() { s_Instance.m_DrawCalls = 0; }
+	size_t GetDrawCalls() { return s_Instance.m_DrawCalls; }
 private:
 	static Renderer s_Instance;
-	static int s_DrawCalls;
+
+	int m_DrawCalls;
+	bool m_IsInitialized;
 };
 
 

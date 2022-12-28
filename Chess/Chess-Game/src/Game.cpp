@@ -12,9 +12,15 @@
 #include "Grid.h"
 
 // Mouse Drag and Drop
-static Entity* s_SelectedEntity = nullptr;
-static double s_PressedX = 0.0f;
-static double s_PressedY = 0.0f;
+struct DragAndDrop
+{
+	Entity* SelectedEntity = nullptr;
+	double PressedX = 0.0f;
+	double PressedY = 0.0f;
+	int EntityGridID = Grid::INVALID_ID;
+};
+
+static DragAndDrop s_DragDropData;
 
 Game::Game(int height, int width)
 	: m_EntityVB(Defaults::Positions, Defaults::PositionsSize)
@@ -52,19 +58,20 @@ void Game::OnStart()
 	m_EntityLayout.Push<float>(2);
 	m_VertexArray.AddBuffer(m_EntityVB, m_EntityLayout);
 
+	m_GridSystem.SetViewPort(m_Viewport);
 	AdjustBackgroundImage();
-	m_EntityPool.emplace_back(Entity(TransformComponent({ 0.0f,0.0f,0.0f }, { 0.75f,0.75f,1.0f }), SpriteSheetComponent(&m_TextureTest)));
 
-	m_GridSystem.AddNewChessPiece(&m_EntityPool[0], 0);
+	m_EntityPool.emplace_back(Entity(TransformComponent({ 0.0f,0.0f,0.0f }, { 75.0f,75.0f,1.0f }), SpriteSheetComponent(&m_TextureTest)));
+	m_GridSystem.AddNewChessPiece(&m_EntityPool[0], 0, 5);
 }
 
 void Game::OnUpdate(const DeltaTime& deltaTime)
 {
-
 }
 
 void Game::OnRender()
 {
+	//DrawBackgroundManually();
 	DrawBackground();
 	DrawEntites();
 }
@@ -88,30 +95,29 @@ void Game::DrawBackground()
 
 void Game::AdjustBackgroundImage()
 {
-	// Centering Calculation based on (0.0 , 0.0) position
-
 	// Calculate the Scale for the background to fit to the window
-	float xNewScale = m_Viewport.x / (Defaults::MAX_POSITION_OFFSET);
-	float yNewScale = m_Viewport.y / (Defaults::MAX_POSITION_OFFSET);
+	const float xNewScale = m_Viewport.x / Defaults::MAX_POSITION_OFFSET;
+	const float yNewScale = m_Viewport.y / Defaults::MAX_POSITION_OFFSET;
 
 	m_BackgroundImage.GetScale().x = xNewScale;
 	m_BackgroundImage.GetScale().y = yNewScale;
 
 	// center of the window
-	float windowCenterX = (float)m_Viewport.x / 2.0f;
-	float windowCenterY = (float)m_Viewport.y / 2.0f;
+	const float windowCenterX = m_Viewport.x / 2.0f;
+	const float windowCenterY = m_Viewport.y / 2.0f;
 
 	// center of the quad
-	float quadCenterX = (Defaults::MAX_POSITION_OFFSET * xNewScale) / 2.0f;
-	float quadCenterY = (Defaults::MAX_POSITION_OFFSET * yNewScale) / 2.0f;
+	float quadCenterX = m_BackgroundImage.GetTransformComponent().GetCenterPositionInScreenSpace().x;
+	float quadCenterY = m_BackgroundImage.GetTransformComponent().GetCenterPositionInScreenSpace().y;
 
-	m_BackgroundImage.GetTranslation().x = windowCenterX - quadCenterX;
-	m_BackgroundImage.GetTranslation().y = windowCenterY - quadCenterY;
+	m_BackgroundImage.GetTranslation().x += windowCenterX - quadCenterX;
+	m_BackgroundImage.GetTranslation().y += windowCenterY - quadCenterY;
 }
 
 void Game::DrawBackgroundManually()
 {
 	std::vector<Entity> backgroundFields;
+	backgroundFields.clear();
 	backgroundFields.reserve(64);
 
 	Shader backgroundShader("res/shaders/Color.shader");
@@ -182,33 +188,44 @@ void Game::CalculateProjectionViewMatrix()
 
 void Game::OnMousePressed(MouseButtonPressedEvent& event)
 {
-	s_PressedX = event.GetXPosition();
-	s_PressedY = m_Viewport.y - event.GetYPosition();// Mouse Position beginn from TOP-Left, but it should be from Bottom-Left
+	s_DragDropData.PressedX = event.GetXPosition();
+	s_DragDropData.PressedY = m_Viewport.y - event.GetYPosition();// Mouse Position beginn from TOP-Left, but it should be from Bottom-Left
 
-	Debug::Log("Grid {0}", m_GridSystem.HasChessPiece(m_GridSystem.GetChessPieceIndex(s_PressedX, s_PressedY, m_Viewport)) != nullptr);
+	//Debug::Log("X: {0}, Y: {1}", s_PressedX, s_PressedY);
+
+	m_GridSystem.GetEntity(s_DragDropData.PressedX, s_DragDropData.PressedY
+		, s_DragDropData.EntityGridID, &s_DragDropData.SelectedEntity);
 }
 
 void Game::OnMouseReleased(MouseButtonReleasedEvent& event)
 {
-	s_SelectedEntity = nullptr;
-	s_PressedX = 0.0f;
-	s_PressedY = 0.0f;
+	if (s_DragDropData.SelectedEntity != nullptr)
+	{
+		const auto& Posititon = s_DragDropData.SelectedEntity->GetTransformComponent().GetCenterPositionInScreenSpace();
+		m_GridSystem.MoveEntityToNewCell(s_DragDropData.SelectedEntity, s_DragDropData.EntityGridID, Posititon);
+	}
+
+	// reset
+	s_DragDropData.SelectedEntity = nullptr;
+	s_DragDropData.PressedX = 0.0f;
+	s_DragDropData.PressedY = 0.0f;
+	s_DragDropData.EntityGridID = Grid::INVALID_ID;
 }
 
 void Game::OnMouseMove(MouseMoveEvent& event)
 {
-	if (s_SelectedEntity == nullptr)
+	if (s_DragDropData.SelectedEntity == nullptr)
 		return;
 
-	double xOffset = (event.GetXPos() - s_PressedX);
-	double yOffset = ((m_Viewport.y - event.GetYPos()) - s_PressedY);
+	double xOffset = (event.GetXPosition() - s_DragDropData.PressedX);
+	double yOffset = ((m_Viewport.y - event.GetYPosition()) - s_DragDropData.PressedY);
 
-	auto& location = s_SelectedEntity->GetTranslation();
-	location.x += (float)xOffset;
-	location.y += (float)yOffset;
+	auto& entityLocation = s_DragDropData.SelectedEntity->GetTranslation();
+	entityLocation.x += (float)xOffset;
+	entityLocation.y += (float)yOffset;
 
-	s_PressedX = event.GetXPos();
-	s_PressedY = m_Viewport.y - event.GetYPos();
+	s_DragDropData.PressedX = event.GetXPosition();
+	s_DragDropData.PressedY = m_Viewport.y - event.GetYPosition();
 }
 
 void Game::UpdateViewport(int width, int height)
@@ -216,6 +233,7 @@ void Game::UpdateViewport(int width, int height)
 	m_Viewport.x = (float)width;
 	m_Viewport.y = (float)height;
 
+	m_GridSystem.SetViewPort(m_Viewport);
 	CalculateProjectionViewMatrix();
 	AdjustBackgroundImage();
 }

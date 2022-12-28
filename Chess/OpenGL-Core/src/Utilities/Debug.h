@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#define CHECK(x) if (!(x)) __debugbreak();
+#if DEBUG
 
 #define ASSERT(x, Msg)								\
 		if (!(x))									\
@@ -11,6 +11,11 @@
 			ASSERT_ERROR(Msg);						\
 			__debugbreak();							\
 		}
+#else
+#define ASSERT(x,MSG)
+#endif
+
+#define CHECK(x) if (!(x)) __debugbreak();
 
 // compatible with all OpenGL Versions
 #define GL_CALL(x)									\
@@ -36,14 +41,8 @@ static bool GlLogCall(const char* functionName, const char* fileName, int line)
 	return true;
 }
 
-static void OpenGLMessageCallback(
-	unsigned source,
-	unsigned type,
-	unsigned id,
-	unsigned severity,
-	int length,
-	const char* message,
-	const void* userParam)
+static void OpenGLMessageCallback(unsigned source, unsigned type, unsigned id, unsigned severity,
+	int length, const char* message, const void* userParam)
 {
 
 	switch (severity)

@@ -1,34 +1,47 @@
 #pragma once
+#include <glm/vec2.hpp>
+#include <unordered_map>
 
 struct TransformComponent;
 class Entity;
 
-struct CellData
+struct Cell
 {
 	Entity* ChessPiece = nullptr;
 
-	CellData() = default;
-	inline Entity* GetOwnedEntity() const { return ChessPiece; }
+	Cell() = default;
+
+	inline void ResetData() { ChessPiece = nullptr; }
+	inline bool HasEntity() const { return ChessPiece != nullptr; }
 };
 
+// TODO: Simplify the logic after finish the whole project
 class Grid
 {
-
 public:
-	Grid(int rowsCount = 8, int columnsCount = 8);
+	static constexpr int INVALID_ID = -1;
+
+	Grid(const glm::vec2& viewportResolution = { 700.0f,700.0f }, int rowsCount = 8, int columnsCount = 8);
 	~Grid();
 
 public:
-	void UpdateChessPiecePosition(Entity* piece, const glm::vec2& newPosition);
+	void AddNewChessPiece(Entity* entity, int rowIndex, int colIndex);
+	void MoveEntityToNewCell(Entity* entity,int oldID, const glm::vec2& newPosition);
+	void GetEntity(double mouseX, double mouseY, int& outGridID, Entity** outEntity);
 
-	Entity* HasChessPiece(int index);
+	inline void SetViewPort(const glm::vec2& viewport) { m_ViewportResolution = viewport; }
 
-	int GetChessPieceIndex(double mouseX, double mouseY, const glm::vec2& viewport);
-	void AddNewChessPiece(Entity* piece, int index);
+private:
+	const glm::vec2& GetRowAndColumn(double mouseX, double mouseY);
+	const glm::vec2 GetCellPosition(int row,int column);
+
+	void ComputeCorrectCellPosition(const glm::vec2& screenSpacePosition, glm::vec2& outCellPosition, int& outNewIndex);
+	int GetCellIndex(double mouseX, double mouseY);
 
 private:
 	int m_Rows;
 	int m_Columns;
+	glm::vec2 m_ViewportResolution;
 
-	std::vector<CellData> m_GridSystem;
+	std::vector<Cell> m_Cells;
 };

@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "Defaults.h"
 
 
 bool SpriteSheetComponent::BindTexture()

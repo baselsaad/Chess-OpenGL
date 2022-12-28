@@ -39,11 +39,11 @@ project "Chess-Game"
 		}
 
 	filter "configurations:Debug"
-	--	defines "DEBUG"
+		defines "DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
-	--	defines "RELEASE"
+		defines "RELEASE"
 		runtime "Release"
         optimize "on"

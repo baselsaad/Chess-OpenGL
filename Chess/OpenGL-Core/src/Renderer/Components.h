@@ -3,6 +3,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/quaternion.hpp"
 
+#include "Defaults.h"
+
 class Texutre;
 namespace Colors { struct RGBA; };
 
@@ -24,6 +26,15 @@ struct TransformComponent
 		return glm::translate(glm::mat4(1.0f), Translation) //Location
 			* glm::mat4(1.0f) //Rotation
 			* glm::scale(glm::mat4(1.0f), Scale); //Scale
+	}
+
+	glm::vec2 GetCenterPositionInScreenSpace() const
+	{
+		return glm::vec2
+		(
+			Translation.x + ((Defaults::MAX_POSITION_OFFSET * Scale.x) / 2.0f), 
+			Translation.y + ((Defaults::MAX_POSITION_OFFSET * Scale.y) / 2.0f)  
+		);
 	}
 
 };
