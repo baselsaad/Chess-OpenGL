@@ -9,7 +9,6 @@
 #include "Utilities\Timer.h"	
 #include "Event.h"
 #include "PlayerInput.h"
-#include "Grid.h"
 
 // Mouse Drag and Drop
 struct DragAndDrop
@@ -17,7 +16,7 @@ struct DragAndDrop
 	Entity* SelectedEntity = nullptr;
 	double PressedX = 0.0f;
 	double PressedY = 0.0f;
-	int EntityGridID = Grid::INVALID_ID;
+	int EntityGridID = Chessboard::INVALID_ID;
 };
 
 static DragAndDrop s_DragDropData;
@@ -209,7 +208,7 @@ void Game::OnMouseReleased(MouseButtonReleasedEvent& event)
 	s_DragDropData.SelectedEntity = nullptr;
 	s_DragDropData.PressedX = 0.0f;
 	s_DragDropData.PressedY = 0.0f;
-	s_DragDropData.EntityGridID = Grid::INVALID_ID;
+	s_DragDropData.EntityGridID = Chessboard::INVALID_ID;
 }
 
 void Game::OnMouseMove(MouseMoveEvent& event)

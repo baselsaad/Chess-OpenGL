@@ -1,21 +1,19 @@
 #include "pch.h"
-#include "Grid.h"
+#include "Chessboard.h"
 #include "Entity.h"
 #include "Renderer\Defaults.h"
 
-
-
-Grid::Grid(const glm::vec2& viewportResolution, int rowsCount, int columnsCount)
+Chessboard::Chessboard(const glm::vec2& viewportResolution, int rowsCount, int columnsCount)
 	: m_Rows(rowsCount), m_Columns(columnsCount), m_ViewportResolution(viewportResolution)
 {
 	m_Cells.resize(rowsCount * columnsCount);
 }
 
-Grid::~Grid()
+Chessboard::~Chessboard()
 {
 }
 
-void Grid::AddNewChessPiece(Entity* piece, int rowIndex, int colIndex)
+void Chessboard::AddNewChessPiece(Entity* piece, int rowIndex, int colIndex)
 {
 	ASSERT(rowIndex >= 0 && rowIndex < m_Rows, "row Index is out of range!");
 	ASSERT(colIndex >= 0 && colIndex < m_Columns, "colIndex Index is out of range!");
@@ -24,14 +22,14 @@ void Grid::AddNewChessPiece(Entity* piece, int rowIndex, int colIndex)
 	MoveEntityToNewCell(piece, index, GetCellPosition(rowIndex + 1, colIndex + 1));
 }
 
-void Grid::GetEntity(double mouseX, double mouseY, int& outGridID, Entity** outEntity)
+void Chessboard::GetEntity(double mouseX, double mouseY, int& outGridID, Entity** outEntity)
 {
 	int index = GetCellIndex(mouseX, mouseY);
 
 	if (!m_Cells[index].HasEntity())
 	{
 		*outEntity = nullptr;
-		outGridID = Grid::INVALID_ID;
+		outGridID = Chessboard::INVALID_ID;
 		return;
 	}
 
@@ -39,7 +37,7 @@ void Grid::GetEntity(double mouseX, double mouseY, int& outGridID, Entity** outE
 	outGridID = index;
 }
 
-void Grid::MoveEntityToNewCell(Entity* entity, int oldID, const glm::vec2& newPosition)
+void Chessboard::MoveEntityToNewCell(Entity* entity, int oldID, const glm::vec2& newPosition)
 {
 	glm::vec2 outPosition;
 	int outCellIndex = 0;
@@ -55,7 +53,7 @@ void Grid::MoveEntityToNewCell(Entity* entity, int oldID, const glm::vec2& newPo
 	m_Cells[outCellIndex].ChessPiece = entity;
 }
 
-void Grid::ComputeCorrectCellPosition(const glm::vec2& screenSpacePosition, glm::vec2& outCellPosition, int& outNewIndex)
+void Chessboard::ComputeCorrectCellPosition(const glm::vec2& screenSpacePosition, glm::vec2& outCellPosition, int& outNewIndex)
 {
 	glm::vec2 indices = GetRowAndColumn(screenSpacePosition.x, screenSpacePosition.y);
 	indices += 1.0f; // Start from 1 to 8 so can know which cell is wanted by multiplication
@@ -68,7 +66,7 @@ void Grid::ComputeCorrectCellPosition(const glm::vec2& screenSpacePosition, glm:
 	outNewIndex = GetCellIndex(center.x, center.y);
 }
 
-int Grid::GetCellIndex(double mouseX, double mouseY)
+int Chessboard::GetCellIndex(double mouseX, double mouseY)
 {
 	const auto& indecis = GetRowAndColumn(mouseX, mouseY);
 	const float& rowIndex = indecis.x;
@@ -77,7 +75,7 @@ int Grid::GetCellIndex(double mouseX, double mouseY)
 	return columnIndex * m_Rows + rowIndex;
 }
 
-const glm::vec2& Grid::GetRowAndColumn(double mouseX, double mouseY)
+const glm::vec2& Chessboard::GetRowAndColumn(double mouseX, double mouseY)
 {
 	float rowWidth = m_ViewportResolution.x / m_Rows;
 	float colHeight = m_ViewportResolution.y / m_Columns;
@@ -88,7 +86,7 @@ const glm::vec2& Grid::GetRowAndColumn(double mouseX, double mouseY)
 	return glm::vec2(rowIndex, columnIndex);
 }
 
-const glm::vec2 Grid::GetCellPosition(int row, int column)
+const glm::vec2 Chessboard::GetCellPosition(int row, int column)
 {
 	// width and height are the Top-Right Position of the first Cell in Screen Space
 	float rowWidth = m_ViewportResolution.x / m_Rows;

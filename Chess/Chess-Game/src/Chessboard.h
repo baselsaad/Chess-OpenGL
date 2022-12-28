@@ -1,7 +1,4 @@
 #pragma once
-#include <glm/vec2.hpp>
-#include <unordered_map>
-
 struct TransformComponent;
 class Entity;
 
@@ -16,13 +13,13 @@ struct Cell
 };
 
 // TODO: Simplify the logic after finish the whole project
-class Grid
+class Chessboard
 {
 public:
 	static constexpr int INVALID_ID = -1;
 
-	Grid(const glm::vec2& viewportResolution = { 700.0f,700.0f }, int rowsCount = 8, int columnsCount = 8);
-	~Grid();
+	Chessboard(const glm::vec2& viewportResolution = { 700.0f,700.0f }, int rowsCount = 8, int columnsCount = 8);
+	~Chessboard();
 
 public:
 	void AddNewChessPiece(Entity* entity, int rowIndex, int colIndex);

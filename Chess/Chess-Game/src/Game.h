@@ -1,6 +1,6 @@
 #pragma once
 #include "Entity.h"
-#include "Grid.h"
+#include "Chessboard.h"
 
 class PlayerInput;
 class Event;
@@ -15,7 +15,7 @@ class OpenGLWindow;
 class MouseButtonPressedEvent;
 class MouseButtonReleasedEvent;
 class MouseMoveEvent;
-class Grid;
+class Chessboard;
 
 class Game
 {
@@ -63,6 +63,6 @@ private:
 	Texture m_BackgroundTexture;
 
 	Entity m_BackgroundImage;
-	Grid m_GridSystem;
+	Chessboard m_GridSystem;
 };
 
