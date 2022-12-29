@@ -35,7 +35,7 @@ public:
 	void OnMouseReleased(MouseButtonReleasedEvent& event);
 	void OnMouseMove(MouseMoveEvent& event);
 
-	void UpdateViewport(int width, int height);
+	void OnUpdateViewport(int width, int height);
 	void CalculateProjectionViewMatrix(); 
 
 	void DrawBackground();

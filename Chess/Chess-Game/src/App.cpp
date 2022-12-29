@@ -65,9 +65,10 @@ void Application::Run()
 		m_Window->PollEvents();
 		{
 			m_GameLayer->OnUpdate(m_DeltaTime);
+			// Maybe renderer pointer to get the information to renderer
 			m_GameLayer->OnRender();
-			//Debug::Log("DrawCalls {0}", Renderer::Get().GetDrawCalls());
-			//Debug::Log("FPS {0}", m_DeltaTime.GetFramePerSecounds());
+			Debug::Log("DrawCalls {0}", Renderer::Get().GetDrawCalls());
+			Debug::Log("FPS {0}", m_DeltaTime.GetFramePerSecounds());
 		}
 		m_Window->Swap();
 	}
@@ -95,7 +96,7 @@ void Application::OnResizeWindow(ResizeWindowEvent& event)
 	m_Window->SetWindowWidth(event.GetWidth());
 	m_Window->SetWindowHeight(event.GetHeight());
 
-	m_GameLayer->UpdateViewport(event.GetWidth(), event.GetHeight());
+	m_GameLayer->OnUpdateViewport(event.GetWidth(), event.GetHeight());
 }
 
 void Application::SetupEventCallback()
