@@ -22,7 +22,6 @@ Application::Application()
 	data.Title = "Chess";
 
 	m_Window = new OpenGLWindow(data);
-	m_Window->SetVsync(true);
 	Renderer::Init();
 
 	m_PlayerInput = new PlayerInput();

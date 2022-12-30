@@ -39,10 +39,10 @@ public:
 	void UpdateViewPort(const glm::vec2& viewport);
 
 	inline const std::vector<Entity>& GetChessPieces() const { return m_EntityPool; }
-	inline const glm::vec2& GetEntityLocation(int entityID) const { return m_Cells[entityID].ChessPiece->GetTransformComponent().GetCenterPositionInScreenSpace(); }
+	inline const glm::vec2 GetEntityLocation(int entityID) const { return m_Cells[entityID].ChessPiece->GetTransformComponent().GetCenterPositionInScreenSpace(); }
 
 private:
-	const glm::vec2& GetRowAndColumn(double mouseX, double mouseY);
+	const glm::vec2 GetRowAndColumn(double mouseX, double mouseY);
 	const glm::vec2 GetCellPosition(int row, int column);
 	//Another way to computer
 	void ComputeCorrectCellPosition(const glm::vec2& screenSpacePosition, glm::vec2& outCellPosition, glm::vec2& outRowColumn,int& outNewIndex);

@@ -97,10 +97,10 @@ int Chessboard::GetCellIndex(double mouseX, double mouseY)
 	const float& rowIndex = indecis.x;
 	const float& columnIndex = indecis.y;
 
-	return columnIndex * m_Rows + rowIndex;
+	return (int)(columnIndex * m_Rows + rowIndex);
 }
 
-const glm::vec2& Chessboard::GetRowAndColumn(double mouseX, double mouseY)
+const glm::vec2 Chessboard::GetRowAndColumn(double mouseX, double mouseY)
 {
 	float rowWidth = m_ViewportResolution.x / m_Rows;
 	float colHeight = m_ViewportResolution.y / m_Columns;

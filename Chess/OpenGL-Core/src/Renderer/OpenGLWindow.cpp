@@ -6,7 +6,8 @@ OpenGLWindow::OpenGLWindow(const WindowData& data)
 	: m_Width(data.Width)
 	, m_Height(data.Height)
 {
-	ASSERT(glfwInit(), "GLFW cannot be initialized!");
+	int state = glfwInit();
+	ASSERT(state == GLFW_TRUE, "GLFW cannot be initialized!");
 
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

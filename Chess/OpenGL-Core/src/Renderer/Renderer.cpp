@@ -11,7 +11,8 @@ Renderer& Renderer::Get()
 
 void Renderer::Init()
 {
-	ASSERT(glewInit() == GLEW_OK, "glewInit should be called after a valid OpenGL rendering context has been created!!");
+	GLenum state = glewInit();
+	ASSERT(state == GLEW_OK, "glewInit should be called after a valid OpenGL rendering context has been created!!");
 
 	glDebugMessageCallback(OpenGLMessageCallback, nullptr);
 

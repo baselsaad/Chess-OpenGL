@@ -17,9 +17,9 @@ project "Chess-Game"
 
 	includedirs
 	{
-		"../OpenGL-Core/Dependencies/spdlog/include",
 		"../OpenGL-Core/src",
-		"../OpenGL-Core/Dependencies",
+		"../OpenGL-Core/vendor",
+		"../OpenGL-Core/vendor/spdlog/include",
 		"../OpenGL-Core/%{IncludeDir.glm}",
 		"../OpenGL-Core/%{IncludeDir.GLEW}",
 		"../OpenGL-Core/%{IncludeDir.GLFW}"
@@ -33,17 +33,14 @@ project "Chess-Game"
 	filter "system:windows"
 		systemversion "latest"
 
-		defines
-		{
-			
-		}
-
 	filter "configurations:Debug"
+		disablewarnings { "4244" }
 		defines "DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
+		disablewarnings { "4244" }
 		defines "RELEASE"
 		runtime "Release"
         optimize "on"

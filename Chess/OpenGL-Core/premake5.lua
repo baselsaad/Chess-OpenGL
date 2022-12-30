@@ -14,13 +14,13 @@ project "OpenGL-Core"
 	{
 		"src/**.h",
 		"src/**.cpp",
-		"Dependencies/stb_image/**.h",
-		"Dependencies/stb_image/**.cpp",
-		"Dependencies/glm/**.hpp",
-		"Dependencies/glm/**.inl",
-		"Dependencies/spdlog/inlcude/spdlog/spdlog.h",
-		"Dependencies/spdlog/inlcude/spdlog/fmt/ostr.h",
-		"Dependencies/spdlog/inlcude/spdlog/sinks/stdout_color_sinks.h"
+		"vendor/stb_image/**.h",
+		"vendor/stb_image/**.cpp",
+		"vendor/glm/**.hpp",
+		"vendor/glm/**.inl",
+		"vendor/spdlog/inlcude/spdlog/spdlog.h",
+		"vendor/spdlog/inlcude/spdlog/fmt/ostr.h",
+		"vendor/spdlog/inlcude/spdlog/sinks/stdout_color_sinks.h"
 	}
 
 	defines
@@ -31,7 +31,7 @@ project "OpenGL-Core"
 	includedirs
 	{
 		"src",
-		"Dependencies/spdlog/include",
+		"vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLEW}",
 		"%{IncludeDir.glm}",
@@ -40,9 +40,9 @@ project "OpenGL-Core"
 
 	links 
 	{ 
-		"GLFW",
-		"GLEW",
-		"opengl32.lib"
+		"vendor/GLFW/lib/glfw3_mt",
+		"vendor/GLEW/lib/glew32s",
+		"opengl32"
 	}
 
 	filter "system:windows"
@@ -54,11 +54,13 @@ project "OpenGL-Core"
 		}
 
 	filter "configurations:Debug"
+		disablewarnings { "4244" }
 	    defines "DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
+		disablewarnings { "4244" }
 	    defines "RELEASE"
 		runtime "Release"
 		optimize "on"

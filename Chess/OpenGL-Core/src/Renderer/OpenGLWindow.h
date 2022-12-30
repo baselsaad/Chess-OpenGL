@@ -8,7 +8,7 @@ struct WindowData
 	std::string Title;
 };
 
-class OpenGLWindow 
+class OpenGLWindow
 {
 public:
 	OpenGLWindow(const WindowData& data);
@@ -29,7 +29,7 @@ public:
 
 	inline int GetWindowWidth() const { return m_Width; }
 	inline int GetWindowHeight() const { return m_Height; }
-	inline float GetAspectRatio() const { return m_Width / m_Height;}
+	inline float GetAspectRatio() const { return (float)m_Width / (float)m_Height; }
 
 	operator GLFWwindow* () const { return m_Window; }
 
