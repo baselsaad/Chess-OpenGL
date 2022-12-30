@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "OpenGL-Core.h"
 #include "stb_image.h"
 
 Texture::Texture(const std::string& path)

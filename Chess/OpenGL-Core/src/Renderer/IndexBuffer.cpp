@@ -1,5 +1,5 @@
 #include "pch.h"
-
+#include "OpenGL-Core.h"
 #include "Utilities\Debug.h"
 
 IndexBuffer::IndexBuffer(const uint32_t* data, uint32_t count)

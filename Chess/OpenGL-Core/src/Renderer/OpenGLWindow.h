@@ -20,12 +20,10 @@ public:
 	void PollEvents();
 
 	void SetVsync(bool enable);
+	void UpdateViewport(int width, int height);
 
-	inline  GLFWwindow* GetWindowHandle() { return m_Window; }
+	inline GLFWwindow* GetWindowHandle() { return m_Window; }
 	inline const GLFWwindow* GetWindowHandle() const { return m_Window; }
-
-	inline void SetWindowWidth(int width) { m_Width = width; }
-	inline void SetWindowHeight(int height) { m_Height = height; }
 
 	inline int GetWindowWidth() const { return m_Width; }
 	inline int GetWindowHeight() const { return m_Height; }

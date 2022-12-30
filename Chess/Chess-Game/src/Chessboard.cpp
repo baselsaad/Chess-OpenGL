@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Entity.h"
+#include "OpenGL-Core.h"
 
 #include "Chessboard.h"
 
@@ -10,23 +10,20 @@ Chessboard::Chessboard(const glm::vec2& viewportResolution, int rowsCount, int c
 	, m_ViewportResolution(viewportResolution)
 {
 	m_Cells.resize(rowsCount * columnsCount);
-	m_EntityPool.reserve(32);
 }
 
 Chessboard::~Chessboard()
 {
 }
 
-void Chessboard::AddNewChessPiece(Texture& test, int rowIndex, int colIndex)
+void Chessboard::AddNewChessPiece(Entity* entity, int rowIndex, int colIndex)
 {
 	ASSERT(rowIndex >= 0 && rowIndex < m_Rows, "row Index is out of range!");
 	ASSERT(colIndex >= 0 && colIndex < m_Columns, "column Index is out of range!");
 
-	Entity& entity = m_EntityPool.emplace_back(Entity(TransformComponent({ 0.0f,0.0f,0.0f }, { 75.0f,75.0f,1.0f }), SpriteSheetComponent(&test)));
-
 	int index = colIndex * m_Rows + rowIndex;
 
-	m_Cells[index].ChessPiece = &entity;
+	m_Cells[index].ChessPiece = entity;
 	m_Cells[index].RowIndex = rowIndex;
 	m_Cells[index].ColIndex = colIndex;
 

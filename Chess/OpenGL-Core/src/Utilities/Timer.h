@@ -4,8 +4,7 @@
 class Timer {
 
 public:
-	Timer();
-	Timer(const char* name);
+	Timer(const char* name = "Unknown");
 	~Timer();
 
 public:

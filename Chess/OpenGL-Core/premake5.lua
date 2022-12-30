@@ -40,9 +40,9 @@ project "OpenGL-Core"
 
 	links 
 	{ 
-		"vendor/GLFW/lib/glfw3_mt",
-		"vendor/GLEW/lib/glew32s",
-		"opengl32"
+		"vendor/GLFW/lib/glfw3_mt.lib",
+		"vendor/GLEW/lib/glew32s.lib",
+		"opengl32.lib"
 	}
 
 	filter "system:windows"

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "OpenGL-Core.h"
 #include "Utilities\Debug.h"
 
 
@@ -52,6 +53,12 @@ void OpenGLWindow::PollEvents()
 void OpenGLWindow::SetVsync(bool enable)
 {
 	glfwSwapInterval(enable);
+}
+
+void OpenGLWindow::UpdateViewport(int width, int height)
+{
+	m_Width = width;
+	m_Height = height;
 }
 
 void OpenGLWindow::HandleErrorMessages()

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "OpenGL-Core.h"
 #include "App.h"
 
 #include "Event.h"
@@ -7,7 +8,6 @@
 #include "Renderer\Defaults.h"
 
 #include "Utilities\Log.h"
-#include "Utilities\Colors.h"
 #include "Utilities\Debug.h"
 #include "Utilities\Timer.h"
 
@@ -22,7 +22,7 @@ Application::Application()
 	data.Title = "Chess";
 
 	m_Window = new OpenGLWindow(data);
-	Renderer::Init();
+	Renderer::Init({ data.Width,data.Height });
 
 	m_PlayerInput = new PlayerInput();
 }
@@ -32,6 +32,7 @@ Application::~Application()
 	delete m_Window;
 	delete m_PlayerInput;
 	delete m_GameLayer;
+	Renderer::ShutDown();
 }
 
 void Application::OnStart()
@@ -43,7 +44,7 @@ void Application::OnStart()
 	m_PlayerInput->BindActionEvent(EventType::ResizeWindow, this, &Application::OnResizeWindow);
 
 	m_GameLayer = new Game(m_Window->GetWindowHeight(), m_Window->GetWindowWidth());
-	m_GameLayer->OnStart();
+	m_GameLayer->OnStart(m_EntityContainer);
 	m_GameLayer->SetupPlayerInput(m_PlayerInput);
 }
 
@@ -58,15 +59,15 @@ void Application::Run()
 	while (s_Running)
 	{
 		m_DeltaTime.Update();
-		Renderer::Get().ResetStats();
+		Renderer::ResetStats();
 
 		m_Window->Clear();
 		m_Window->PollEvents();
 		{
 			m_GameLayer->OnUpdate(m_DeltaTime);
-			// Maybe renderer pointer to get the information to renderer
-			m_GameLayer->OnRender();
-			Debug::Log("DrawCalls {0}", Renderer::Get().GetDrawCalls());
+			m_EntityContainer.OnRender();
+
+			Debug::Log("DrawCalls {0}", Renderer::GetDrawCalls());
 			Debug::Log("FPS {0}", m_DeltaTime.GetFramePerSecounds());
 		}
 		m_Window->Swap();
@@ -92,10 +93,9 @@ void Application::OnResizeWindow(ResizeWindowEvent& event)
 {
 	glViewport(0, 0, event.GetWidth(), event.GetHeight());
 
-	m_Window->SetWindowWidth(event.GetWidth());
-	m_Window->SetWindowHeight(event.GetHeight());
-
+	m_Window->UpdateViewport(event.GetWidth(), event.GetHeight());
 	m_GameLayer->OnUpdateViewport(event.GetWidth(), event.GetHeight());
+	Renderer::UpdateViewport(event.GetWidth(), event.GetHeight());
 }
 
 void Application::SetupEventCallback()
@@ -129,7 +129,7 @@ void Application::SetupEventCallback()
 
 	// Mouse Buttons
 	{
-		auto callback = [](GLFWwindow* window, int button, int action, int mods) 
+		auto callback = [](GLFWwindow* window, int button, int action, int mods)
 		{
 			auto& func = *(std::function<void(Event&)>*)glfwGetWindowUserPointer(window);
 			double outX, outY;

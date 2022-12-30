@@ -23,11 +23,5 @@ IncludeDir["GLEW"] = "vendor/GLEW/include"
 IncludeDir["glm"] =  "vendor/glm"
 IncludeDir["stb_image"] = "vendor/stb_image"
 
--- Projects
-group "Dependencies"
-	include "OpenGL-Core/vendor/GLFW"
-	include "OpenGL-Core/vendor/GLEW"
-group ""
-
 include "OpenGL-Core"
 include "Chess-Game"

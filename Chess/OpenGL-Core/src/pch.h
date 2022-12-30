@@ -19,19 +19,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Utilities\Colors.h"
-
-#include "Renderer\OpenGLWindow.h"
-#include "Renderer\Texture.h"
-#include "Renderer\Shader.h"
-#include "Renderer\VertexArray.h"
-#include "Renderer\VertexBuffer.h"
-#include "Renderer\VertexBufferLayout.h"
-#include "Renderer\IndexBuffer.h"
-#include "Renderer\Renderer.h"
-#include "Renderer\Components.h"
-
-
 #ifdef GLCORE_PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif

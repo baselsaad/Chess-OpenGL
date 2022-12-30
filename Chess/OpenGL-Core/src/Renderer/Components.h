@@ -41,20 +41,20 @@ struct TransformComponent
 
 struct SpriteSheetComponent
 {
-	Texture* Sprite;
+	Texture* SpriteTexture;
 	Colors::RGBA Color;
 
 	SpriteSheetComponent() = default;
 	SpriteSheetComponent(const SpriteSheetComponent&) = default;
 
 	SpriteSheetComponent(Texture* texture = nullptr, Colors::RGBA color = Colors::White)
-		: Sprite(texture)
+		: SpriteTexture(texture)
 		, Color(color)
 	{
 	}
 
 	SpriteSheetComponent(Colors::RGBA color = Colors::White)
-		: Sprite(nullptr)
+		: SpriteTexture(nullptr)
 		, Color(color)
 	{
 	}

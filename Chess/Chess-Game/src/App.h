@@ -1,10 +1,12 @@
 #pragma once
 #include "Utilities\DeltaTime.h"
+#include "Container.h"
 
 class OpenGLWindow;
 class GLFWWindow;
 class PlayerInput;
 class DeltaTime;
+class EntityContainer;
 
 enum class EventType;
 class Event;
@@ -36,6 +38,7 @@ private:
 
 	EventFuncType m_EventCallback;
 	DeltaTime m_DeltaTime;
+	EntityContainer m_EntityContainer;
 };
 
 extern bool s_Running;

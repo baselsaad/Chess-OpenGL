@@ -1,11 +1,8 @@
 #include "pch.h"
+#include "OpenGL-Core.h"
+
 #include "Timer.h"
 #include "Debug.h"
-
-Timer::Timer()
-	: m_Name("Unknown")
-{
-}
 
 Timer::Timer(const char* name)
 	: m_Name(name)

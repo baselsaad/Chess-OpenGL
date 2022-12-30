@@ -1,19 +1,20 @@
 #include "pch.h"
+#include "OpenGL-Core.h"
 
 bool SpriteSheetComponent::BindTexture() 
 {
-	if (Sprite == nullptr)
+	if (SpriteTexture == nullptr)
 		return false;
 
-	Sprite->Bind(0);
+	SpriteTexture->Bind(0);
 	return true;
 }
 
 bool SpriteSheetComponent::BindTexture() const
 {
-	if (Sprite == nullptr)
+	if (SpriteTexture == nullptr)
 		return false;
 
-	Sprite->Bind(0);
+	SpriteTexture->Bind(0);
 	return true;
 }

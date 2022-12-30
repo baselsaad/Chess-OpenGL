@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "OpenGL-Core.h"
 #include "Entity.h"
 
 #include "Renderer\Defaults.h"

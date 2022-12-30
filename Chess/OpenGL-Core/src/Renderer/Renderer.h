@@ -1,8 +1,30 @@
 #pragma once
+
+struct Quad;
+struct TransformComponent;
+struct SpriteSheetComponent;
+
 class VertexArray;
 class IndexBuffer;
+class VertexArray;
+class VertexBuffer;
+class VertexBufferLayout;
+class IndexBuffer;
 class Shader;
-struct Quad;
+class Entity;
+
+struct RenderData
+{
+	VertexArray VertexArray;
+	VertexBuffer VetexBuffer;
+	VertexBufferLayout Layout;
+	IndexBuffer IndexBuffer;
+
+	Shader TextureShader;
+	Shader ColorShader;
+
+	RenderData();
+};
 
 class Renderer
 {
@@ -11,17 +33,30 @@ public:
 	Renderer(const Renderer&) = delete;
 
 public:
-	static Renderer& Get();
-	static void Init();
+	static void Init(const glm::vec2& viewport);
+	static void ShutDown();
 
-	void Draw(const VertexArray& vb, const IndexBuffer& ib);
-	void ResetStats() { s_Instance.m_DrawCalls = 0; }
-	size_t GetDrawCalls() { return s_Instance.m_DrawCalls; }
+	static void DrawQuad(const glm::mat4& transform, const Texture* texture);
+	static void DrawQuad(const glm::mat4& transform, const Colors::RGBA& color);
+
+	static void ResetStats();
+	static int GetDrawCalls();
+
+	static void UpdateViewport(int width, int height);
+	static const glm::vec2& GetViewport();
+	static const glm::mat4& GetProjectionView();
+
 private:
-	static Renderer s_Instance;
+	static Renderer* Get();
 
-	int m_DrawCalls;
-	bool m_IsInitialized;
+	static void Draw(const VertexArray& vb, const IndexBuffer& ib);
+	void CalculateProjectionViewMatrix();
+
+private:
+	int m_DrawCalls = 0;
+	glm::vec2 m_Viewport;
+	glm::mat4 m_ProjectionView;
+	RenderData m_RenderData;
 };
 
 

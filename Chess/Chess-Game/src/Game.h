@@ -1,5 +1,4 @@
 #pragma once
-#include "Entity.h"
 #include "Chessboard.h"
 
 class PlayerInput;
@@ -16,17 +15,16 @@ class MouseButtonPressedEvent;
 class MouseButtonReleasedEvent;
 class MouseMoveEvent;
 class Chessboard;
+class EntityContainer;
 
 class Game
 {
 public:
-	Game();
-	Game(int height, int width);
+	Game(int height = 700, int width = 700);
 	~Game() = default;
 
 public:
-	void OnStart();
-	void OnRender();
+	void OnStart(EntityContainer& container);
 	void OnUpdate(const DeltaTime& deltaTime);
 	void SetupPlayerInput(PlayerInput* input);
 	void OnDestroy();
@@ -36,32 +34,17 @@ public:
 	void OnMouseMove(MouseMoveEvent& event);
 
 	void OnUpdateViewport(int width, int height);
-	void CalculateProjectionViewMatrix(); 
-
-	void DrawBackground();
 	void AdjustBackgroundImage();
 
-	//+64 DrawCalls
-	void DrawBackgroundManually();
-
-	void DrawEntites();
-
+	void Game::DrawBackgroundManually();
 private:
 	glm::vec2 m_Viewport;
-	glm::mat4 m_ProjectionView;
-
-	// Move to entity rendering container
-	VertexArray m_VertexArray;
-	VertexBuffer m_EntityVB;
-	VertexBufferLayout m_EntityLayout;
-	IndexBuffer m_EntityIB;
-	Shader m_EntityShader;
 
 	// Test
 	Texture m_TextureTest;
 	Texture m_BackgroundTexture;
 
-	Entity m_BackgroundImage;
+	Entity* m_BackgroundImage;
 	Chessboard m_Chessboard;
 };
 

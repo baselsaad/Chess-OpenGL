@@ -28,7 +28,7 @@ public:
 
 public:
 	// TODO: Texture ref just for now, will change later when we move every thing to opengl core
-	void AddNewChessPiece(Texture& entity, int rowIndex, int colIndex);
+	void AddNewChessPiece(Entity* entity, int rowIndex, int colIndex);
 	bool HasEntity(double mouseX, double mouseY);
 	int GetEntityID(double mouseX, double mouseY);
 
@@ -38,7 +38,6 @@ public:
 
 	void UpdateViewPort(const glm::vec2& viewport);
 
-	inline const std::vector<Entity>& GetChessPieces() const { return m_EntityPool; }
 	inline const glm::vec2 GetEntityLocation(int entityID) const { return m_Cells[entityID].ChessPiece->GetTransformComponent().GetCenterPositionInScreenSpace(); }
 
 private:
@@ -54,5 +53,4 @@ private:
 	glm::vec2 m_ViewportResolution;
 
 	std::vector<Cell> m_Cells; // contains only a pointer to an existing entity
-	std::vector<Entity> m_EntityPool; // contains entities object to be sent to the renderer
 };
