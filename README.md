@@ -1,4 +1,8 @@
 # Chess game using OpenGL-Api
+
+# Building and running
+
+Run (script/Build.bat) to generate visual studio solution and you can run the project
  
 In progress ...
 
@@ -17,3 +21,5 @@ What's next?
 
 # Dynamic Background(Manually Drawing +64 Draw Calls)
 ![alt text](https://github.com/baselsaad/Chess-OpenGL/blob/main/Chess/Chess-Game/res/screenshots/Screenshot%202022-12-31%20150142.png)
+
+
