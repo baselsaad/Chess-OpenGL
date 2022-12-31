@@ -1,4 +1,4 @@
-# Chess using OpenGL-Api
+# Chess game using OpenGL-Api
  
 In progress ...
 
