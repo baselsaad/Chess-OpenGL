@@ -66,11 +66,10 @@ void Application::Run()
 		{
 			m_GameLayer->OnUpdate(m_DeltaTime);
 			m_EntityContainer.OnRender();
-
-			Debug::Log("DrawCalls {0}", Renderer::GetDrawCalls());
-			Debug::Log("FPS {0}", m_DeltaTime.GetFramePerSecounds());
 		}
 		m_Window->Swap();
+
+		Debug::Log("Vsync: {}, FPS: {}, DrawCalls: {}", m_Window->IsVsyncOn(), m_DeltaTime.GetFramePerSecounds(), Renderer::GetDrawCalls());
 	}
 
 	// OnDestroy
@@ -91,11 +90,9 @@ void Application::OnClose(CloseWindowEvent& event)
 
 void Application::OnResizeWindow(ResizeWindowEvent& event)
 {
-	glViewport(0, 0, event.GetWidth(), event.GetHeight());
-
-	m_Window->UpdateViewport(event.GetWidth(), event.GetHeight());
-	m_GameLayer->OnUpdateViewport(event.GetWidth(), event.GetHeight());
 	Renderer::UpdateViewport(event.GetWidth(), event.GetHeight());
+	m_Window->UpdateWindowSize(event.GetWidth(), event.GetHeight());
+	m_GameLayer->OnUpdateViewport();
 }
 
 void Application::SetupEventCallback()

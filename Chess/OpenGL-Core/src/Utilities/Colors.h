@@ -37,7 +37,7 @@ namespace Colors
 
 	static const RGBA Red{ 0.77f, 0.12f, 0.23f };				//#C41E3A
 	static const RGBA Dark_Magenta{ 0.64f, 0.19f, 0.79f };		//#A330C9
-	static const RGBA Orange{ 1.00f, 0.49f, 0.04f };			//#FF7C0A
+	static const RGBA Orange{ 0.89f, 0.49f, 0.04f };			//#FF7C0A
 	static const RGBA Dark_Cyan{ 0.20f, 0.58f, 0.50f };			//#33937F
 	static const RGBA Green{ 0.67f, 0.83f, 0.45f };				//#AAD372
 	static const RGBA Light_Blue{ 0.25f, 0.78f, 0.92f };		//#3FC7EB

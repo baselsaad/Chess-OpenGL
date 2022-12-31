@@ -23,7 +23,7 @@ class Chessboard
 public:
 	static constexpr int INVALID = -1;
 
-	Chessboard(const glm::vec2& viewportResolution = { 700.0f,700.0f }, int rowsCount = 8, int columnsCount = 8);
+	Chessboard(int rowsCount = 8, int columnsCount = 8);
 	~Chessboard();
 
 public:
@@ -36,7 +36,7 @@ public:
 	void MoveEntityByOffset(const int& entityID, const float& xOffset, const float& yOffset);
 	void MoveEntityToNewPosition(const int entityID, const glm::vec3& positionOffset);
 
-	void UpdateViewPort(const glm::vec2& viewport);
+	void OnUpdateViewPort();
 
 	inline const glm::vec2 GetEntityLocation(int entityID) const { return m_Cells[entityID].ChessPiece->GetTransformComponent().GetCenterPositionInScreenSpace(); }
 
@@ -50,7 +50,6 @@ private:
 private:
 	int m_Rows;
 	int m_Columns;
-	glm::vec2 m_ViewportResolution;
 
 	std::vector<Cell> m_Cells; // contains only a pointer to an existing entity
 };

@@ -24,6 +24,7 @@ OpenGLWindow::OpenGLWindow(const WindowData& data)
 
 	HandleErrorMessages();
 	PrintGpuInformation();
+	SetVsync(true);
 }
 
 OpenGLWindow::~OpenGLWindow()
@@ -52,10 +53,11 @@ void OpenGLWindow::PollEvents()
 
 void OpenGLWindow::SetVsync(bool enable)
 {
+	m_Vsync = enable;
 	glfwSwapInterval(enable);
 }
 
-void OpenGLWindow::UpdateViewport(int width, int height)
+void OpenGLWindow::UpdateWindowSize(int width, int height)
 {
 	m_Width = width;
 	m_Height = height;

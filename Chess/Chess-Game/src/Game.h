@@ -17,6 +17,35 @@ class MouseMoveEvent;
 class Chessboard;
 class EntityContainer;
 
+// Assets
+struct ChessTextures
+{
+	std::string SelectedColor;
+	Texture Pawn;
+	Texture Bishop;
+	Texture Knight;
+	Texture Rock;
+	Texture Queen;
+	Texture King;
+
+	enum class Color
+	{
+		White, Black
+	};
+
+	ChessTextures(const Color& color)
+		: SelectedColor(color == Color::Black ? "Black" : "White")
+		, Pawn("res/textures/" + SelectedColor + "Pawn.png")
+		, Bishop("res/textures/" + SelectedColor + "Bishop.png")
+		, Knight("res/textures/" + SelectedColor + "Knight.png")
+		, Rock("res/textures/" + SelectedColor + "Rook.png")
+		, Queen("res/textures/" + SelectedColor + "Queen.png")
+		, King("res/textures/" + SelectedColor + "King.png")
+	{
+	}
+
+};
+
 class Game
 {
 public:
@@ -25,6 +54,7 @@ public:
 
 public:
 	void OnStart(EntityContainer& container);
+	void CreateChessPieces(EntityContainer& container, ChessTextures& textures, int pawns, int rest);
 	void OnUpdate(const DeltaTime& deltaTime);
 	void SetupPlayerInput(PlayerInput* input);
 	void OnDestroy();
@@ -33,15 +63,16 @@ public:
 	void OnMouseReleased(MouseButtonReleasedEvent& event);
 	void OnMouseMove(MouseMoveEvent& event);
 
-	void OnUpdateViewport(int width, int height);
+	void OnUpdateViewport();
 	void AdjustBackgroundImage();
 
-	void Game::DrawBackgroundManually();
-private:
-	glm::vec2 m_Viewport;
+	void DrawBackgroundManually();
 
+
+private:
 	// Test
-	Texture m_TextureTest;
+	ChessTextures m_WhitePieces;
+	ChessTextures m_BlackPieces;
 	Texture m_BackgroundTexture;
 
 	Entity* m_BackgroundImage;

@@ -20,7 +20,9 @@ public:
 	void PollEvents();
 
 	void SetVsync(bool enable);
-	void UpdateViewport(int width, int height);
+	inline bool IsVsyncOn() const { return m_Vsync; }
+
+	void UpdateWindowSize(int width, int height);
 
 	inline GLFWwindow* GetWindowHandle() { return m_Window; }
 	inline const GLFWwindow* GetWindowHandle() const { return m_Window; }
@@ -38,5 +40,6 @@ private:
 private:
 	GLFWwindow* m_Window;
 	int m_Width, m_Height;
+	bool m_Vsync;
 };
 

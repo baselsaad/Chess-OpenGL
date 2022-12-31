@@ -36,11 +36,13 @@ void Renderer::Init(const glm::vec2& viewport)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	s_Instance = new Renderer();
-
-	s_Instance->m_DrawCalls = 0;
-	s_Instance->m_Viewport = viewport;
-	s_Instance->CalculateProjectionViewMatrix();
+	if (s_Instance == nullptr)
+	{
+		s_Instance = new Renderer();
+		s_Instance->m_DrawCalls = 0;
+		s_Instance->m_Viewport = viewport;
+		s_Instance->CalculateProjectionViewMatrix();
+	}
 }
 
 void Renderer::ShutDown()
@@ -52,11 +54,11 @@ void Renderer::DrawQuad(const glm::mat4& transform, const Texture* texture)
 {
 	glm::mat4 mvp = Renderer::Get()->m_ProjectionView * transform;
 
-	s_Instance->m_RenderData.TextureShader.Bind();
+	Renderer::Get()->m_RenderData.TextureShader.Bind();
 	texture->Bind(0);
 
-	s_Instance->m_RenderData.TextureShader.SetUniformMat4f("u_MVP", mvp);
-	s_Instance->m_RenderData.TextureShader.SetUniform1i("u_Texture", 0);
+	Renderer::Get()->m_RenderData.TextureShader.SetUniformMat4f("u_MVP", mvp);
+	Renderer::Get()->m_RenderData.TextureShader.SetUniform1i("u_Texture", 0);
 
 	Draw(Renderer::Get()->m_RenderData.VertexArray, Renderer::Get()->m_RenderData.IndexBuffer);
 }
@@ -65,11 +67,11 @@ void Renderer::DrawQuad(const glm::mat4& transform, const Colors::RGBA& color)
 {
 	glm::mat4 mvp = Renderer::Get()->m_ProjectionView * transform;
 
-	s_Instance->m_RenderData.ColorShader.Bind();
-	s_Instance->m_RenderData.ColorShader.SetUniformMat4f("u_MVP", mvp);
-	s_Instance->m_RenderData.ColorShader.SetUniform4f("u_Color", color);
+	Renderer::Get()->m_RenderData.ColorShader.Bind();
+	Renderer::Get()->m_RenderData.ColorShader.SetUniformMat4f("u_MVP", mvp);
+	Renderer::Get()->m_RenderData.ColorShader.SetUniform4f("u_Color", color);
 
-	Draw(s_Instance->m_RenderData.VertexArray, s_Instance->m_RenderData.IndexBuffer);
+	Draw(Renderer::Get()->m_RenderData.VertexArray, Renderer::Get()->m_RenderData.IndexBuffer);
 }
 
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib)
@@ -98,6 +100,8 @@ void Renderer::CalculateProjectionViewMatrix()
 
 void Renderer::UpdateViewport(int width, int height)
 {
+	glViewport(0, 0, width, height);
+
 	Renderer::Get()->m_Viewport.x = width;
 	Renderer::Get()->m_Viewport.y = height;
 	Renderer::Get()->CalculateProjectionViewMatrix();

@@ -4,10 +4,9 @@
 #include "Chessboard.h"
 
 
-Chessboard::Chessboard(const glm::vec2& viewportResolution, int rowsCount, int columnsCount)
+Chessboard::Chessboard(int rowsCount, int columnsCount)
 	: m_Rows(rowsCount)
 	, m_Columns(columnsCount)
-	, m_ViewportResolution(viewportResolution)
 {
 	m_Cells.resize(rowsCount * columnsCount);
 }
@@ -99,8 +98,8 @@ int Chessboard::GetCellIndex(double mouseX, double mouseY)
 
 const glm::vec2 Chessboard::GetRowAndColumn(double mouseX, double mouseY)
 {
-	float rowWidth = m_ViewportResolution.x / m_Rows;
-	float colHeight = m_ViewportResolution.y / m_Columns;
+	float rowWidth = Renderer::GetViewport().x / m_Rows;
+	float colHeight = Renderer::GetViewport().y / m_Columns;
 
 	int rowIndex = mouseX / rowWidth;
 	int columnIndex = mouseY / colHeight;
@@ -111,8 +110,8 @@ const glm::vec2 Chessboard::GetRowAndColumn(double mouseX, double mouseY)
 const glm::vec2 Chessboard::GetCellPosition(int row, int column)
 {
 	// width and height are the Top-Right Position of the first Cell in Screen Space
-	float rowWidth = m_ViewportResolution.x / m_Rows;
-	float colHeight = m_ViewportResolution.y / m_Columns;
+	float rowWidth = Renderer::GetViewport().x / m_Rows;
+	float colHeight = Renderer::GetViewport().y / m_Columns;
 
 	// Top-Right Position of the selected cell (Screen Space)
 	float selectedRightPosition = (rowWidth * row);
@@ -140,9 +139,8 @@ void Chessboard::MoveEntityToNewPosition(int entityID, const glm::vec3& position
 	m_Cells[entityID].ChessPiece->SetTranslation(positionOffset);
 }
 
-void Chessboard::UpdateViewPort(const glm::vec2& viewport)
+void Chessboard::OnUpdateViewPort()
 {
-	m_ViewportResolution = viewport;
 
 	for (auto& cell : m_Cells)
 	{

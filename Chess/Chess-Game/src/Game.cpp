@@ -22,10 +22,10 @@ struct DragAndDrop
 static DragAndDrop s_DragDropData;
 
 Game::Game(int height, int width)
-	: m_Viewport(width, height)
-	, m_TextureTest("res/textures/1024_13.png")
-	, m_BackgroundTexture("res/textures/background.png")
+	: m_BackgroundTexture("res/textures/background.png")
 	, m_BackgroundImage(nullptr)
+	, m_WhitePieces(ChessTextures::Color::White)
+	, m_BlackPieces(ChessTextures::Color::Black)
 {
 }
 
@@ -40,19 +40,59 @@ void Game::SetupPlayerInput(PlayerInput* input)
 
 void Game::OnStart(EntityContainer& container)
 {
-	m_Chessboard.UpdateViewPort(m_Viewport);
-
+	m_Chessboard.OnUpdateViewPort();
 	m_BackgroundImage = container.CreateNewEntity(TransformComponent({ 0.0f,0.0f,0.0f }), SpriteSheetComponent(&m_BackgroundTexture));
 	AdjustBackgroundImage();
 
-	Entity* test = container.CreateNewEntity(TransformComponent({ 0.0f,0.0f,0.0f }, { 75.0f,75.0f,1.0f }), SpriteSheetComponent(&m_TextureTest));
-	m_Chessboard.AddNewChessPiece(test, 0, 0);
+	CreateChessPieces(container, m_WhitePieces, 1, 0);
+	CreateChessPieces(container, m_BlackPieces, 6, 7);
+}
+
+void Game::CreateChessPieces(EntityContainer& container, ChessTextures& textures, int pawns, int rest)
+{
+	TransformComponent defaultTransform({ 0.0f,0.0f,0.0f }, { 75.0f,75.0f,1.0f });
+
+	for (int i = 0; i < 8; i++)
+	{
+		if (i == 0 || i == 7) //Rook
+		{
+			Entity* rock = container.CreateNewEntity(defaultTransform, SpriteSheetComponent(&textures.Rock));
+			m_Chessboard.AddNewChessPiece(rock, i, rest);
+		}
+		else if (i == 1 || i == 6) //Knight
+		{
+			Entity* knight = container.CreateNewEntity(defaultTransform, SpriteSheetComponent(&textures.Knight));
+			m_Chessboard.AddNewChessPiece(knight, i, rest);
+		}
+		else if (i == 2 || i == 5) //Bishop
+		{
+			Entity* bishop = container.CreateNewEntity(defaultTransform, SpriteSheetComponent(&textures.Bishop));
+			m_Chessboard.AddNewChessPiece(bishop, i, rest);
+		}
+		else if (i == 3) // Queen
+		{
+			Entity* queen = container.CreateNewEntity(defaultTransform, SpriteSheetComponent(&textures.Queen));
+			m_Chessboard.AddNewChessPiece(queen, i, rest);
+		}
+		else if (i == 4) //King
+		{
+			Entity* king = container.CreateNewEntity(defaultTransform, SpriteSheetComponent(&textures.King));
+			m_Chessboard.AddNewChessPiece(king, i, rest);
+		}
+	}
+
+	// Pawns
+	for (int i = 0; i < 8; i++)
+	{
+		Entity* pawn = container.CreateNewEntity(defaultTransform, SpriteSheetComponent(&textures.Pawn));
+		m_Chessboard.AddNewChessPiece(pawn, i, pawns);
+	}
+
 }
 
 void Game::OnUpdate(const DeltaTime& deltaTime)
 {
 	//DrawBackgroundManually();
-
 }
 
 void Game::OnDestroy()
@@ -61,16 +101,17 @@ void Game::OnDestroy()
 
 void Game::AdjustBackgroundImage()
 {
+	const glm::vec2& viewport = Renderer::GetViewport();
 	// Calculate the Scale for the background to fit to the window
-	const float xNewScale = m_Viewport.x / Defaults::MAX_POSITION_OFFSET;
-	const float yNewScale = m_Viewport.y / Defaults::MAX_POSITION_OFFSET;
+	const float xNewScale = viewport.x / Defaults::MAX_POSITION_OFFSET;
+	const float yNewScale = viewport.y / Defaults::MAX_POSITION_OFFSET;
 
 	m_BackgroundImage->GetScale().x = xNewScale;
 	m_BackgroundImage->GetScale().y = yNewScale;
 
 	// center of the window
-	const float windowCenterX = m_Viewport.x / 2.0f;
-	const float windowCenterY = m_Viewport.y / 2.0f;
+	const float windowCenterX = viewport.x / 2.0f;
+	const float windowCenterY = viewport.y / 2.0f;
 
 	// center of the quad
 	float quadCenterX = m_BackgroundImage->GetTransformComponent().GetCenterPositionInScreenSpace().x;
@@ -82,8 +123,9 @@ void Game::AdjustBackgroundImage()
 
 void Game::OnMousePressed(MouseButtonPressedEvent& event)
 {
+	const glm::vec2& viewport = Renderer::GetViewport();
 	s_DragDropData.PressedX = event.GetXPosition();
-	s_DragDropData.PressedY = m_Viewport.y - event.GetYPosition();// Mouse Position beginn from TOP-Left, but it should be from Bottom-Left
+	s_DragDropData.PressedY = viewport.y - event.GetYPosition();// Mouse Position beginn from TOP-Left, but it should be from Bottom-Left
 
 	//Debug::Log("X: {0}, Y: {1}", s_PressedX, s_PressedY);
 
@@ -116,27 +158,26 @@ void Game::OnMouseMove(MouseMoveEvent& event)
 	if (s_DragDropData.EntityID == Chessboard::INVALID)
 		return;
 
+	const glm::vec2& viewport = Renderer::GetViewport();
+
 	float xOffset = event.GetXPosition() - s_DragDropData.PressedX;
-	float yOffset = (m_Viewport.y - event.GetYPosition()) - s_DragDropData.PressedY;
+	float yOffset = (viewport.y - event.GetYPosition()) - s_DragDropData.PressedY;
 	m_Chessboard.MoveEntityByOffset(s_DragDropData.EntityID, xOffset, yOffset);
 
 	s_DragDropData.PressedX = event.GetXPosition();
-	s_DragDropData.PressedY = m_Viewport.y - event.GetYPosition();
+	s_DragDropData.PressedY = viewport.y - event.GetYPosition();
 }
 
-void Game::OnUpdateViewport(int width, int height)
+void Game::OnUpdateViewport()
 {
-	m_Viewport.x = (float)width;
-	m_Viewport.y = (float)height;
-
 	AdjustBackgroundImage();
-	m_Chessboard.UpdateViewPort(m_Viewport);// To Update Cells
+	m_Chessboard.OnUpdateViewPort();// To Update Cells
 }
 
 void Game::DrawBackgroundManually()
 {
-	const float quadWidth = m_Viewport.x / 8;
-	const float quadHeight = m_Viewport.y / 8;
+	const float quadWidth = Renderer::GetViewport().x / 8;
+	const float quadHeight = Renderer::GetViewport().y / 8;
 
 	const float xNewScale = quadWidth / (Defaults::MAX_POSITION_OFFSET);
 	const float yNewScale = quadHeight / (Defaults::MAX_POSITION_OFFSET);
@@ -151,16 +192,16 @@ void Game::DrawBackgroundManually()
 		for (int x = 0; x < 8; x++)
 		{
 			if ((y + x) % 2 == 0)
-				color = Colors::White;
+				color = Colors::Orange;
 			else
-				color = Colors::Black;
+				color = Colors::White;
 
-			{
-				glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(xOffset, yOffset, 1.0f))
-					* glm::scale(glm::mat4(1.0f), glm::vec3(xNewScale, yNewScale, 1.0f));
+			const glm::vec3 transform(xOffset, yOffset, 1.0f);
+			const glm::vec3 scale(xNewScale, yNewScale, 1.0f);
+			const glm::mat4 model = glm::translate(glm::mat4(1.0f), transform) * glm::scale(glm::mat4(1.0f), scale);
 
-				Renderer::DrawQuad(model, color);
-			}
+			Renderer::DrawQuad(model, color);
+
 
 			xOffset += quadWidth;
 		}
@@ -169,3 +210,5 @@ void Game::DrawBackgroundManually()
 		yOffset += quadHeight;
 	}
 }
+
+

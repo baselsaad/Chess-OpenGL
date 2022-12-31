@@ -12,7 +12,7 @@ public:
 	template<typename...Args>
 	static void Log(const Args&... args)
 	{
-		Debug::GetLogger()->info(args ...);
+		Debug::GetLogger()->debug(args ...);
 	}
 
 	template<typename...Args>
@@ -39,11 +39,11 @@ public:
 		Debug::GetLogger()->critical(args ...);
 	}
 
-	inline static std::shared_ptr<spdlog::logger>& GetLogger() { return s_Logger; }
 private:
 	static std::shared_ptr<spdlog::logger> s_Logger;
+	inline static std::shared_ptr<spdlog::logger>& GetLogger() { return s_Logger; }
 };
 
 
 
-#define ASSERT_ERROR(...)		Debug::GetLogger()->error(__VA_ARGS__);
+#define ASSERT_ERROR(...)		Debug::Error(__VA_ARGS__);

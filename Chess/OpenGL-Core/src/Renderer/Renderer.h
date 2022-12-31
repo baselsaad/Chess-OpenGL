@@ -53,7 +53,7 @@ private:
 	void CalculateProjectionViewMatrix();
 
 private:
-	int m_DrawCalls = 0;
+	int m_DrawCalls;
 	glm::vec2 m_Viewport;
 	glm::mat4 m_ProjectionView;
 	RenderData m_RenderData;
