@@ -4,7 +4,7 @@
 
 Run (script/Build.bat) to generate visual studio solution and you can run the project
  
-In progress ...
+# In progress ...
 
 What's done?
 - Renderer (Basic rendering techniques There is no batch rendering or entity component system)
