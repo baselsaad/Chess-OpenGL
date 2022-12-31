@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "OpenGL-Core.h"
-
 #include "Chessboard.h"
 
 
@@ -15,13 +14,14 @@ Chessboard::~Chessboard()
 {
 }
 
-void Chessboard::AddNewChessPiece(Entity* entity, int rowIndex, int colIndex)
+void Chessboard::AddNewChessPiece(ChessPiece* entity, int rowIndex, int colIndex)
 {
 	ASSERT(rowIndex >= 0 && rowIndex < m_Rows, "row Index is out of range!");
 	ASSERT(colIndex >= 0 && colIndex < m_Columns, "column Index is out of range!");
 
 	int index = colIndex * m_Rows + rowIndex;
 
+	entity->SetCurrentCell(index);
 	m_Cells[index].ChessPiece = entity;
 	m_Cells[index].RowIndex = rowIndex;
 	m_Cells[index].ColIndex = colIndex;
@@ -33,13 +33,13 @@ int Chessboard::GetEntityID(double mouseX, double mouseY)
 {
 	int index = GetCellIndex(mouseX, mouseY);
 
-	if (!m_Cells[index].HasEntity())
+	if (!m_Cells[index].CellHasEntity())
 		return Chessboard::INVALID;
 
 	return index;
 }
 
-bool Chessboard::HasEntity(double mouseX, double mouseY)
+bool Chessboard::CellHasEntity(double mouseX, double mouseY)
 {
 	return GetEntityID(mouseX, mouseY) != Chessboard::INVALID;
 }
@@ -48,7 +48,7 @@ void Chessboard::MoveEntityToCell(int entityID, const glm::vec2& newPosition)
 {
 	ASSERT(entityID >= 0 && entityID < m_Cells.size(), "Invalid Entity ID!!");
 
-	Entity* entity = m_Cells[entityID].ChessPiece;
+	ChessPiece* entity = m_Cells[entityID].ChessPiece;
 
 	// Get Cell Center-Position
 	glm::vec2 outCellPosition;
@@ -69,6 +69,12 @@ void Chessboard::MoveEntityToCell(int entityID, const glm::vec2& newPosition)
 	m_Cells[outTargetCell].ChessPiece = entity;
 	m_Cells[outTargetCell].RowIndex = outRowColumn.x;
 	m_Cells[outTargetCell].ColIndex = outRowColumn.y;
+}
+
+void Chessboard::MoveEntityToCell(int entityID, int cellNum)
+{
+
+	//MoveEntityToCell(entityID, GetCellPosition(rowIndex + 1, colIndex + 1));
 }
 
 //TODO: Another way to compute

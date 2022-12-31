@@ -17,30 +17,6 @@
 
 #define CHECK(x) if (!(x)) __debugbreak();
 
-// compatible with all OpenGL Versions
-#define GL_CALL(x)									\
-	GlClearErros();									\
-	x;												\
-	CHECK(GlLogCall(#x, __FILE__, __LINE__))
-
-static void GlClearErros()
-{
-	while (glGetError() != GL_NO_ERROR);
-}
-
-static bool GlLogCall(const char* functionName, const char* fileName, int line)
-{
-	while (GLenum error = glGetError())
-	{
-		Debug::Error("{0} : {1} at Line ({0})", fileName, functionName, line);
-		Debug::Error("OpenGL-Error: {0} {1}", error, error);
-
-		return false;
-	}
-
-	return true;
-}
-
 static void OpenGLMessageCallback(unsigned source, unsigned type, unsigned id, unsigned severity,
 	int length, const char* message, const void* userParam)
 {

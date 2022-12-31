@@ -1,9 +1,9 @@
 #pragma once
-class Entity;
+#include "ChessPiece.h"
 
 struct Cell
 {
-	Entity* ChessPiece = nullptr;
+	ChessPiece* ChessPiece = nullptr;
 	int RowIndex = -1;
 	int ColIndex = -1;
 
@@ -14,7 +14,7 @@ struct Cell
 		ColIndex = -1;
 	}
 
-	inline bool HasEntity() const { return ChessPiece != nullptr; }
+	inline bool CellHasEntity() const { return ChessPiece != nullptr; }
 
 };
 
@@ -28,11 +28,12 @@ public:
 
 public:
 	// TODO: Texture ref just for now, will change later when we move every thing to opengl core
-	void AddNewChessPiece(Entity* entity, int rowIndex, int colIndex);
-	bool HasEntity(double mouseX, double mouseY);
+	void AddNewChessPiece(ChessPiece* entity, int rowIndex, int colIndex);
+	bool CellHasEntity(double mouseX, double mouseY);
 	int GetEntityID(double mouseX, double mouseY);
 
 	void MoveEntityToCell(int entityID, const glm::vec2& newPosition);
+	void MoveEntityToCell(int entityID, int cellNum);
 	void MoveEntityByOffset(const int& entityID, const float& xOffset, const float& yOffset);
 	void MoveEntityToNewPosition(const int entityID, const glm::vec3& positionOffset);
 

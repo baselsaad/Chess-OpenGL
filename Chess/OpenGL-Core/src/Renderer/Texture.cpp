@@ -15,8 +15,8 @@ Texture::Texture(const std::string& path)
 	m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_BitsPerPixel, 4);
 	ASSERT(m_LocalBuffer != nullptr, "Can not load the image, Check the path: " + m_FilePath);
 
-	GL_CALL(glGenTextures(1, &m_RendererID));
-	GL_CALL(glBindTexture(GL_TEXTURE_2D, m_RendererID));
+	glGenTextures(1, &m_RendererID);
+	glBindTexture(GL_TEXTURE_2D, m_RendererID);
 
 	glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -24,7 +24,7 @@ Texture::Texture(const std::string& path)
 	glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_LocalBuffer));
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_LocalBuffer);
 	UnBind();
 
 	if (m_LocalBuffer)
@@ -35,7 +35,7 @@ Texture::Texture(const std::string& path)
 
 Texture::~Texture()
 {
-	GL_CALL(glDeleteTextures(1, &m_RendererID));
+	glDeleteTextures(1, &m_RendererID);
 }
 
 void Texture::Bind(uint32_t slot /*= 0*/) const
@@ -46,7 +46,7 @@ void Texture::Bind(uint32_t slot /*= 0*/) const
 
 void Texture::UnBind() const
 {
-	GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture::EnableBlending() const
@@ -61,13 +61,13 @@ void Texture::EnableBlending() const
 	 *	A = (a-src * 0) + (a-dest * (1 - 0)) = a-dest
 	 */
 
-	GL_CALL(glEnable(GL_BLEND));
-	GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Texture::DisableBlending()
 {
-	GL_CALL(glDisable(GL_BLEND));
+	glDisable(GL_BLEND);
 }
 
 void Texture::DisableTexturing()

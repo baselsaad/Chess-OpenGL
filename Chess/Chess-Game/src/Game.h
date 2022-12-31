@@ -24,7 +24,7 @@ struct ChessTextures
 	Texture Pawn;
 	Texture Bishop;
 	Texture Knight;
-	Texture Rock;
+	Texture Rook;
 	Texture Queen;
 	Texture King;
 
@@ -38,7 +38,7 @@ struct ChessTextures
 		, Pawn("res/textures/" + SelectedColor + "Pawn.png")
 		, Bishop("res/textures/" + SelectedColor + "Bishop.png")
 		, Knight("res/textures/" + SelectedColor + "Knight.png")
-		, Rock("res/textures/" + SelectedColor + "Rook.png")
+		, Rook("res/textures/" + SelectedColor + "Rook.png")
 		, Queen("res/textures/" + SelectedColor + "Queen.png")
 		, King("res/textures/" + SelectedColor + "King.png")
 	{
@@ -53,8 +53,8 @@ public:
 	~Game() = default;
 
 public:
-	void OnStart(EntityContainer& container);
-	void CreateChessPieces(EntityContainer& container, ChessTextures& textures, int pawns, int rest);
+	void OnStart(const EntityContainer& container);
+	void CreateChessPieces(const EntityContainer& container, ChessTextures& textures, int pawns, int rest);
 	void OnUpdate(const DeltaTime& deltaTime);
 	void SetupPlayerInput(PlayerInput* input);
 	void OnDestroy();

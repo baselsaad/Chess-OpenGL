@@ -1,13 +1,13 @@
 #pragma once
-struct TransformComponent;
-struct SpriteSheetComponent;
+#include "Components.h"
 
 
 class Entity
 {
+
 public:
-	Entity() = default;
 	Entity(const TransformComponent& transform, const SpriteSheetComponent& sprite);
+	virtual ~Entity() = default;
 
 public:
 	bool IsInBound(int x, int y);
@@ -22,6 +22,7 @@ public:
 	inline glm::vec3& GetScale() { return m_Transform.Scale; }
 
 	inline void SetTranslation(const glm::vec3& translation) { m_Transform.Translation = translation; }
+
 private:
 	TransformComponent m_Transform;
 	SpriteSheetComponent m_Sprite;

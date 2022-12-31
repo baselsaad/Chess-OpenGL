@@ -1,19 +1,31 @@
 #pragma once
-
 class Entity;
-class TransformComponent;
-class SpriteSheetComponent;
 
 class EntityContainer
 {
 public:
 	EntityContainer();
+	~EntityContainer();
 
 public:
-	Entity* CreateNewEntity(const TransformComponent& transform, const SpriteSheetComponent& sprite);
 	void OnRender();
 
+	template<class T, typename ...Args>
+	T* CreateNewEntity(Args&&... args) const
+	{
+		static_assert(std::is_base_of<Entity, T>::value, "T must be a subclass of Entity");
+
+		m_EntityCount++;
+		Entity* e = new T(std::forward<Args>(args)...);
+		m_EntityPool.emplace_back(e);
+
+		return static_cast<T*>(e);
+	}
+
 private:
-	std::vector<Entity> m_EntityPool;
-	int m_EntityCount;
+	mutable std::vector<Entity*> m_EntityPool;
+	mutable int m_EntityCount;
 };
+
+
+

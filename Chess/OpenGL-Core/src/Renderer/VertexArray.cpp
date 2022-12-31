@@ -7,12 +7,12 @@
 
 VertexArray::VertexArray()
 {
-	GL_CALL(glGenVertexArrays(1, &m_RendererID));
+	glGenVertexArrays(1, &m_RendererID);
 }
 
 VertexArray::~VertexArray()
 {
-	GL_CALL(glDeleteVertexArrays(1, &m_RendererID));
+	glDeleteVertexArrays(1, &m_RendererID);
 }
 
 void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout)
@@ -29,21 +29,21 @@ void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& la
 		const auto& element = elements[i];
 
 		//should be called for glVertexAttribPointer
-		GL_CALL(glEnableVertexAttribArray(i));
+		glEnableVertexAttribArray(i);
 
 		//tell OpenGL how to read vertexBuffer
 		//(index, size_of_values_per_vertex, type, if_values_are_normlized, offset_between_vertecis, offset_of_attribute)
-		GL_CALL(glVertexAttribPointer(i, element.Count, element.Type, element.normlized, layout.GetStride(), (const void*)offset));
+		glVertexAttribPointer(i, element.Count, element.Type, element.normlized, layout.GetStride(), (const void*)offset);
 		offset += element.Count * VertexBufferElement::GetSizeOfType(element.Type);
 	}
 }
 
 void VertexArray::Bind() const
 {
-	GL_CALL(glBindVertexArray(m_RendererID));
+	glBindVertexArray(m_RendererID);
 }
 
 void VertexArray::UnBind() const
 {
-	GL_CALL(glBindVertexArray(0));
+	glBindVertexArray(0);
 }

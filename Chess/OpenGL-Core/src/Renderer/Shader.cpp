@@ -12,45 +12,45 @@ Shader::Shader(const std::string& filePath)
 
 Shader::~Shader()
 {
-	GL_CALL(glDeleteProgram(m_RendererID));
+	glDeleteProgram(m_RendererID);
 }
 
 void Shader::Bind() const
 {
 	//bind shaders
-	GL_CALL(glUseProgram(m_RendererID));
+	glUseProgram(m_RendererID);
 }
 
 void Shader::UnBind() const
 {
-	GL_CALL(glUseProgram(0));
+	glUseProgram(0);
 }
 
 void Shader::SetUniform1i(const char* name, int v0)
 {
-	GL_CALL(glUniform1i(GetUniformLocation(name), v0));
+	glUniform1i(GetUniformLocation(name), v0);
 }
 
 void Shader::SetUniform1f(const char* name, float v0)
 {
-	GL_CALL(glUniform1f(GetUniformLocation(name), v0));
+	glUniform1f(GetUniformLocation(name), v0);
 }
 
 void Shader::SetUniform4f(const char* name, float v0, float v1, float v2, float v3)
 {
-	GL_CALL(glUniform4f(GetUniformLocation(name), v0, v1, v2, v3));
+	glUniform4f(GetUniformLocation(name), v0, v1, v2, v3);
 }
 
 void Shader::SetUniform4f(const char* name, const Colors::RGBA& color)
 {
 	using namespace Colors;
-	GL_CALL(glUniform4f(GetUniformLocation(name), color.R, color.G, color.B, color.Alpha));
+	glUniform4f(GetUniformLocation(name), color.R, color.G, color.B, color.Alpha);
 }
 
 
 void Shader::SetUniformMat4f(const char* name, const glm::mat4& matrix)
 {
-	GL_CALL(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
+	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
 }
 
 Shaders Shader::ParaseShader(const std::string& filePath)
@@ -90,22 +90,22 @@ uint32_t Shader::CompileShader(uint32_t type, const std::string& source)
 	uint32_t id = glCreateShader(type);
 	const char* src = source.c_str();
 	const int HOW_MANY_SHADERS = 1;
-	GL_CALL(glShaderSource(id, HOW_MANY_SHADERS, &src, NULL));//Replaces the source code in a shader object
-	GL_CALL(glCompileShader(id));
+	glShaderSource(id, HOW_MANY_SHADERS, &src, NULL);//Replaces the source code in a shader object
+	glCompileShader(id);
 
 	//Compile Error Handling
 	int result;
-	GL_CALL(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
+	glGetShaderiv(id, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE)
 	{
 		int length;
-		GL_CALL(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
+		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 		char* message = (char*)alloca(length * sizeof(char));
-		GL_CALL(glGetShaderInfoLog(id, length, &length, message));
+		glGetShaderInfoLog(id, length, &length, message);
 
 		std::cout << "Shader Compile Error in " << (type == GL_FRAGMENT_SHADER ? "fragment Shader: " : "vertex Shader: ") << std::endl;
 		std::cout << message;
-		GL_CALL(glDeleteShader(id));
+		glDeleteShader(id);
 
 		ASSERT(false, "failed to compile the shader!");
 		return 0;
@@ -123,14 +123,14 @@ uint32_t Shader::CreateShader(const std::string& fragmentShader, const std::stri
 	uint32_t fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
 	uint32_t vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
 
-	GL_CALL(glAttachShader(programm, fs));
-	GL_CALL(glAttachShader(programm, vs));
+	glAttachShader(programm, fs);
+	glAttachShader(programm, vs);
 
-	GL_CALL(glLinkProgram(programm));//links any attached shader to program
-	GL_CALL(glValidateProgram(programm)); // checks, if can execute given the current OpenGL state
+	glLinkProgram(programm);//links any attached shader to program
+	glValidateProgram(programm); // checks, if can execute given the current OpenGL state
 
-	GL_CALL(glDeleteShader(fs));
-	GL_CALL(glDeleteShader(vs));
+	glDeleteShader(fs);
+	glDeleteShader(vs);
 
 	return programm;
 }

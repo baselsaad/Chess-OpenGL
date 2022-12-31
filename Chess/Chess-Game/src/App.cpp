@@ -5,6 +5,7 @@
 #include "Event.h"
 #include "PlayerInput.h"
 #include "Game.h"
+
 #include "Renderer\Defaults.h"
 
 #include "Utilities\Log.h"
@@ -69,7 +70,7 @@ void Application::Run()
 		}
 		m_Window->Swap();
 
-		Debug::Log("Vsync: {}, FPS: {}, DrawCalls: {}", m_Window->IsVsyncOn(), m_DeltaTime.GetFramePerSecounds(), Renderer::GetDrawCalls());
+		//Debug::Log("Vsync: {}, FPS: {}, DrawCalls: {}", m_Window->IsVsyncOn(), m_DeltaTime.GetFramePerSecounds(), Renderer::GetDrawCalls());
 	}
 
 	// OnDestroy

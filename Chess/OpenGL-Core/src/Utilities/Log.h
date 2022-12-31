@@ -8,6 +8,7 @@ class Debug
 {
 public:
 	static void Init();
+	static void ShutDown();
 
 	template<typename...Args>
 	static void Log(const Args&... args)

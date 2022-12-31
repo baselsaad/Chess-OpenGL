@@ -11,6 +11,7 @@
 #include "PlayerInput.h"
 #include "Container.h"
 
+
 // Mouse Drag and Drop
 struct DragAndDrop
 {
@@ -27,6 +28,7 @@ Game::Game(int height, int width)
 	, m_WhitePieces(ChessTextures::Color::White)
 	, m_BlackPieces(ChessTextures::Color::Black)
 {
+	
 }
 
 void Game::SetupPlayerInput(PlayerInput* input)
@@ -38,17 +40,17 @@ void Game::SetupPlayerInput(PlayerInput* input)
 	input->BindActionEvent(EventType::MouseMove, this, &Game::OnMouseMove);
 }
 
-void Game::OnStart(EntityContainer& container)
+void Game::OnStart(const EntityContainer& container)
 {
 	m_Chessboard.OnUpdateViewPort();
-	m_BackgroundImage = container.CreateNewEntity(TransformComponent({ 0.0f,0.0f,0.0f }), SpriteSheetComponent(&m_BackgroundTexture));
+	m_BackgroundImage = container.CreateNewEntity<Entity>(TransformComponent({ 0.0f,0.0f,0.0f }), SpriteSheetComponent(&m_BackgroundTexture));
 	AdjustBackgroundImage();
 
 	CreateChessPieces(container, m_WhitePieces, 1, 0);
 	CreateChessPieces(container, m_BlackPieces, 6, 7);
 }
 
-void Game::CreateChessPieces(EntityContainer& container, ChessTextures& textures, int pawns, int rest)
+void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& textures, int pawns, int rest)
 {
 	TransformComponent defaultTransform({ 0.0f,0.0f,0.0f }, { 75.0f,75.0f,1.0f });
 
@@ -56,27 +58,27 @@ void Game::CreateChessPieces(EntityContainer& container, ChessTextures& textures
 	{
 		if (i == 0 || i == 7) //Rook
 		{
-			Entity* rock = container.CreateNewEntity(defaultTransform, SpriteSheetComponent(&textures.Rock));
-			m_Chessboard.AddNewChessPiece(rock, i, rest);
+			ChessPiece* rook = container.CreateNewEntity<ChessPiece>(defaultTransform, SpriteSheetComponent(&textures.Rook), 0);
+			m_Chessboard.AddNewChessPiece(rook, i, rest);
 		}
 		else if (i == 1 || i == 6) //Knight
 		{
-			Entity* knight = container.CreateNewEntity(defaultTransform, SpriteSheetComponent(&textures.Knight));
+			ChessPiece* knight = container.CreateNewEntity<ChessPiece>(defaultTransform, SpriteSheetComponent(&textures.Knight));
 			m_Chessboard.AddNewChessPiece(knight, i, rest);
 		}
 		else if (i == 2 || i == 5) //Bishop
 		{
-			Entity* bishop = container.CreateNewEntity(defaultTransform, SpriteSheetComponent(&textures.Bishop));
+			ChessPiece* bishop = container.CreateNewEntity<ChessPiece>(defaultTransform, SpriteSheetComponent(&textures.Bishop));
 			m_Chessboard.AddNewChessPiece(bishop, i, rest);
 		}
 		else if (i == 3) // Queen
 		{
-			Entity* queen = container.CreateNewEntity(defaultTransform, SpriteSheetComponent(&textures.Queen));
+			ChessPiece* queen = container.CreateNewEntity<ChessPiece>(defaultTransform, SpriteSheetComponent(&textures.Queen));
 			m_Chessboard.AddNewChessPiece(queen, i, rest);
 		}
 		else if (i == 4) //King
 		{
-			Entity* king = container.CreateNewEntity(defaultTransform, SpriteSheetComponent(&textures.King));
+			ChessPiece* king = container.CreateNewEntity<ChessPiece>(defaultTransform, SpriteSheetComponent(&textures.King));
 			m_Chessboard.AddNewChessPiece(king, i, rest);
 		}
 	}
@@ -84,7 +86,7 @@ void Game::CreateChessPieces(EntityContainer& container, ChessTextures& textures
 	// Pawns
 	for (int i = 0; i < 8; i++)
 	{
-		Entity* pawn = container.CreateNewEntity(defaultTransform, SpriteSheetComponent(&textures.Pawn));
+		ChessPiece* pawn = container.CreateNewEntity<ChessPiece>(defaultTransform, SpriteSheetComponent(&textures.Pawn));
 		m_Chessboard.AddNewChessPiece(pawn, i, pawns);
 	}
 
@@ -142,7 +144,8 @@ void Game::OnMouseReleased(MouseButtonReleasedEvent& event)
 	if (s_DragDropData.EntityID != Chessboard::INVALID)
 	{
 		glm::vec2 entityLocation = m_Chessboard.GetEntityLocation(s_DragDropData.EntityID);
-		glm::vec2 targetLocation = m_Chessboard.HasEntity(entityLocation.x, entityLocation.y) ? s_DragDropData.OrginalPosition : entityLocation;
+		// target cell has allready entity, then move the seleceted entity to his orginal location
+		glm::vec2 targetLocation = m_Chessboard.CellHasEntity(entityLocation.x, entityLocation.y) ? s_DragDropData.OrginalPosition : entityLocation;
 
 		m_Chessboard.MoveEntityToCell(s_DragDropData.EntityID, targetLocation);
 	}

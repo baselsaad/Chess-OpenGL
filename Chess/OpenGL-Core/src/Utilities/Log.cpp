@@ -19,3 +19,9 @@ void Debug::Init()
 	s_Logger = spdlog::stdout_color_mt("console");
 	s_Logger->set_level(spdlog::level::debug);
 }
+
+void Debug::ShutDown()
+{
+	spdlog::drop("console");
+	s_Logger.reset();
+}
