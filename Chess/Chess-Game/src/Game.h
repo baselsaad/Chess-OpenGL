@@ -1,5 +1,6 @@
 #pragma once
 #include "Chessboard.h"
+#include "Container.h"
 
 class PlayerInput;
 class Event;
@@ -14,7 +15,6 @@ class OpenGLWindow;
 class MouseButtonPressedEvent;
 class MouseButtonReleasedEvent;
 class MouseMoveEvent;
-class EntityContainer;
 
 // Assets
 struct ChessTextures
@@ -52,7 +52,7 @@ public:
 	~Game() = default;
 
 public:
-	void OnStart(const EntityContainer& container);
+	void OnStart();
 	void CreateChessPieces(const EntityContainer& container, ChessTextures& textures, int pawns, int rest);
 	void OnUpdate(const DeltaTime& deltaTime);
 	void SetupPlayerInput(PlayerInput& input);
@@ -63,8 +63,8 @@ public:
 	void OnMouseMove(MouseMoveEvent& event);
 
 	void OnUpdateViewport();
-	void AdjustBackgroundImage();
 
+	void AdjustBackgroundImage();
 	void DrawBackgroundManually();
 
 
@@ -74,7 +74,8 @@ private:
 	ChessTextures m_BlackPieces;
 	Texture m_BackgroundTexture;
 
-	Entity* m_BackgroundImage;
+	Entity m_BackgroundEntity;
 	Chessboard m_Chessboard;
+	EntityContainer m_EntityContainer;
 };
 

@@ -1,6 +1,5 @@
 #pragma once
 #include "Utilities\DeltaTime.h"
-#include "Container.h"
 #include "PlayerInput.h"
 
 class OpenGLWindow;
@@ -33,11 +32,10 @@ public:
 private:
 	OpenGLWindow* m_Window;
 	PlayerInput m_PlayerInput;
-	Game* m_GameLayer;
+	Game* m_Game;
 
 	EventFuncType m_EventCallback;
 	DeltaTime m_DeltaTime;
-	EntityContainer m_EntityContainer;
 };
 
 extern bool s_Running;

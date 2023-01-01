@@ -9,8 +9,6 @@
 #include "Utilities\Timer.h"	
 #include "Event.h"
 #include "PlayerInput.h"
-#include "Container.h"
-
 #include "ChessPieces\Pawn.h"
 
 
@@ -26,11 +24,10 @@ static DragAndDrop s_DragDropData;
 
 Game::Game(int height, int width)
 	: m_BackgroundTexture("res/textures/background.png")
-	, m_BackgroundImage(nullptr)
+	, m_BackgroundEntity()
 	, m_WhitePieces(ChessTextures::Color::White)
 	, m_BlackPieces(ChessTextures::Color::Black)
 {
-
 }
 
 void Game::SetupPlayerInput(PlayerInput& input)
@@ -40,59 +37,54 @@ void Game::SetupPlayerInput(PlayerInput& input)
 	input.BindActionEvent(EventType::MouseMove, this, &Game::OnMouseMove);
 }
 
-void Game::OnStart(const EntityContainer& container)
+void Game::OnStart()
 {
 	m_Chessboard.OnUpdateViewPort();
-	m_BackgroundImage = container.CreateNewEntity<Entity>();
-	m_BackgroundImage->SetTexture(&m_BackgroundTexture);
+	m_BackgroundEntity.SetTexture(&m_BackgroundTexture);
 	AdjustBackgroundImage();
 
-	CreateChessPieces(container, m_WhitePieces, 1, 0);
-	CreateChessPieces(container, m_BlackPieces, 6, 7);
+	CreateChessPieces(m_EntityContainer, m_WhitePieces, 1, 0);
+	CreateChessPieces(m_EntityContainer, m_BlackPieces, 6, 7);
 }
 
 void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& textures, int pawns, int rest)
 {
+	glm::vec3 defaultPosition(1.0f);
 	glm::vec3 defaultScale(75.0f, 75.0f, 1.0f);
 
 	for (int i = 0; i < 8; i++)
 	{
 		if (i == 0 || i == 7) //Rook
 		{
-			ChessPiece* rook = container.CreateNewEntity<ChessPiece>();
-			rook->SetScale(defaultScale);
+			ChessPiece* rook = container.CreateNewEntity<ChessPiece>(defaultPosition, defaultScale);
 			rook->SetTexture(&textures.Rook);
 
 			m_Chessboard.AddNewChessPiece(rook, i, rest);
 		}
 		else if (i == 1 || i == 6) //Knight
 		{
-			ChessPiece* knight = container.CreateNewEntity<ChessPiece>();
-			knight->SetScale(defaultScale);
+			ChessPiece* knight = container.CreateNewEntity<ChessPiece>(defaultPosition, defaultScale);
 			knight->SetTexture(&textures.Knight);
 
 			m_Chessboard.AddNewChessPiece(knight, i, rest);
 		}
 		else if (i == 2 || i == 5) //Bishop
 		{
-			ChessPiece* bishop = container.CreateNewEntity<ChessPiece>();
-			bishop->SetScale(defaultScale);
+			ChessPiece* bishop = container.CreateNewEntity<ChessPiece>(defaultPosition, defaultScale);
 			bishop->SetTexture(&textures.Bishop);
 
 			m_Chessboard.AddNewChessPiece(bishop, i, rest);
 		}
 		else if (i == 3) // Queen
 		{
-			ChessPiece* queen = container.CreateNewEntity<ChessPiece>();
-			queen->SetScale(defaultScale);
+			ChessPiece* queen = container.CreateNewEntity<ChessPiece>(defaultPosition, defaultScale);
 			queen->SetTexture(&textures.Queen);
 
 			m_Chessboard.AddNewChessPiece(queen, i, rest);
 		}
 		else if (i == 4) //King
 		{
-			ChessPiece* king = container.CreateNewEntity<ChessPiece>();
-			king->SetScale(defaultScale);
+			ChessPiece* king = container.CreateNewEntity<ChessPiece>(defaultPosition, defaultScale);
 			king->SetTexture(&textures.King);
 
 			m_Chessboard.AddNewChessPiece(king, i, rest);
@@ -102,8 +94,7 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 	// Pawns
 	for (int i = 0; i < 8; i++)
 	{
-		ChessPiece* pawn = container.CreateNewEntity<ChessPiece>();
-		pawn->SetScale(defaultScale);
+		ChessPiece* pawn = container.CreateNewEntity<ChessPiece>(defaultPosition, defaultScale);
 		pawn->SetTexture(&textures.Pawn);
 
 		m_Chessboard.AddNewChessPiece(pawn, i, pawns);
@@ -113,7 +104,18 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 
 void Game::OnUpdate(const DeltaTime& deltaTime)
 {
-	//DrawBackgroundManually();
+
+
+	// Rendering
+	{
+		// Background
+		Renderer::DrawQuad(m_BackgroundEntity.GetTransformationMatrix(), m_BackgroundEntity.GetTexture());
+		//DrawBackgroundManually();
+
+		// ChessPieces
+		m_EntityContainer.OnRender();
+	}
+
 }
 
 void Game::OnDestroy()
@@ -127,19 +129,19 @@ void Game::AdjustBackgroundImage()
 	const float xNewScale = viewport.x / Defaults::MAX_POSITION_OFFSET;
 	const float yNewScale = viewport.y / Defaults::MAX_POSITION_OFFSET;
 
-	m_BackgroundImage->GetScale().x = xNewScale;
-	m_BackgroundImage->GetScale().y = yNewScale;
+	m_BackgroundEntity.GetScale().x = xNewScale;
+	m_BackgroundEntity.GetScale().y = yNewScale;
 
 	// center of the window
 	const float windowCenterX = viewport.x / 2.0f;
 	const float windowCenterY = viewport.y / 2.0f;
 
 	// center of the quad
-	float quadCenterX = m_BackgroundImage->GetCenterPositionInScreenSpace().x;
-	float quadCenterY = m_BackgroundImage->GetCenterPositionInScreenSpace().y;
+	float quadCenterX = m_BackgroundEntity.GetCenterPositionInScreenSpace().x;
+	float quadCenterY = m_BackgroundEntity.GetCenterPositionInScreenSpace().y;
 
-	m_BackgroundImage->GetPosition().x += windowCenterX - quadCenterX;
-	m_BackgroundImage->GetPosition().y += windowCenterY - quadCenterY;
+	m_BackgroundEntity.GetPosition().x += windowCenterX - quadCenterX;
+	m_BackgroundEntity.GetPosition().y += windowCenterY - quadCenterY;
 }
 
 void Game::OnMousePressed(MouseButtonPressedEvent& event)
@@ -232,5 +234,3 @@ void Game::DrawBackgroundManually()
 		yOffset += quadHeight;
 	}
 }
-
-

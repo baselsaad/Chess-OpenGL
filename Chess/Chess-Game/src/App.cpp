@@ -30,7 +30,7 @@ Application::Application()
 Application::~Application()
 {
 	delete m_Window;
-	delete m_GameLayer;
+	delete m_Game;
 	Renderer::ShutDown();
 }
 
@@ -42,9 +42,9 @@ void Application::OnStart()
 	m_PlayerInput.BindActionEvent(EventType::CloseWindow, this, &Application::OnClose);
 	m_PlayerInput.BindActionEvent(EventType::ResizeWindow, this, &Application::OnResizeWindow);
 
-	m_GameLayer = new Game(m_Window->GetWindowHeight(), m_Window->GetWindowWidth());
-	m_GameLayer->OnStart(m_EntityContainer);
-	m_GameLayer->SetupPlayerInput(m_PlayerInput);
+	m_Game = new Game(m_Window->GetWindowHeight(), m_Window->GetWindowWidth());
+	m_Game->OnStart();
+	m_Game->SetupPlayerInput(m_PlayerInput);
 }
 
 void Application::Run()
@@ -63,8 +63,7 @@ void Application::Run()
 		m_Window->Clear();
 		m_Window->PollEvents();
 		{
-			m_GameLayer->OnUpdate(m_DeltaTime);
-			m_EntityContainer.OnRender();
+			m_Game->OnUpdate(m_DeltaTime);
 		}
 		m_Window->Swap();
 
@@ -79,7 +78,7 @@ void Application::Run()
 
 void Application::OnDestroy()
 {
-	m_GameLayer->OnDestroy();
+	m_Game->OnDestroy();
 }
 
 void Application::OnClose(CloseWindowEvent& event)
@@ -91,7 +90,7 @@ void Application::OnResizeWindow(ResizeWindowEvent& event)
 {
 	Renderer::UpdateViewport(event.GetWidth(), event.GetHeight());
 	m_Window->UpdateWindowSize(event.GetWidth(), event.GetHeight());
-	m_GameLayer->OnUpdateViewport();
+	m_Game->OnUpdateViewport();
 }
 
 void Application::SetupEventCallback()
