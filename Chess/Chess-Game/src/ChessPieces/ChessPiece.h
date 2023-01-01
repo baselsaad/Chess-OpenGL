@@ -1,10 +1,11 @@
 #pragma once
-#include "Renderer\Entity.h"
+#include "..\Entity.h"
+#include "Utilities\Debug.h"
 
 class ChessPiece : public Entity
 {
 public:
-	ChessPiece(const TransformComponent& transform, const SpriteSheetComponent& sprite, int cell = 0);
+	ChessPiece() = default;
 	virtual ~ChessPiece() = default;
 
 public:
@@ -14,6 +15,5 @@ public:
 	inline void SetCurrentCell(int cell) { m_CurrentCell = cell; };
 
 private:
-	int m_CurrentCell;
+	int m_CurrentCell = 0;
 };
-

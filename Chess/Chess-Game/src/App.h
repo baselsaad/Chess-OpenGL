@@ -1,10 +1,10 @@
 #pragma once
 #include "Utilities\DeltaTime.h"
 #include "Container.h"
+#include "PlayerInput.h"
 
 class OpenGLWindow;
 class GLFWWindow;
-class PlayerInput;
 class DeltaTime;
 class EntityContainer;
 
@@ -17,7 +17,6 @@ class Game;
 class Application
 {
 public:
-
 	using EventFuncType = std::function<void(Event&)>;
 	Application();
 	~Application();
@@ -33,7 +32,7 @@ public:
 
 private:
 	OpenGLWindow* m_Window;
-	PlayerInput* m_PlayerInput;
+	PlayerInput m_PlayerInput;
 	Game* m_GameLayer;
 
 	EventFuncType m_EventCallback;

@@ -4,7 +4,6 @@
 
 #include "Renderer\Defaults.h"
 
-
 Entity::Entity(const TransformComponent& transform, const SpriteSheetComponent& sprite)
 	: m_Transform(transform)
 	, m_Sprite(sprite)
@@ -13,7 +12,7 @@ Entity::Entity(const TransformComponent& transform, const SpriteSheetComponent& 
 
 bool Entity::IsInBound(int x, int y)
 {
-    // Calculate PixelData (Pixel Positions of Vertics)
+	// Calculate PixelData (Pixel Positions of Vertics)
 	float minX = m_Transform.Translation.x + (Defaults::MIN_POSITION_OFFSET * m_Transform.Scale.x);
 	float maxX = m_Transform.Translation.x + (Defaults::MAX_POSITION_OFFSET * m_Transform.Scale.x);
 

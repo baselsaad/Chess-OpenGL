@@ -13,7 +13,4 @@
 #include "Renderer\IndexBuffer.h"
 #include "Renderer\Shader.h"
 
-
-#include "Renderer\Entity.h"
-
 #include "Renderer\Renderer.h"

@@ -23,7 +23,7 @@ OpenGLWindow::OpenGLWindow(const WindowData& data)
 	glfwMakeContextCurrent(m_Window);
 
 	HandleErrorMessages();
-	//PrintGpuInformation();
+	PrintGpuInformation();
 	SetVsync(true);
 }
 

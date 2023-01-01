@@ -1,5 +1,5 @@
 #pragma once
-#include "ChessPiece.h"
+#include "ChessPieces\ChessPiece.h"
 
 struct Cell
 {

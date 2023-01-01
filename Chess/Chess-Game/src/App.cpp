@@ -2,8 +2,8 @@
 #include "OpenGL-Core.h"
 #include "App.h"
 
+
 #include "Event.h"
-#include "PlayerInput.h"
 #include "Game.h"
 
 #include "Renderer\Defaults.h"
@@ -15,7 +15,6 @@
 static bool s_Running = false;
 
 Application::Application()
-	: m_GameLayer(nullptr)
 {
 	WindowData data;
 	data.Width = Defaults::WINDOW_WIDTH;
@@ -24,14 +23,11 @@ Application::Application()
 
 	m_Window = new OpenGLWindow(data);
 	Renderer::Init({ data.Width,data.Height });
-
-	m_PlayerInput = new PlayerInput();
 }
 
 Application::~Application()
 {
 	delete m_Window;
-	delete m_PlayerInput;
 	delete m_GameLayer;
 	Renderer::ShutDown();
 }
@@ -41,12 +37,12 @@ void Application::OnStart()
 	SetupEventCallback();
 	s_Running = true;
 
-	m_PlayerInput->BindActionEvent(EventType::CloseWindow, this, &Application::OnClose);
-	m_PlayerInput->BindActionEvent(EventType::ResizeWindow, this, &Application::OnResizeWindow);
+	m_PlayerInput.BindActionEvent(EventType::CloseWindow, this, &Application::OnClose);
+	m_PlayerInput.BindActionEvent(EventType::ResizeWindow, this, &Application::OnResizeWindow);
 
 	m_GameLayer = new Game(m_Window->GetWindowHeight(), m_Window->GetWindowWidth());
 	m_GameLayer->OnStart(m_EntityContainer);
-	m_GameLayer->SetupPlayerInput(m_PlayerInput);
+	m_GameLayer->SetupPlayerInput(&m_PlayerInput);
 }
 
 void Application::Run()
@@ -70,7 +66,7 @@ void Application::Run()
 		}
 		m_Window->Swap();
 
-		//Debug::Log("Vsync: {}, FPS: {}, DrawCalls: {}", m_Window->IsVsyncOn(), m_DeltaTime.GetFramePerSecounds(), Renderer::GetDrawCalls());
+		Debug::Log("Vsync: {}, FPS: {}, DrawCalls: {}", m_Window->IsVsyncOn(), m_DeltaTime.GetFramePerSecounds(), Renderer::GetDrawCalls());
 	}
 
 	// OnDestroy
@@ -98,7 +94,7 @@ void Application::OnResizeWindow(ResizeWindowEvent& event)
 
 void Application::SetupEventCallback()
 {
-	m_EventCallback = [this](Event& e) -> void { m_PlayerInput->OnEvent(e); };
+	m_EventCallback = [this](Event& e) -> void { m_PlayerInput.OnEvent(e); };
 	glfwSetWindowUserPointer(*m_Window, &m_EventCallback);
 
 	// Window Close 

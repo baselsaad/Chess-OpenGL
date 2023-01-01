@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "OpenGL-Core.h"
-
 #include "Container.h"
+
+#include "Entity.h"
 
 EntityContainer::EntityContainer()
 	: m_EntityCount(0)

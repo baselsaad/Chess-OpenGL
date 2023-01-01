@@ -7,7 +7,7 @@ namespace Colors
 	{
 		float R, G, B, Alpha;
 
-		RGBA(float r, float g, float b, float a = 1.0f)
+		RGBA(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f)
 			: R(r)
 			, G(g)
 			, B(b)
@@ -26,8 +26,8 @@ namespace Colors
 
 		bool operator==(const RGBA& other)
 		{
-			return 
-				R == other.R 
+			return
+				R == other.R
 				&& G == other.G
 				&& B == other.B
 				&& Alpha == other.Alpha;
