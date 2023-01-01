@@ -22,6 +22,8 @@ Application::Application()
 	data.Title = "Chess";
 
 	m_Window = new OpenGLWindow(data);
+	m_Window->SetVsync(true);
+
 	Renderer::Init({ data.Width,data.Height });
 }
 
@@ -42,7 +44,7 @@ void Application::OnStart()
 
 	m_GameLayer = new Game(m_Window->GetWindowHeight(), m_Window->GetWindowWidth());
 	m_GameLayer->OnStart(m_EntityContainer);
-	m_GameLayer->SetupPlayerInput(&m_PlayerInput);
+	m_GameLayer->SetupPlayerInput(m_PlayerInput);
 }
 
 void Application::Run()

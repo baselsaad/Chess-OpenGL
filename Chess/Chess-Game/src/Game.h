@@ -14,7 +14,6 @@ class OpenGLWindow;
 class MouseButtonPressedEvent;
 class MouseButtonReleasedEvent;
 class MouseMoveEvent;
-class Chessboard;
 class EntityContainer;
 
 // Assets
@@ -56,7 +55,7 @@ public:
 	void OnStart(const EntityContainer& container);
 	void CreateChessPieces(const EntityContainer& container, ChessTextures& textures, int pawns, int rest);
 	void OnUpdate(const DeltaTime& deltaTime);
-	void SetupPlayerInput(PlayerInput* input);
+	void SetupPlayerInput(PlayerInput& input);
 	void OnDestroy();
 
 	void OnMousePressed(MouseButtonPressedEvent& event);

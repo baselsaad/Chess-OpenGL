@@ -33,19 +33,18 @@ Game::Game(int height, int width)
 
 }
 
-void Game::SetupPlayerInput(PlayerInput* input)
+void Game::SetupPlayerInput(PlayerInput& input)
 {
-	ASSERT(input, "input can not be null!!");
-
-	input->BindActionEvent(EventType::MouseButtonPressed, this, &Game::OnMousePressed);
-	input->BindActionEvent(EventType::MouseButtonReleased, this, &Game::OnMouseReleased);
-	input->BindActionEvent(EventType::MouseMove, this, &Game::OnMouseMove);
+	input.BindActionEvent(EventType::MouseButtonPressed, this, &Game::OnMousePressed);
+	input.BindActionEvent(EventType::MouseButtonReleased, this, &Game::OnMouseReleased);
+	input.BindActionEvent(EventType::MouseMove, this, &Game::OnMouseMove);
 }
 
 void Game::OnStart(const EntityContainer& container)
 {
 	m_Chessboard.OnUpdateViewPort();
-	m_BackgroundImage = container.CreateNewEntity<Entity>(TransformComponent({ 0.0f,0.0f,0.0f }), SpriteSheetComponent(&m_BackgroundTexture));
+	m_BackgroundImage = container.CreateNewEntity<Entity>();
+	m_BackgroundImage->SetTexture(&m_BackgroundTexture);
 	AdjustBackgroundImage();
 
 	CreateChessPieces(container, m_WhitePieces, 1, 0);
@@ -54,47 +53,47 @@ void Game::OnStart(const EntityContainer& container)
 
 void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& textures, int pawns, int rest)
 {
-	TransformComponent defaultTransform({ 0.0f,0.0f,0.0f }, { 75.0f,75.0f,1.0f });
+	glm::vec3 defaultScale(75.0f, 75.0f, 1.0f);
 
 	for (int i = 0; i < 8; i++)
 	{
 		if (i == 0 || i == 7) //Rook
 		{
 			ChessPiece* rook = container.CreateNewEntity<ChessPiece>();
-			rook->SetTransformComponent(defaultTransform);
-			rook->SetSpriteSheetComponent(SpriteSheetComponent(&textures.Rook));
+			rook->SetScale(defaultScale);
+			rook->SetTexture(&textures.Rook);
 
 			m_Chessboard.AddNewChessPiece(rook, i, rest);
 		}
 		else if (i == 1 || i == 6) //Knight
 		{
 			ChessPiece* knight = container.CreateNewEntity<ChessPiece>();
-			knight->SetTransformComponent(defaultTransform);
-			knight->SetSpriteSheetComponent(SpriteSheetComponent(&textures.Knight));
+			knight->SetScale(defaultScale);
+			knight->SetTexture(&textures.Knight);
 
 			m_Chessboard.AddNewChessPiece(knight, i, rest);
 		}
 		else if (i == 2 || i == 5) //Bishop
 		{
 			ChessPiece* bishop = container.CreateNewEntity<ChessPiece>();
-			bishop->SetTransformComponent(defaultTransform);
-			bishop->SetSpriteSheetComponent(SpriteSheetComponent(&textures.Bishop));
+			bishop->SetScale(defaultScale);
+			bishop->SetTexture(&textures.Bishop);
 
 			m_Chessboard.AddNewChessPiece(bishop, i, rest);
 		}
 		else if (i == 3) // Queen
 		{
 			ChessPiece* queen = container.CreateNewEntity<ChessPiece>();
-			queen->SetTransformComponent(defaultTransform);
-			queen->SetSpriteSheetComponent(SpriteSheetComponent(&textures.Queen));
+			queen->SetScale(defaultScale);
+			queen->SetTexture(&textures.Queen);
 
 			m_Chessboard.AddNewChessPiece(queen, i, rest);
 		}
 		else if (i == 4) //King
 		{
 			ChessPiece* king = container.CreateNewEntity<ChessPiece>();
-			king->SetTransformComponent(defaultTransform);
-			king->SetSpriteSheetComponent(SpriteSheetComponent(&textures.King));
+			king->SetScale(defaultScale);
+			king->SetTexture(&textures.King);
 
 			m_Chessboard.AddNewChessPiece(king, i, rest);
 		}
@@ -104,8 +103,8 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 	for (int i = 0; i < 8; i++)
 	{
 		ChessPiece* pawn = container.CreateNewEntity<ChessPiece>();
-		pawn->SetTransformComponent(defaultTransform);
-		pawn->SetSpriteSheetComponent(SpriteSheetComponent(&textures.Pawn));
+		pawn->SetScale(defaultScale);
+		pawn->SetTexture(&textures.Pawn);
 
 		m_Chessboard.AddNewChessPiece(pawn, i, pawns);
 	}
@@ -136,11 +135,11 @@ void Game::AdjustBackgroundImage()
 	const float windowCenterY = viewport.y / 2.0f;
 
 	// center of the quad
-	float quadCenterX = m_BackgroundImage->GetTransformComponent().GetCenterPositionInScreenSpace().x;
-	float quadCenterY = m_BackgroundImage->GetTransformComponent().GetCenterPositionInScreenSpace().y;
+	float quadCenterX = m_BackgroundImage->GetCenterPositionInScreenSpace().x;
+	float quadCenterY = m_BackgroundImage->GetCenterPositionInScreenSpace().y;
 
-	m_BackgroundImage->GetTranslation().x += windowCenterX - quadCenterX;
-	m_BackgroundImage->GetTranslation().y += windowCenterY - quadCenterY;
+	m_BackgroundImage->GetPosition().x += windowCenterX - quadCenterX;
+	m_BackgroundImage->GetPosition().y += windowCenterY - quadCenterY;
 }
 
 void Game::OnMousePressed(MouseButtonPressedEvent& event)

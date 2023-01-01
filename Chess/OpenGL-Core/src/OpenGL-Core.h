@@ -5,8 +5,6 @@
 #include "Renderer\OpenGLWindow.h"
 #include "Renderer\Texture.h"
 
-#include "Renderer\Components.h"
-
 #include "Renderer\VertexArray.h"
 #include "Renderer\VertexBuffer.h"
 #include "Renderer\VertexBufferLayout.h"

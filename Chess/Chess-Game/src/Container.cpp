@@ -20,12 +20,11 @@ void EntityContainer::OnRender()
 {
 	for (int i = 0; i < m_EntityCount; i++)
 	{
-		const TransformComponent& transform = m_EntityPool[i]->GetTransformComponent();
-		const SpriteSheetComponent& sprite = m_EntityPool[i]->GetSpriteSheetComponent();
+		const Texture* texture = m_EntityPool[i]->GetTexture();
 
-		if (sprite.SpriteTexture)
-			Renderer::DrawQuad(transform.GetTransformationMatrix(), sprite.SpriteTexture);
+		if (texture)
+			Renderer::DrawQuad(m_EntityPool[i]->GetTransformationMatrix(), texture);
 		else
-			Renderer::DrawQuad(transform.GetTransformationMatrix(), sprite.Color);
+			Renderer::DrawQuad(m_EntityPool[i]->GetTransformationMatrix(), m_EntityPool[i]->GetColor());
 	}
 }

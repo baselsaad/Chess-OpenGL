@@ -1,32 +1,38 @@
 #pragma once
-#include "Renderer/Components.h"
-
+#include "glm/vec3.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 class Entity
 {
 
 public:
-	Entity() = default;
-	Entity(const TransformComponent& transform, const SpriteSheetComponent& sprite);
+	Entity(const glm::vec3& position = { 1.0f, 1.0f, 1.0f }, const glm::vec3& scale ={ 1.0f, 1.0f, 1.0f });
 	virtual ~Entity() = default;
 
 public:
 	bool IsInBound(int x, int y);
 
-	inline void SetTransformComponent(TransformComponent& transform) { m_Transform = transform; }
-	inline TransformComponent& GetTransformComponent() { return m_Transform; }
-	inline const TransformComponent& GetTransformComponent() const { return m_Transform; }
+	const glm::mat4 GetTransformationMatrix() const;
+	const glm::vec2 GetCenterPositionInScreenSpace() const;
+	
+	inline void SetPosition(const glm::vec3& translation) { m_Position = translation; }
+	inline glm::vec3& GetPosition() { return m_Position; }
 
-	inline void SetSpriteSheetComponent(SpriteSheetComponent& sprite) { m_Sprite = sprite; }
-	inline SpriteSheetComponent& GetSpriteSheetComponent() { return m_Sprite; }
-	inline const SpriteSheetComponent& GetSpriteSheetComponent() const { return m_Sprite; }
+	inline void SetScale(const glm::vec3& scale) { m_Scale = scale; }
+	inline glm::vec3& GetScale() { return m_Scale; }
 
-	inline glm::vec3& GetTranslation() { return m_Transform.Translation; }
-	inline glm::vec3& GetScale() { return m_Transform.Scale; }
+	inline void SetTexture(Texture* texture) { m_Texture = texture; }
+	inline Texture* GetTexture() { return m_Texture; }
 
-	inline void SetTranslation(const glm::vec3& translation) { m_Transform.Translation = translation; }
+	inline void SetColor(const Colors::RGBA& color) { m_Color = color; }
+	inline const Colors::RGBA& GetColor() { return m_Color; }
 
+	
 private:
-	TransformComponent m_Transform;
-	SpriteSheetComponent m_Sprite;
+	// Transform
+	glm::vec3 m_Position;
+	glm::vec3 m_Scale;
+	// Sprite
+	Texture* m_Texture;
+	Colors::RGBA m_Color;
 };

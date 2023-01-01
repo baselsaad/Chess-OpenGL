@@ -39,7 +39,7 @@ public:
 
 	void OnUpdateViewPort();
 
-	inline const glm::vec2 GetEntityLocation(int entityID) const { return m_Cells[entityID].ChessPiece->GetTransformComponent().GetCenterPositionInScreenSpace(); }
+	inline const glm::vec2 GetEntityLocation(int entityID) const { return m_Cells[entityID].ChessPiece->GetCenterPositionInScreenSpace(); }
 
 private:
 	const glm::vec2 GetRowAndColumn(double mouseX, double mouseY);
