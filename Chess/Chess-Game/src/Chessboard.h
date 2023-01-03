@@ -1,5 +1,5 @@
 #pragma once
-#include "ChessPieces\ChessPiece.h"
+class ChessPiece;
 
 struct Cell
 {
@@ -39,7 +39,7 @@ public:
 
 	void OnUpdateViewPort();
 
-	inline const glm::vec2 GetEntityLocation(int entityID) const { return m_Cells[entityID].ChessPiece->GetCenterPositionInScreenSpace(); }
+	const glm::vec2 GetEntityLocation(int entityID) const;
 
 private:
 	const glm::vec2 GetRowAndColumn(double mouseX, double mouseY);

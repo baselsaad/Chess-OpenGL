@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "OpenGL-Core.h"
 #include "Chessboard.h"
+#include "ChessPieces\ChessPiece.h"
 
 
 Chessboard::Chessboard(int rowsCount, int columnsCount)
@@ -57,7 +58,7 @@ void Chessboard::MoveEntityToCell(int entityID, const glm::vec2& newPosition)
 	glm::vec2 outRowColumn;
 	int outTargetCell = 0;
 	ComputeCorrectCellPosition(newPosition, outCellPosition, outRowColumn, outTargetCell);
-	ASSERT(outTargetCell >= 0 && outTargetCell < m_Cells.size(), "Invalid Entity ID!!");
+	ASSERT(outTargetCell >= 0 && outTargetCell < m_Cells.size(), "Invalid TargetCell Index!!");
 
 	// Translate Entity
 	auto& translation = entity->GetPosition();
@@ -112,8 +113,8 @@ const glm::vec2 Chessboard::GetRowAndColumn(double mouseX, double mouseY)
 	int rowIndex = mouseX / rowWidth;
 	int columnIndex = mouseY / colHeight;
 
-	int safeRowIndex = glm::min(m_Rows - 1 , rowIndex);
-	int safeColumnIndex = glm::min(m_Columns - 1 , columnIndex);
+	int safeRowIndex = glm::min(m_Rows - 1, rowIndex);
+	int safeColumnIndex = glm::min(m_Columns - 1, columnIndex);
 
 	return glm::vec2(safeRowIndex, safeColumnIndex);
 }
@@ -165,4 +166,9 @@ void Chessboard::OnUpdateViewPort()
 		translation.x += center.x - entityOrgin.x;
 		translation.y += center.y - entityOrgin.y;
 	}
+}
+
+const glm::vec2 Chessboard::GetEntityLocation(int entityID) const
+{
+	return m_Cells[entityID].ChessPiece->GetCenterPositionInScreenSpace();
 }

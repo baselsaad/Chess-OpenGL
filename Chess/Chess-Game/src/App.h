@@ -16,7 +16,6 @@ class Game;
 class Application
 {
 public:
-	using EventFuncType = std::function<void(Event&)>;
 	Application();
 	~Application();
 
@@ -31,10 +30,11 @@ public:
 
 private:
 	OpenGLWindow* m_Window;
-	PlayerInput m_PlayerInput;
 	Game* m_Game;
 
-	EventFuncType m_EventCallback;
+	PlayerInput m_PlayerInput;
+
+	std::function<void(Event&)> m_EventCallback;
 	DeltaTime m_DeltaTime;
 };
 

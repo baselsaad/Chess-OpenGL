@@ -1,6 +1,7 @@
 #pragma once
 #include "Chessboard.h"
 #include "Container.h"
+#include "Entity.h"
 
 class PlayerInput;
 class Event;
@@ -11,7 +12,6 @@ class VertexBufferLayout;
 class IndexBuffer;
 class Shader;
 class DeltaTime;
-class OpenGLWindow;
 class MouseButtonPressedEvent;
 class MouseButtonReleasedEvent;
 class MouseMoveEvent;
@@ -32,17 +32,7 @@ struct ChessTextures
 		White, Black
 	};
 
-	ChessTextures(const Color& color)
-		: SelectedColor(color == Color::Black ? "Black" : "White")
-		, Pawn("res/textures/" + SelectedColor + "Pawn.png")
-		, Bishop("res/textures/" + SelectedColor + "Bishop.png")
-		, Knight("res/textures/" + SelectedColor + "Knight.png")
-		, Rook("res/textures/" + SelectedColor + "Rook.png")
-		, Queen("res/textures/" + SelectedColor + "Queen.png")
-		, King("res/textures/" + SelectedColor + "King.png")
-	{
-	}
-
+	ChessTextures(const Color& color);
 };
 
 class Game

@@ -2,12 +2,9 @@
 #include "OpenGL-Core.h"
 #include "App.h"
 
-
 #include "Event.h"
 #include "Game.h"
-
 #include "Renderer\Defaults.h"
-
 #include "Utilities\Log.h"
 #include "Utilities\Debug.h"
 #include "Utilities\Timer.h"
@@ -15,6 +12,7 @@
 static bool s_Running = false;
 
 Application::Application()
+	: m_Game(nullptr)
 {
 	WindowData data;
 	data.Width = Defaults::WINDOW_WIDTH;
@@ -25,6 +23,8 @@ Application::Application()
 	m_Window->SetVsync(true);
 
 	Renderer::Init({ data.Width,data.Height });
+
+	Debug::Info("Width {}, Height {}", data.Width, data.Height);
 }
 
 Application::~Application()
@@ -36,8 +36,8 @@ Application::~Application()
 
 void Application::OnStart()
 {
-	SetupEventCallback();
 	s_Running = true;
+	SetupEventCallback();
 
 	m_PlayerInput.BindActionEvent(EventType::CloseWindow, this, &Application::OnClose);
 	m_PlayerInput.BindActionEvent(EventType::ResizeWindow, this, &Application::OnResizeWindow);
@@ -54,7 +54,7 @@ void Application::Run()
 		OnStart();
 	}
 
-	// OnUpdate (Game Loop)
+	// OnUpdate
 	while (s_Running)
 	{
 		m_DeltaTime.Update();
@@ -67,7 +67,7 @@ void Application::Run()
 		}
 		m_Window->Swap();
 
-		Debug::Log("Vsync: {}, FPS: {}, DrawCalls: {}", m_Window->IsVsyncOn(), m_DeltaTime.GetFramePerSecounds(), Renderer::GetDrawCalls());
+		//Debug::Log("Vsync: {}, FPS: {}, DrawCalls: {}", m_Window->IsVsyncOn(), m_DeltaTime.GetFramePerSecounds(), Renderer::GetDrawCalls());
 	}
 
 	// OnDestroy
@@ -91,6 +91,8 @@ void Application::OnResizeWindow(ResizeWindowEvent& event)
 	Renderer::UpdateViewport(event.GetWidth(), event.GetHeight());
 	m_Window->UpdateWindowSize(event.GetWidth(), event.GetHeight());
 	m_Game->OnUpdateViewport();
+
+	//Debug::Info("Resize: Width {}, Height {}",event.GetWidth(),event.GetHeight());
 }
 
 void Application::SetupEventCallback()

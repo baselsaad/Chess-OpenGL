@@ -35,7 +35,7 @@ OpenGLWindow::~OpenGLWindow()
 void OpenGLWindow::Clear()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void OpenGLWindow::Swap()
@@ -70,9 +70,9 @@ void OpenGLWindow::HandleErrorMessages()
 void OpenGLWindow::PrintGpuInformation()
 {
 	// GPU driver and OpenGL Information
-	Debug::Info("OpenGL Info:");
-	Debug::Info(">> Vendor: {0}", glGetString(GL_VENDOR));
-	Debug::Info(">> GPU: {0}", glGetString(GL_RENDERER));
-	Debug::Info(">> OpenGL-Version: {0}", glGetString(GL_VERSION));
-	Debug::Info(">> GLSL version: {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
+	Debug::Info("------------OpenGL Info------------------------");
+	Debug::Info(">> GPU: {}", glGetString(GL_RENDERER));
+	Debug::Info(">> OpenGL-Version: {}", glGetString(GL_VERSION));
+	Debug::Info(">> GLSL version: {}", glGetString(GL_SHADING_LANGUAGE_VERSION));
+	Debug::Info("-----------------------------------------------");
 }

@@ -2,11 +2,14 @@
 #include "glm/vec3.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+class Texture;
+namespace Colors { class RGBA; }
+
 class Entity
 {
 
 public:
-	Entity(const glm::vec3& position = { 1.0f, 1.0f, 1.0f }, const glm::vec3& scale ={ 1.0f, 1.0f, 1.0f });
+	Entity(const glm::vec3& position = { 1.0f, 1.0f, 1.0f }, const glm::vec3& scale = { 1.0f, 1.0f, 1.0f });
 	virtual ~Entity() = default;
 
 public:
@@ -14,7 +17,7 @@ public:
 
 	const glm::mat4 GetTransformationMatrix() const;
 	const glm::vec2 GetCenterPositionInScreenSpace() const;
-	
+
 	inline void SetPosition(const glm::vec3& translation) { m_Position = translation; }
 	inline glm::vec3& GetPosition() { return m_Position; }
 
@@ -27,7 +30,7 @@ public:
 	inline void SetColor(const Colors::RGBA& color) { m_Color = color; }
 	inline const Colors::RGBA& GetColor() { return m_Color; }
 
-	
+
 private:
 	// Transform
 	glm::vec3 m_Position;

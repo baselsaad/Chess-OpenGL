@@ -4,24 +4,19 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
-std::shared_ptr<spdlog::logger> Debug::s_Logger;
+std::shared_ptr< spdlog::logger> Debug::s_Logger;
 
-void Debug::Init()
+void Debug::Init(const char* consoleName)
 {
 
-#if DIST
+	#if DEBUG
+	spdlog::set_pattern("%^[%n] [%t] [%l]: %v%$");
+	#else
 	// (Date) (Thread) (LogLvel) [Message]
 	spdlog::set_pattern("%^[%d-%m-%Y %S:%M:%H] [%n] [%t] [%l]: %v%$");
-#else
-	spdlog::set_pattern("%^[%n] [%t] [%l]: %v%$");
-#endif
+	#endif
 
-	s_Logger = spdlog::stdout_color_mt("console");
+	s_Logger = spdlog::stdout_color_mt(consoleName);
 	s_Logger->set_level(spdlog::level::debug);
 }
 
-void Debug::ShutDown()
-{
-	spdlog::drop("console");
-	s_Logger.reset();
-}

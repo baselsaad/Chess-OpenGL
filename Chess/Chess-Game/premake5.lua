@@ -17,7 +17,8 @@ project "Chess-Game"
 
 	includedirs
 	{
-		"../OpenGL-Core/src",
+		"src/",
+		"../OpenGL-Core/src/",
 		"../OpenGL-Core/vendor",
 		"../OpenGL-Core/vendor/spdlog/include",
 		"../OpenGL-Core/%{IncludeDir.glm}",

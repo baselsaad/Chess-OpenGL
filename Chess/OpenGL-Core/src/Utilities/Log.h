@@ -7,8 +7,7 @@
 class Debug
 {
 public:
-	static void Init();
-	static void ShutDown();
+	static void Init(const char* consoleName);
 
 	template<typename...Args>
 	static void Log(const Args&... args)
@@ -41,10 +40,8 @@ public:
 	}
 
 private:
-	static std::shared_ptr<spdlog::logger> s_Logger;
-	inline static std::shared_ptr<spdlog::logger>& GetLogger() { return s_Logger; }
+	static std::shared_ptr< spdlog::logger> s_Logger;
+	inline static std::shared_ptr< spdlog::logger>& GetLogger() { return s_Logger; }
 };
-
-
 
 #define ASSERT_ERROR(...)		Debug::Error(__VA_ARGS__);

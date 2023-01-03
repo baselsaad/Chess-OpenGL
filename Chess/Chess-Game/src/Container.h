@@ -10,11 +10,11 @@ public:
 public:
 	void OnRender();
 
-	template<class T, typename ...Args>
+	template<typename ...Args>
 	ChessPiece* CreateNewEntity(Args... args) const
 	{
 		m_EntityCount++;
-		return (T*)&m_EntityPool.emplace_back(std::forward<Args>(args)...);
+		return &m_EntityPool.emplace_back(std::forward<Args>(args)...);
 	}
 
 private:
