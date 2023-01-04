@@ -131,10 +131,10 @@ void Game::OnUpdate(const DeltaTime& deltaTime)
 
 		for (int& i : s_DragDropData.PossibleMovesToDraw)
 		{
-			glm::vec2 position = m_Chessboard.GetCellScreenPosition(i);
-			glm::vec3 location(position.x + 10.0f, position.y + 10.0f, 1.0f);
+			glm::vec2 position2d = m_Chessboard.GetCellScreenPosition(i);
+			glm::vec3 position3d(position2d.x + 10.0f, position2d.y + 10.0f, 1.0f);
 
-			Renderer::DrawQuad(location, glm::vec3(xNewScale, yNewScale, 1.0f), &m_PossibleMovesTexture);
+			Renderer::DrawQuad(position3d, glm::vec3(xNewScale, yNewScale, 1.0f), &m_PossibleMovesTexture);
 		}
 	}
 

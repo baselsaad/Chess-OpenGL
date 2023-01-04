@@ -15,12 +15,9 @@ public:
 	std::vector<int> GetPossibleMoves(int entityID);
 
 	void OnUpdateViewPort();
-	
+
 	void GetChessPiece(double mouseX, double mouseY, int& outEntityID, ChessPiece** outEntity);
 	bool DoesCellHaveEntity(double mouseX, double mouseY);
-
-	const glm::vec2 GetRowAndColumnIndex(double mouseX, double mouseY);
-	const glm::vec2 GetCellScreenPosition(int rowIndex, int columnIndex);
 	const glm::vec2 GetCellScreenPosition(int cellIndex);
 
 	inline int GetRowsCount() const { return m_Rows; }
@@ -29,6 +26,8 @@ public:
 private:
 	//Another way to compute
 	void ComputeCorrectCellPosition(const glm::vec2& targetPosInScreenSpcae, glm::vec2& outCellPosition, glm::vec2& outRowColumn, int& outNewIndex);
+	const glm::vec2 GetRowAndColumnIndex(double mouseX, double mouseY);
+	const glm::vec2 GetCellScreenPosition(int rowIndex, int columnIndex);
 
 private:
 	int m_Rows;
