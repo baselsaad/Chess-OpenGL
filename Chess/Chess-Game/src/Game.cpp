@@ -12,7 +12,6 @@
 #include "ChessPieces\ChessPieceMovement.h"
 #include "ChessPieces\ChessPiece.h"
 
-
 ChessTextures::ChessTextures(const Color& color)
 	: SelectedColor(color == Color::Black ? "Black" : "White")
 	, Pawn("res/textures/" + SelectedColor + "Pawn.png")
@@ -24,11 +23,12 @@ ChessTextures::ChessTextures(const Color& color)
 {
 }
 
-
 // Mouse Drag and Drop
 struct DragAndDrop
 {
-	glm::vec2 OrginalPosition;
+	glm::vec3 OrginalPosition;
+	std::vector<int> PossibleMovesToDraw;
+
 	double PressedX = 0.0f;
 	double PressedY = 0.0f;
 	int EntityID = Chessboard::INVALID;
@@ -62,42 +62,42 @@ void Game::OnStart()
 
 void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& textures, int pawns, int rest)
 {
-	glm::vec3 defaultPosition(1.0f);
-	glm::vec3 defaultScale(75.0f, 75.0f, 1.0f);
+
 
 	for (int i = 0; i < 8; i++)
 	{
 		if (i == 0 || i == 7) //Rook
 		{
-			ChessPiece* rook = container.CreateNewEntity(defaultPosition, defaultScale);
+			// Create New Entity and bind the move function in constructur
+			ChessPiece* rook = container.CreateNewEntity(Defaults::DefaultPosition, Defaults::DefaultScale);
 			rook->SetTexture(&textures.Rook);
 
 			m_Chessboard.AddNewChessPiece(rook, i, rest);
 		}
 		else if (i == 1 || i == 6) //Knight
 		{
-			ChessPiece* knight = container.CreateNewEntity(defaultPosition, defaultScale);
+			ChessPiece* knight = container.CreateNewEntity(Defaults::DefaultPosition, Defaults::DefaultScale);
 			knight->SetTexture(&textures.Knight);
 
 			m_Chessboard.AddNewChessPiece(knight, i, rest);
 		}
 		else if (i == 2 || i == 5) //Bishop
 		{
-			ChessPiece* bishop = container.CreateNewEntity(defaultPosition, defaultScale);
+			ChessPiece* bishop = container.CreateNewEntity(Defaults::DefaultPosition, Defaults::DefaultScale);
 			bishop->SetTexture(&textures.Bishop);
 
 			m_Chessboard.AddNewChessPiece(bishop, i, rest);
 		}
 		else if (i == 3) // Queen
 		{
-			ChessPiece* queen = container.CreateNewEntity(defaultPosition, defaultScale);
+			ChessPiece* queen = container.CreateNewEntity(Defaults::DefaultPosition, Defaults::DefaultScale);
 			queen->SetTexture(&textures.Queen);
 
 			m_Chessboard.AddNewChessPiece(queen, i, rest);
 		}
 		else if (i == 4) //King
 		{
-			ChessPiece* king = container.CreateNewEntity(defaultPosition, defaultScale);
+			ChessPiece* king = container.CreateNewEntity(Defaults::DefaultPosition, Defaults::DefaultScale);
 			king->SetTexture(&textures.King);
 
 			m_Chessboard.AddNewChessPiece(king, i, rest);
@@ -107,7 +107,7 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 	// Pawns
 	for (int i = 0; i < 8; i++)
 	{
-		ChessPiece* pawn = container.CreateNewEntity(defaultPosition, defaultScale);
+		ChessPiece* pawn = container.CreateNewEntity(&ChessPieceMovement::PawnMovement, Defaults::DefaultPosition, Defaults::DefaultScale);
 		pawn->SetTexture(&textures.Pawn);
 
 		m_Chessboard.AddNewChessPiece(pawn, i, pawns);
@@ -125,6 +125,20 @@ void Game::OnUpdate(const DeltaTime& deltaTime)
 
 		// ChessPieces
 		m_EntityContainer.OnRender();
+
+		// DrawPossibleMoves
+		const float quadWidth = Renderer::GetViewport().x / m_Chessboard.GetRowsCount();
+		const float quadHeight = Renderer::GetViewport().y / m_Chessboard.GetColumnCount();
+
+		const float xNewScale = (quadWidth - 10.0f) / (Defaults::MAX_POSITION_OFFSET);
+		const float yNewScale = (quadHeight - 10.0f) / (Defaults::MAX_POSITION_OFFSET);
+		for (int& i : s_DragDropData.PossibleMovesToDraw)
+		{
+			glm::vec2 position = m_Chessboard.GetCellPosition(i);
+			glm::vec3 location(position.x + 5.0f, position.y + 5.0f, 1.0f);
+
+			Renderer::DrawQuad(location, glm::vec3(xNewScale, yNewScale, 1.0f), Colors::Red);
+		}
 	}
 }
 
@@ -166,7 +180,10 @@ void Game::OnMousePressed(MouseButtonPressedEvent& event)
 
 	// copy the location in case the move was invalid, so we set it back 
 	if (s_DragDropData.EntityID != Chessboard::INVALID)
+	{
 		s_DragDropData.OrginalPosition = m_Chessboard.GetEntityLocation(s_DragDropData.EntityID);
+		s_DragDropData.PossibleMovesToDraw = m_Chessboard.GetEntityPossibleMoves(s_DragDropData.EntityID);
+	}
 
 }
 
@@ -178,13 +195,14 @@ void Game::OnMouseReleased(MouseButtonReleasedEvent& event)
 		// target cell has allready entity, then move the seleceted entity to his orginal location
 		glm::vec2 targetLocation = m_Chessboard.CellHasEntity(entityLocation.x, entityLocation.y) ? s_DragDropData.OrginalPosition : entityLocation;
 
-		m_Chessboard.MoveEntityToCell(s_DragDropData.EntityID, targetLocation);
+		m_Chessboard.MoveEntityToNewCell(s_DragDropData.EntityID, targetLocation, s_DragDropData.OrginalPosition);
 	}
 
 	// reset
 	s_DragDropData.PressedX = 0.0f;
 	s_DragDropData.PressedY = 0.0f;
 	s_DragDropData.EntityID = Chessboard::INVALID;
+	s_DragDropData.PossibleMovesToDraw.clear();
 }
 
 void Game::OnMouseMove(MouseMoveEvent& event)
@@ -210,8 +228,8 @@ void Game::OnUpdateViewport()
 
 void Game::DrawBackgroundManually()
 {
-	const float quadWidth = Renderer::GetViewport().x / 8;
-	const float quadHeight = Renderer::GetViewport().y / 8;
+	const float quadWidth = Renderer::GetViewport().x / m_Chessboard.GetRowsCount();
+	const float quadHeight = Renderer::GetViewport().y / m_Chessboard.GetColumnCount();
 
 	const float xNewScale = quadWidth / (Defaults::MAX_POSITION_OFFSET);
 	const float yNewScale = quadHeight / (Defaults::MAX_POSITION_OFFSET);

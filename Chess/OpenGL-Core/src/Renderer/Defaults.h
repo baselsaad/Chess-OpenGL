@@ -2,6 +2,9 @@
 
 namespace Defaults
 {
+	static constexpr glm::vec3 DefaultPosition(1.0f);
+	static constexpr glm::vec3 DefaultScale(75.0f, 75.0f, 1.0f);
+
 	static constexpr int WINDOW_WIDTH = 700;
 	static constexpr int WINDOW_HEIGHT = 700;
 

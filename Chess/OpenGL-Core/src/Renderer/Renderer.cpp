@@ -25,6 +25,7 @@ Renderer* Renderer::Get()
 
 void Renderer::Init(const glm::vec2& viewport)
 {
+	ASSERT(s_Instance == nullptr, "Renderer should only be initialized once!!");
 	GLenum state = glewInit();
 	ASSERT(state == GLEW_OK, "glewInit should be called after a valid OpenGL rendering context has been created!!");
 
@@ -36,13 +37,10 @@ void Renderer::Init(const glm::vec2& viewport)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	if (s_Instance == nullptr)
-	{
-		s_Instance = new Renderer();
-		s_Instance->m_DrawCalls = 0;
-		s_Instance->m_Viewport = viewport;
-		s_Instance->CalculateProjectionViewMatrix();
-	}
+	s_Instance = new Renderer();
+	s_Instance->m_DrawCalls = 0;
+	s_Instance->m_Viewport = viewport;
+	s_Instance->CalculateProjectionViewMatrix();
 }
 
 void Renderer::ShutDown()
@@ -72,6 +70,16 @@ void Renderer::DrawQuad(const glm::mat4& transform, const Colors::RGBA& color)
 	Renderer::Get()->m_RenderData.ColorShader.SetUniform4f("u_Color", color);
 
 	Draw(Renderer::Get()->m_RenderData.VertexArray, Renderer::Get()->m_RenderData.IndexBuffer);
+}
+
+void Renderer::DrawQuad(const glm::vec3& position, const glm::vec3& scale, const Colors::RGBA& color)
+{
+	glm::mat4 transform =
+		glm::translate(glm::mat4(1.0f), position)
+		* glm::mat4(1.0f)
+		* glm::scale(glm::mat4(1.0f), scale);
+
+	DrawQuad(transform, color);
 }
 
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib)

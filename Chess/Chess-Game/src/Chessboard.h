@@ -7,7 +7,7 @@ struct Cell
 	int RowIndex = -1;
 	int ColIndex = -1;
 
-	inline void ResetData() 
+	inline void ResetData()
 	{
 		ChessPiece = nullptr;
 		RowIndex = -1;
@@ -27,25 +27,30 @@ public:
 	~Chessboard();
 
 public:
-	// TODO: Texture ref just for now, will change later when we move every thing to opengl core
 	void AddNewChessPiece(ChessPiece* entity, int rowIndex, int colIndex);
 	bool CellHasEntity(double mouseX, double mouseY);
 	int GetEntityID(double mouseX, double mouseY);
+	std::vector<int> GetEntityPossibleMoves(int entityID);
 
+	//Movement
 	void MoveEntityToCell(int entityID, const glm::vec2& newPosition);
-	void MoveEntityToCell(int entityID, int cellNum);
+	void MoveEntityToNewCell(int entityID, const glm::vec2& newPosition, const glm::vec3& orginalPosition);
 	void MoveEntityByOffset(const int& entityID, const float& xOffset, const float& yOffset);
-	void MoveEntityToNewPosition(const int entityID, const glm::vec3& positionOffset);
 
 	void OnUpdateViewPort();
 
-	const glm::vec2 GetEntityLocation(int entityID) const;
+	const glm::vec3 GetEntityLocation(int entityID) const;
 
-private:
 	const glm::vec2 GetRowAndColumn(double mouseX, double mouseY);
 	const glm::vec2 GetCellPosition(int row, int column);
-	//Another way to computer
-	void ComputeCorrectCellPosition(const glm::vec2& screenSpacePosition, glm::vec2& outCellPosition, glm::vec2& outRowColumn,int& outNewIndex);
+	const glm::vec2 GetCellPosition(int cellIndex);
+
+	inline int GetRowsCount() const { return m_Rows; }
+	inline int GetColumnCount() const { return m_Columns; }
+
+private:
+	//Another way to compute
+	void ComputeCorrectCellPosition(const glm::vec2& screenSpacePosition, glm::vec2& outCellPosition, glm::vec2& outRowColumn, int& outNewIndex);
 	int GetCellIndex(double mouseX, double mouseY);
 
 private:

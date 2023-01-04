@@ -23,12 +23,20 @@ void Chessboard::AddNewChessPiece(ChessPiece* entity, int rowIndex, int colIndex
 	int index = colIndex * m_Rows + rowIndex;
 	ASSERT(index >= 0 && index < m_Cells.size(), "Index is out of Range!!!");
 
-	entity->SetCurrentCell(index);
 	m_Cells[index].ChessPiece = entity;
 	m_Cells[index].RowIndex = rowIndex;
 	m_Cells[index].ColIndex = colIndex;
+	entity->SetRowIndex(rowIndex);
+	entity->SetColumnIndex(colIndex);
 
-	MoveEntityToCell(index, GetCellPosition(rowIndex + 1, colIndex + 1));
+	// Get Cell Center-Position
+	glm::vec2 newPosition = GetCellPosition(rowIndex + 1, colIndex + 1);
+
+	// Translate Entity
+	auto& translation = entity->GetPosition();
+	auto& entityOrgin = entity->GetCenterPositionInScreenSpace();
+	translation.x += newPosition.x - entityOrgin.x;
+	translation.y += newPosition.y - entityOrgin.y;
 }
 
 int Chessboard::GetEntityID(double mouseX, double mouseY)
@@ -40,6 +48,11 @@ int Chessboard::GetEntityID(double mouseX, double mouseY)
 		return Chessboard::INVALID;
 
 	return index;
+}
+
+std::vector<int> Chessboard::GetEntityPossibleMoves(int entityID)
+{
+	return m_Cells[entityID].ChessPiece->GetPossibleMoves(m_Rows);
 }
 
 bool Chessboard::CellHasEntity(double mouseX, double mouseY)
@@ -70,14 +83,44 @@ void Chessboard::MoveEntityToCell(int entityID, const glm::vec2& newPosition)
 	m_Cells[entityID].ResetData();
 
 	m_Cells[outTargetCell].ChessPiece = entity;
-	m_Cells[outTargetCell].RowIndex = outRowColumn.x;
-	m_Cells[outTargetCell].ColIndex = outRowColumn.y;
+	entity->SetRowIndex(outRowColumn.x);
+	entity->SetColumnIndex(outRowColumn.y);
 }
 
-void Chessboard::MoveEntityToCell(int entityID, int cellNum)
+void Chessboard::MoveEntityToNewCell(int entityID, const glm::vec2& newPosition, const glm::vec3& orginalPosition)
 {
+	ASSERT(entityID >= 0 && entityID < m_Cells.size(), "Invalid Entity ID!!");
 
-	//MoveEntityToCell(entityID, GetCellPosition(rowIndex + 1, colIndex + 1));
+	ChessPiece* entity = m_Cells[entityID].ChessPiece;
+
+	// Get Cell Center-Position
+	glm::vec2 outCellPosition;
+	glm::vec2 outRowColumn;
+	int outTargetCell = 0;
+	ComputeCorrectCellPosition(newPosition, outCellPosition, outRowColumn, outTargetCell);
+	std::vector<int> possibleMoves = entity->GetPossibleMoves(m_Rows);
+
+	for (int& i : possibleMoves)
+	{
+		if (i == outTargetCell)
+		{
+			// Translate Entity
+			auto& translation = entity->GetPosition();
+			auto& entityOrgin = entity->GetCenterPositionInScreenSpace();
+			translation.x += outCellPosition.x - entityOrgin.x;
+			translation.y += outCellPosition.y - entityOrgin.y;
+
+			// Add Entity to Cell and delete old one 
+			m_Cells[entityID].ResetData();
+
+			m_Cells[outTargetCell].ChessPiece = entity;
+			entity->SetRowIndex(outRowColumn.x);
+			entity->SetColumnIndex(outRowColumn.y);
+			return;
+		}
+	}
+
+	MoveEntityToCell(entityID, orginalPosition);
 }
 
 //TODO: Another way to compute
@@ -119,7 +162,7 @@ const glm::vec2 Chessboard::GetRowAndColumn(double mouseX, double mouseY)
 	return glm::vec2(safeRowIndex, safeColumnIndex);
 }
 
-const glm::vec2 Chessboard::GetCellPosition(int row, int column)
+const glm::vec2 Chessboard::GetCellPosition(int row, int column) // beginn from 1
 {
 	// width and height are the Top-Right Position of the first Cell in Screen Space
 	float rowWidth = Renderer::GetViewport().x / m_Rows;
@@ -136,6 +179,22 @@ const glm::vec2 Chessboard::GetCellPosition(int row, int column)
 	return glm::vec2(centerPosX, centerPosY);
 }
 
+const glm::vec2 Chessboard::GetCellPosition(int cellIndex)
+{
+	int row = cellIndex % m_Columns;
+	int col = cellIndex / m_Columns;
+
+	// width and height are the Top-Right Position of the first Cell in Screen Space
+	float rowWidth = Renderer::GetViewport().x / m_Rows;
+	float colHeight = Renderer::GetViewport().y / m_Columns;
+
+	// Top-Right Position of the selected cell (Screen Space)
+	float selectedRightPosition = (rowWidth * row);
+	float selectedTopPosition = (colHeight * col);
+
+	return glm::vec2(selectedRightPosition, selectedTopPosition);
+}
+
 void Chessboard::MoveEntityByOffset(const int& entityID, const float& xOffset, const float& yOffset)
 {
 	ASSERT(entityID >= 0 && entityID < m_Cells.size(), "Invalid Entity ID!!");
@@ -143,12 +202,6 @@ void Chessboard::MoveEntityByOffset(const int& entityID, const float& xOffset, c
 	auto& entityLocation = m_Cells[entityID].ChessPiece->GetPosition();
 	entityLocation.x += xOffset;
 	entityLocation.y += yOffset;
-}
-
-void Chessboard::MoveEntityToNewPosition(int entityID, const glm::vec3& positionOffset)
-{
-	ASSERT(entityID >= 0 && entityID < m_Cells.size(), "Invalid Entity ID!!");
-	m_Cells[entityID].ChessPiece->SetPosition(positionOffset);
 }
 
 void Chessboard::OnUpdateViewPort()
@@ -168,7 +221,8 @@ void Chessboard::OnUpdateViewPort()
 	}
 }
 
-const glm::vec2 Chessboard::GetEntityLocation(int entityID) const
+const glm::vec3 Chessboard::GetEntityLocation(int entityID) const
 {
 	return m_Cells[entityID].ChessPiece->GetCenterPositionInScreenSpace();
 }
+

@@ -67,7 +67,11 @@ void Application::Run()
 		}
 		m_Window->Swap();
 
-		//Debug::Log("Vsync: {}, FPS: {}, DrawCalls: {}", m_Window->IsVsyncOn(), m_DeltaTime.GetFramePerSecounds(), Renderer::GetDrawCalls());
+		Debug::Log("Vsync: {0}, FPS ({2} ms): {1}, DrawCalls: {3}", 
+			m_Window->IsVsyncOn(),
+			m_DeltaTime.GetFramePerSecounds(),
+			m_DeltaTime.GetMilliSeconds(),
+			Renderer::GetDrawCalls());
 	}
 
 	// OnDestroy
@@ -89,6 +93,7 @@ void Application::OnClose(CloseWindowEvent& event)
 void Application::OnResizeWindow(ResizeWindowEvent& event)
 {
 	Renderer::UpdateViewport(event.GetWidth(), event.GetHeight());
+	
 	m_Window->UpdateWindowSize(event.GetWidth(), event.GetHeight());
 	m_Game->OnUpdateViewport();
 

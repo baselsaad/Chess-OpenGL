@@ -4,8 +4,9 @@
 
 void DeltaTime::Update()
 {
-	float now = (float)glfwGetTime();
-	m_FrameTime = now - m_LastFrameTime;
-	m_LastFrameTime = now;
+	// DeltaTime
+	float now = glfwGetTime();
+	m_FrameTime = (float)(now - m_LastFrameTime);
+	m_LastFrameTime = glfwGetTime();
 }
 

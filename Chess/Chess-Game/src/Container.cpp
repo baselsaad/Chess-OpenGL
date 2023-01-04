@@ -12,17 +12,13 @@ EntityContainer::EntityContainer()
 
 EntityContainer::~EntityContainer()
 {
+
 }
 
 void EntityContainer::OnRender()
 {
 	for (auto& entity : m_EntityPool)
 	{
-		const Texture* texture = entity.GetTexture();
-
-		if (texture)
-			Renderer::DrawQuad(entity.GetTransformationMatrix(), texture);
-		else
-			Renderer::DrawQuad(entity.GetTransformationMatrix(), entity.GetColor());
+		Renderer::DrawQuad(entity.GetTransformationMatrix(), entity.GetTexture());
 	}
 }
