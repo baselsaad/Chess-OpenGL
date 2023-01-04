@@ -16,7 +16,7 @@ public:
 	bool IsInBound(int x, int y);
 
 	const glm::mat4 GetTransformationMatrix() const;
-	const glm::vec3 GetCenterPositionInScreenSpace() const;
+	const glm::vec3 GetPositionCenteredInScreenSpace() const;
 
 	inline void SetPosition(const glm::vec3& translation) { m_Position = translation; }
 	inline glm::vec3& GetPosition() { return m_Position; }

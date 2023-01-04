@@ -38,7 +38,7 @@ public:
 
 	static void DrawQuad(const glm::mat4& transform, const Texture* texture);
 	static void DrawQuad(const glm::mat4& transform, const Colors::RGBA& color);
-	static void DrawQuad(const glm::vec3& position,const glm::vec3& scale, const Colors::RGBA& color);
+	static void DrawQuad(const glm::vec3& position,const glm::vec3& scale, const Texture* texture);
 
 	static void ResetStats();
 	static int GetDrawCalls();

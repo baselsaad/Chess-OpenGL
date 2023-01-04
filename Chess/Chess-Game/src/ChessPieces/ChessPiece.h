@@ -10,7 +10,12 @@ public:
 	virtual ~ChessPiece() = default;
 
 public:
+
+	/*
+	* returns Array of Possible Cells that can move to
+	*/
 	const std::vector<int> GetPossibleMoves(const int& maxRows) const;
+
 	inline void SetMovementFunction(const FuncType& func) { m_GetPossibleMoves = func; };
 
 	inline void SetRowIndex(int rowIndex) { m_RowIndex = rowIndex; }

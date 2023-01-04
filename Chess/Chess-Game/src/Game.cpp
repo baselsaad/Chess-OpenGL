@@ -32,11 +32,13 @@ struct DragAndDrop
 	double PressedX = 0.0f;
 	double PressedY = 0.0f;
 	int EntityID = Chessboard::INVALID;
+	ChessPiece* EntityPtr = nullptr;
 };
 static DragAndDrop s_DragDropData;
 
 Game::Game(int height, int width)
 	: m_BackgroundTexture("res/textures/background.png")
+	, m_PossibleMovesTexture("res/textures/PossibleMoves.png")
 	, m_BackgroundEntity()
 	, m_WhitePieces(ChessTextures::Color::White)
 	, m_BlackPieces(ChessTextures::Color::Black)
@@ -62,8 +64,6 @@ void Game::OnStart()
 
 void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& textures, int pawns, int rest)
 {
-
-
 	for (int i = 0; i < 8; i++)
 	{
 		if (i == 0 || i == 7) //Rook
@@ -117,29 +117,29 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 
 void Game::OnUpdate(const DeltaTime& deltaTime)
 {
-	// Rendering
+	// Background
+	Renderer::DrawQuad(m_BackgroundEntity.GetTransformationMatrix(), m_BackgroundEntity.GetTexture());
+	//DrawBackgroundManually();
+
+	// DrawPossibleMoves
 	{
-		// Background
-		Renderer::DrawQuad(m_BackgroundEntity.GetTransformationMatrix(), m_BackgroundEntity.GetTexture());
-		//DrawBackgroundManually();
-
-		// ChessPieces
-		m_EntityContainer.OnRender();
-
-		// DrawPossibleMoves
 		const float quadWidth = Renderer::GetViewport().x / m_Chessboard.GetRowsCount();
 		const float quadHeight = Renderer::GetViewport().y / m_Chessboard.GetColumnCount();
 
-		const float xNewScale = (quadWidth - 10.0f) / (Defaults::MAX_POSITION_OFFSET);
-		const float yNewScale = (quadHeight - 10.0f) / (Defaults::MAX_POSITION_OFFSET);
+		const float xNewScale = (quadWidth - 20.0f) / (Defaults::MAX_POSITION_OFFSET);
+		const float yNewScale = (quadHeight - 20.0f) / (Defaults::MAX_POSITION_OFFSET);
+
 		for (int& i : s_DragDropData.PossibleMovesToDraw)
 		{
-			glm::vec2 position = m_Chessboard.GetCellPosition(i);
-			glm::vec3 location(position.x + 5.0f, position.y + 5.0f, 1.0f);
+			glm::vec2 position = m_Chessboard.GetCellScreenPosition(i);
+			glm::vec3 location(position.x + 10.0f, position.y + 10.0f, 1.0f);
 
-			Renderer::DrawQuad(location, glm::vec3(xNewScale, yNewScale, 1.0f), Colors::Red);
+			Renderer::DrawQuad(location, glm::vec3(xNewScale, yNewScale, 1.0f), &m_PossibleMovesTexture);
 		}
 	}
+
+	// ChessPieces
+	m_EntityContainer.OnRender();
 }
 
 void Game::OnDestroy()
@@ -161,8 +161,8 @@ void Game::AdjustBackgroundImage()
 	const float windowCenterY = viewport.y / 2.0f;
 
 	// center of the quad
-	float quadCenterX = m_BackgroundEntity.GetCenterPositionInScreenSpace().x;
-	float quadCenterY = m_BackgroundEntity.GetCenterPositionInScreenSpace().y;
+	float quadCenterX = m_BackgroundEntity.GetPositionCenteredInScreenSpace().x;
+	float quadCenterY = m_BackgroundEntity.GetPositionCenteredInScreenSpace().y;
 
 	m_BackgroundEntity.GetPosition().x += windowCenterX - quadCenterX;
 	m_BackgroundEntity.GetPosition().y += windowCenterY - quadCenterY;
@@ -176,45 +176,49 @@ void Game::OnMousePressed(MouseButtonPressedEvent& event)
 
 	//Debug::Log("X: {0}, Y: {1}", s_PressedX, s_PressedY);
 
-	s_DragDropData.EntityID = m_Chessboard.GetEntityID(s_DragDropData.PressedX, s_DragDropData.PressedY);
+	m_Chessboard.GetChessPiece(s_DragDropData.PressedX, s_DragDropData.PressedY, s_DragDropData.EntityID, &s_DragDropData.EntityPtr);
 
 	// copy the location in case the move was invalid, so we set it back 
-	if (s_DragDropData.EntityID != Chessboard::INVALID)
+	if (s_DragDropData.EntityPtr != nullptr)
 	{
-		s_DragDropData.OrginalPosition = m_Chessboard.GetEntityLocation(s_DragDropData.EntityID);
-		s_DragDropData.PossibleMovesToDraw = m_Chessboard.GetEntityPossibleMoves(s_DragDropData.EntityID);
+		s_DragDropData.OrginalPosition = s_DragDropData.EntityPtr->GetPositionCenteredInScreenSpace();
+		s_DragDropData.PossibleMovesToDraw = m_Chessboard.GetPossibleMoves(s_DragDropData.EntityID);
 	}
 
 }
 
 void Game::OnMouseReleased(MouseButtonReleasedEvent& event)
 {
-	if (s_DragDropData.EntityID != Chessboard::INVALID)
+	if (s_DragDropData.EntityPtr != nullptr)
 	{
-		glm::vec2 entityLocation = m_Chessboard.GetEntityLocation(s_DragDropData.EntityID);
+		glm::vec3 entityLocation = s_DragDropData.EntityPtr->GetPositionCenteredInScreenSpace();
 		// target cell has allready entity, then move the seleceted entity to his orginal location
-		glm::vec2 targetLocation = m_Chessboard.CellHasEntity(entityLocation.x, entityLocation.y) ? s_DragDropData.OrginalPosition : entityLocation;
+		glm::vec3 targetLocation = m_Chessboard.DoesCellHaveEntity(entityLocation.x, entityLocation.y) ? s_DragDropData.OrginalPosition : entityLocation;
 
-		m_Chessboard.MoveEntityToNewCell(s_DragDropData.EntityID, targetLocation, s_DragDropData.OrginalPosition);
+		m_Chessboard.MoveToNewCell(s_DragDropData.EntityID, targetLocation, s_DragDropData.OrginalPosition);
 	}
 
 	// reset
 	s_DragDropData.PressedX = 0.0f;
 	s_DragDropData.PressedY = 0.0f;
 	s_DragDropData.EntityID = Chessboard::INVALID;
+	s_DragDropData.EntityPtr = nullptr;
 	s_DragDropData.PossibleMovesToDraw.clear();
 }
 
 void Game::OnMouseMove(MouseMoveEvent& event)
 {
-	if (s_DragDropData.EntityID == Chessboard::INVALID)
+	if (s_DragDropData.EntityPtr == nullptr)
 		return;
 
 	const glm::vec2& viewport = Renderer::GetViewport();
 
 	float xOffset = event.GetXPosition() - s_DragDropData.PressedX;
 	float yOffset = (viewport.y - event.GetYPosition()) - s_DragDropData.PressedY;
-	m_Chessboard.MoveEntityByOffset(s_DragDropData.EntityID, xOffset, yOffset);
+
+	auto& position = s_DragDropData.EntityPtr->GetPosition();
+	position.x += xOffset;
+	position.y += yOffset;
 
 	s_DragDropData.PressedX = event.GetXPosition();
 	s_DragDropData.PressedY = viewport.y - event.GetYPosition();
@@ -244,7 +248,7 @@ void Game::DrawBackgroundManually()
 		for (int x = 0; x < 8; x++)
 		{
 			if ((y + x) % 2 == 0)
-				color = Colors::Orange;
+				color = Colors::Black;
 			else
 				color = Colors::White;
 

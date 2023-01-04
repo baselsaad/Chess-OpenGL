@@ -31,7 +31,7 @@ const glm::mat4 Entity::GetTransformationMatrix() const
 		* glm::scale(glm::mat4(1.0f), m_Scale); //Scale
 }
 
-const glm::vec3 Entity::GetCenterPositionInScreenSpace() const
+const glm::vec3 Entity::GetPositionCenteredInScreenSpace() const
 {
 	return glm::vec3
 	(

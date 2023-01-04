@@ -63,6 +63,7 @@ private:
 	ChessTextures m_WhitePieces;
 	ChessTextures m_BlackPieces;
 	Texture m_BackgroundTexture;
+	Texture m_PossibleMovesTexture;
 
 	Entity m_BackgroundEntity;
 	Chessboard m_Chessboard;

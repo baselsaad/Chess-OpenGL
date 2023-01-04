@@ -1,23 +1,6 @@
 #pragma once
 class ChessPiece;
 
-struct Cell
-{
-	ChessPiece* ChessPiece = nullptr;
-	int RowIndex = -1;
-	int ColIndex = -1;
-
-	inline void ResetData()
-	{
-		ChessPiece = nullptr;
-		RowIndex = -1;
-		ColIndex = -1;
-	}
-
-	inline bool CellHasEntity() const { return ChessPiece != nullptr; }
-
-};
-
 class Chessboard
 {
 public:
@@ -28,34 +11,28 @@ public:
 
 public:
 	void AddNewChessPiece(ChessPiece* entity, int rowIndex, int colIndex);
-	bool CellHasEntity(double mouseX, double mouseY);
-	int GetEntityID(double mouseX, double mouseY);
-	std::vector<int> GetEntityPossibleMoves(int entityID);
-
-	//Movement
-	void MoveEntityToCell(int entityID, const glm::vec2& newPosition);
-	void MoveEntityToNewCell(int entityID, const glm::vec2& newPosition, const glm::vec3& orginalPosition);
-	void MoveEntityByOffset(const int& entityID, const float& xOffset, const float& yOffset);
+	void MoveToNewCell(int entityID, const glm::vec2& newPosition, const glm::vec3& orginalPosition);
+	std::vector<int> GetPossibleMoves(int entityID);
 
 	void OnUpdateViewPort();
+	
+	void GetChessPiece(double mouseX, double mouseY, int& outEntityID, ChessPiece** outEntity);
+	bool DoesCellHaveEntity(double mouseX, double mouseY);
 
-	const glm::vec3 GetEntityLocation(int entityID) const;
-
-	const glm::vec2 GetRowAndColumn(double mouseX, double mouseY);
-	const glm::vec2 GetCellPosition(int row, int column);
-	const glm::vec2 GetCellPosition(int cellIndex);
+	const glm::vec2 GetRowAndColumnIndex(double mouseX, double mouseY);
+	const glm::vec2 GetCellScreenPosition(int rowIndex, int columnIndex);
+	const glm::vec2 GetCellScreenPosition(int cellIndex);
 
 	inline int GetRowsCount() const { return m_Rows; }
 	inline int GetColumnCount() const { return m_Columns; }
 
 private:
 	//Another way to compute
-	void ComputeCorrectCellPosition(const glm::vec2& screenSpacePosition, glm::vec2& outCellPosition, glm::vec2& outRowColumn, int& outNewIndex);
-	int GetCellIndex(double mouseX, double mouseY);
+	void ComputeCorrectCellPosition(const glm::vec2& targetPosInScreenSpcae, glm::vec2& outCellPosition, glm::vec2& outRowColumn, int& outNewIndex);
 
 private:
 	int m_Rows;
 	int m_Columns;
 
-	std::vector<Cell> m_Cells; // contains only a pointer to an existing entity
+	std::vector<ChessPiece*> m_Cells; // contains only a pointer to an existing entity
 };
