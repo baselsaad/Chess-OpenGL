@@ -18,7 +18,7 @@ public:
 	const glm::mat4 GetTransformationMatrix() const;
 	const glm::vec3 GetPositionCenteredInScreenSpace() const;
 
-	inline void SetPosition(const glm::vec3& translation) { m_Position = translation; }
+	inline void SetPosition(const glm::vec3& position) { m_Position = position; }
 	inline glm::vec3& GetPosition() { return m_Position; }
 
 	inline void SetScale(const glm::vec3& scale) { m_Scale = scale; }
@@ -30,6 +30,7 @@ public:
 	inline void SetColor(const Colors::RGBA& color) { m_Color = color; }
 	inline const Colors::RGBA& GetColor() { return m_Color; }
 
+	inline void SetTransform(const glm::vec3& position, const glm::vec3& scale) { m_Position = position; m_Scale = scale; }
 
 private:
 	// Transform

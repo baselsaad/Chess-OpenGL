@@ -2,15 +2,16 @@
 #include "OpenGL-Core.h"
 #include "Game.h"
 
-#include "Utilities\DeltaTime.h"
 #include "Renderer\Defaults.h"
+#include "Utilities\DeltaTime.h"
 #include "Utilities\Log.h"
 #include "Utilities\Debug.h"
 #include "Utilities\Timer.h"	
 #include "Event.h"
 #include "PlayerInput.h"
-#include "ChessPieces\ChessPieceMovement.h"
+
 #include "ChessPieces\ChessPiece.h"
+#include "ChessPieces\Pawn.h"
 
 ChessTextures::ChessTextures(const Color& color)
 	: SelectedColor(color == Color::Black ? "Black" : "White")
@@ -69,35 +70,40 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 		if (i == 0 || i == 7) //Rook
 		{
 			// Create New Entity and bind the move function in constructur
-			ChessPiece* rook = container.CreateNewEntity(Defaults::DefaultPosition, Defaults::DefaultScale);
+			ChessPiece* rook = container.CreateNewEntity<ChessPiece>();
+			rook->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
 			rook->SetTexture(&textures.Rook);
 
 			m_Chessboard.AddNewChessPiece(rook, i, rest);
 		}
 		else if (i == 1 || i == 6) //Knight
 		{
-			ChessPiece* knight = container.CreateNewEntity(Defaults::DefaultPosition, Defaults::DefaultScale);
+			ChessPiece* knight = container.CreateNewEntity<ChessPiece>();
+			knight->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
 			knight->SetTexture(&textures.Knight);
 
 			m_Chessboard.AddNewChessPiece(knight, i, rest);
 		}
 		else if (i == 2 || i == 5) //Bishop
 		{
-			ChessPiece* bishop = container.CreateNewEntity(Defaults::DefaultPosition, Defaults::DefaultScale);
+			ChessPiece* bishop = container.CreateNewEntity<ChessPiece>();
+			bishop->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
 			bishop->SetTexture(&textures.Bishop);
 
 			m_Chessboard.AddNewChessPiece(bishop, i, rest);
 		}
 		else if (i == 3) // Queen
 		{
-			ChessPiece* queen = container.CreateNewEntity(Defaults::DefaultPosition, Defaults::DefaultScale);
+			ChessPiece* queen = container.CreateNewEntity<ChessPiece>();
+			queen->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
 			queen->SetTexture(&textures.Queen);
 
 			m_Chessboard.AddNewChessPiece(queen, i, rest);
 		}
 		else if (i == 4) //King
 		{
-			ChessPiece* king = container.CreateNewEntity(Defaults::DefaultPosition, Defaults::DefaultScale);
+			ChessPiece* king = container.CreateNewEntity<ChessPiece>();
+			king->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
 			king->SetTexture(&textures.King);
 
 			m_Chessboard.AddNewChessPiece(king, i, rest);
@@ -107,7 +113,8 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 	// Pawns
 	for (int i = 0; i < 8; i++)
 	{
-		ChessPiece* pawn = container.CreateNewEntity(&ChessPieceMovement::PawnMovement, Defaults::DefaultPosition, Defaults::DefaultScale);
+		Pawn* pawn = container.CreateNewEntity<Pawn>();
+		pawn->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
 		pawn->SetTexture(&textures.Pawn);
 
 		m_Chessboard.AddNewChessPiece(pawn, i, pawns);

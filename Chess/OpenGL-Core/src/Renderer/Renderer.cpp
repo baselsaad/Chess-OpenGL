@@ -3,29 +3,46 @@
 
 #include "Defaults.h"
 
-// Manage life time
-static Renderer* s_Instance = nullptr;
+static int s_DrawCalls = 0;
+static struct RenderData* s_Data = nullptr;
 
-RenderData::RenderData()
-	: VetexBuffer(Defaults::Positions, Defaults::PositionsSize)
-	, IndexBuffer(Defaults::Indices, Defaults::IndicesCount)
-	, TextureShader("res/shaders/Texture.shader")
-	, ColorShader("res/shaders/Color.shader")
+struct RenderData
 {
-	Layout.Push<float>(2);
-	Layout.Push<float>(2);
-	VertexArray.AddBuffer(VetexBuffer, Layout);
-}
+	VertexArray VertexArray;
+	VertexBuffer VetexBuffer;
+	VertexBufferLayout Layout;
+	IndexBuffer IndexBuffer;
 
-Renderer* Renderer::Get()
-{
-	ASSERT(s_Instance != nullptr, "Renderer should be Initialized first!!");
-	return s_Instance;
-}
+	Shader TextureShader;
+	Shader ColorShader;
+
+	glm::vec2 Viewport;
+	glm::mat4 ProjectionView;
+
+	RenderData(int width, int height)
+		: VetexBuffer(Defaults::Positions, Defaults::PositionsSize)
+		, IndexBuffer(Defaults::Indices, Defaults::IndicesCount)
+		, TextureShader("res/shaders/Texture.shader")
+		, ColorShader("res/shaders/Color.shader")
+		, Viewport(width, height)
+	{
+		Layout.Push<float>(2);
+		Layout.Push<float>(2);
+		VertexArray.AddBuffer(VetexBuffer, Layout);
+
+		CalculateProjectionViewMatrix();
+	}
+
+	void CalculateProjectionViewMatrix()
+	{
+		const glm::mat4 proj = glm::ortho(0.0f, Viewport.x, 0.0f, Viewport.y, -1.0f, 1.0f);
+		ProjectionView = proj * glm::mat4(1.0f); // proj * view (Camera Pos(1.0f,1.0f))
+	}
+};
 
 void Renderer::Init(const glm::vec2& viewport)
 {
-	ASSERT(s_Instance == nullptr, "Renderer should only be initialized once!!");
+	ASSERT(s_Data == nullptr, "Renderer should only be initialized once!!");
 	GLenum state = glewInit();
 	ASSERT(state == GLEW_OK, "glewInit should be called after a valid OpenGL rendering context has been created!!");
 
@@ -37,39 +54,37 @@ void Renderer::Init(const glm::vec2& viewport)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	s_Instance = new Renderer();
-	s_Instance->m_DrawCalls = 0;
-	s_Instance->m_Viewport = viewport;
-	s_Instance->CalculateProjectionViewMatrix();
+	s_Data = new RenderData(viewport.x, viewport.y);
+	s_DrawCalls = 0;
 }
 
 void Renderer::ShutDown()
 {
-	delete s_Instance;
+	delete s_Data;
 }
 
 void Renderer::DrawQuad(const glm::mat4& transform, const Texture* texture)
 {
-	glm::mat4 mvp = Renderer::Get()->m_ProjectionView * transform;
+	glm::mat4 mvp = s_Data->ProjectionView * transform;
 
-	Renderer::Get()->m_RenderData.TextureShader.Bind();
+	s_Data->TextureShader.Bind();
 	texture->Bind(0);
 
-	Renderer::Get()->m_RenderData.TextureShader.SetUniformMat4f("u_MVP", mvp);
-	Renderer::Get()->m_RenderData.TextureShader.SetUniform1i("u_Texture", 0);
+	s_Data->TextureShader.SetUniformMat4f("u_MVP", mvp);
+	s_Data->TextureShader.SetUniform1i("u_Texture", 0);
 
-	Draw(Renderer::Get()->m_RenderData.VertexArray, Renderer::Get()->m_RenderData.IndexBuffer);
+	Draw(s_Data->VertexArray, s_Data->IndexBuffer);
 }
 
 void Renderer::DrawQuad(const glm::mat4& transform, const Colors::RGBA& color)
 {
-	glm::mat4 mvp = Renderer::Get()->m_ProjectionView * transform;
+	glm::mat4 mvp = s_Data->ProjectionView * transform;
 
-	Renderer::Get()->m_RenderData.ColorShader.Bind();
-	Renderer::Get()->m_RenderData.ColorShader.SetUniformMat4f("u_MVP", mvp);
-	Renderer::Get()->m_RenderData.ColorShader.SetUniform4f("u_Color", color);
+	s_Data->ColorShader.Bind();
+	s_Data->ColorShader.SetUniformMat4f("u_MVP", mvp);
+	s_Data->ColorShader.SetUniform4f("u_Color", color);
 
-	Draw(Renderer::Get()->m_RenderData.VertexArray, Renderer::Get()->m_RenderData.IndexBuffer);
+	Draw(s_Data->VertexArray, s_Data->IndexBuffer);
 }
 
 void Renderer::DrawQuad(const glm::vec3& position, const glm::vec3& scale, const Texture* texture)
@@ -87,40 +102,34 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib)
 	ib.Bind();
 	va.Bind();
 	glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
-	Renderer::Get()->m_DrawCalls++;
+	s_DrawCalls++;
 }
 
 int Renderer::GetDrawCalls()
 {
-	return Renderer::Get()->m_DrawCalls;
+	return s_DrawCalls;
 }
 
 void Renderer::ResetStats()
 {
-	Renderer::Get()->m_DrawCalls = 0;
-}
-
-void Renderer::CalculateProjectionViewMatrix()
-{
-	const glm::mat4 proj = glm::ortho(0.0f, m_Viewport.x, 0.0f, m_Viewport.y, -1.0f, 1.0f);
-	m_ProjectionView = proj * glm::mat4(1.0f); // proj * view (Camera Pos(1.0f,1.0f))
+	s_DrawCalls = 0;
 }
 
 void Renderer::UpdateViewport(int width, int height)
 {
 	glViewport(0, 0, width, height);
 
-	Renderer::Get()->m_Viewport.x = width;
-	Renderer::Get()->m_Viewport.y = height;
-	Renderer::Get()->CalculateProjectionViewMatrix();
+	s_Data->Viewport.x = width;
+	s_Data->Viewport.y = height;
+	s_Data->CalculateProjectionViewMatrix();
 }
 
 const glm::vec2& Renderer::GetViewport()
 {
-	return Renderer::Get()->m_Viewport;
+	return s_Data->Viewport;
 }
 
 const glm::mat4& Renderer::GetProjectionView()
 {
-	return Renderer::Get()->m_ProjectionView;
+	return s_Data->ProjectionView;
 }

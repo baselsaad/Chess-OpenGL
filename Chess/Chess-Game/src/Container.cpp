@@ -2,7 +2,7 @@
 #include "OpenGL-Core.h"
 #include "Container.h"
 
-#include "ChessPieces\ChessPiece.h"
+#include "Entity.h"
 
 EntityContainer::EntityContainer()
 	: m_EntityCount(0)
@@ -12,13 +12,14 @@ EntityContainer::EntityContainer()
 
 EntityContainer::~EntityContainer()
 {
-
+	for (Entity* entity : m_EntityPool)
+		delete entity;
 }
 
 void EntityContainer::OnRender()
 {
-	for (auto& entity : m_EntityPool)
+	for (Entity* entity : m_EntityPool)
 	{
-		Renderer::DrawQuad(entity.GetTransformationMatrix(), entity.GetTexture());
+		Renderer::DrawQuad(entity->GetTransformationMatrix(), entity->GetTexture());
 	}
 }
