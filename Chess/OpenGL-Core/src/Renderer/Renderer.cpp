@@ -65,6 +65,8 @@ void Renderer::ShutDown()
 
 void Renderer::DrawQuad(const glm::mat4& transform, const Texture* texture)
 {
+	ASSERT(s_Data , "Renderer should only be initialized !!");
+
 	glm::mat4 mvp = s_Data->ProjectionView * transform;
 
 	s_Data->TextureShader.Bind();
@@ -78,6 +80,7 @@ void Renderer::DrawQuad(const glm::mat4& transform, const Texture* texture)
 
 void Renderer::DrawQuad(const glm::mat4& transform, const Colors::RGBA& color)
 {
+	ASSERT(s_Data , "Renderer should only be initialized !!");
 	glm::mat4 mvp = s_Data->ProjectionView * transform;
 
 	s_Data->ColorShader.Bind();
@@ -99,6 +102,7 @@ void Renderer::DrawQuad(const glm::vec3& position, const glm::vec3& scale, const
 
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib)
 {
+	ASSERT(s_Data , "Renderer should only be initialized !!");
 	ib.Bind();
 	va.Bind();
 	glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
@@ -117,6 +121,8 @@ void Renderer::ResetStats()
 
 void Renderer::UpdateViewport(int width, int height)
 {
+	ASSERT(s_Data , "Renderer should only be initialized !!");
+
 	glViewport(0, 0, width, height);
 
 	s_Data->Viewport.x = width;
@@ -126,10 +132,14 @@ void Renderer::UpdateViewport(int width, int height)
 
 const glm::vec2& Renderer::GetViewport()
 {
+	ASSERT(s_Data , "Renderer should only be initialized !!");
+
 	return s_Data->Viewport;
 }
 
 const glm::mat4& Renderer::GetProjectionView()
 {
+	ASSERT(s_Data , "Renderer should only be initialized !!");
+
 	return s_Data->ProjectionView;
 }
