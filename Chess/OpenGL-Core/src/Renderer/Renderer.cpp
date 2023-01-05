@@ -102,7 +102,6 @@ void Renderer::DrawQuad(const glm::vec3& position, const glm::vec3& scale, const
 
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib)
 {
-	ASSERT(s_Data , "Renderer should only be initialized !!");
 	ib.Bind();
 	va.Bind();
 	glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
