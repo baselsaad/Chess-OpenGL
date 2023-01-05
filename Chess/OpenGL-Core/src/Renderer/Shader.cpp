@@ -56,7 +56,7 @@ void Shader::SetUniformMat4f(const char* name, const glm::mat4& matrix)
 Shaders Shader::ParaseShader(const std::string& filePath)
 {
 	std::ifstream stream(filePath);
-	ASSERT(stream.is_open(), "Can not find the shader file path: "+filePath);
+	ASSERT(stream.is_open(), "Can not find the shader file path: " + filePath);
 
 	enum class ParsingState
 	{
@@ -103,8 +103,8 @@ uint32_t Shader::CompileShader(uint32_t type, const std::string& source)
 		char* message = (char*)alloca(length * sizeof(char));
 		glGetShaderInfoLog(id, length, &length, message);
 
-		std::cout << "Shader Compile Error in " << (type == GL_FRAGMENT_SHADER ? "fragment Shader: " : "vertex Shader: ") << std::endl;
-		std::cout << message;
+		Debug::Error("Shader Compile Error in {0}", (type == GL_FRAGMENT_SHADER ? "fragment Shader: " : "vertex Shader: "));
+		Debug::Error(message);
 		glDeleteShader(id);
 
 		ASSERT(false, "failed to compile the shader!");
@@ -145,7 +145,7 @@ GLint Shader::GetUniformLocation(const char* name)
 
 	GLint location = glGetUniformLocation(m_RendererID, name);
 	if (location == -1)
-		std::cout << "Warning Uniform " << name << " does not exist!!\n";
+		Debug::Error("Uniform {0} does not exsist!", name);
 
 	m_ShaderCache[name] = location;
 	return location;

@@ -2,25 +2,16 @@
 #include "OpenGL-Core.h"
 #include "Pawn.h"
 
-constexpr int INVALID_MOVE = -1;
+#include "Chessboard.h"
 
-int GetCell(const int& targetRow, const int& targetColumn, const int& maxRows)
-{
-	//Edge Case
-	if (targetRow < 0 || targetRow >= maxRows || targetColumn < 0 || targetColumn >= maxRows)
-		return INVALID_MOVE;
-
-	return targetColumn * maxRows + targetRow;
-}
-
-const std::vector<int> Pawn::GetPossibleMoves(const int& maxRows) const
+const std::vector<int> Pawn::GetPossibleMoves(const int& maxRows, const Chessboard& board) const
 {
 	std::vector<int> outMoves;
 	outMoves.reserve(3);
 
-	outMoves.emplace_back(GetCell(m_RowIndex, m_ColumnIndex + 1, maxRows)); // first move forward
-	outMoves.emplace_back(GetCell(m_RowIndex + 1, m_ColumnIndex + 1, maxRows)); // Attack Move TOP-RIGHT
-	outMoves.emplace_back(GetCell(m_RowIndex - 1, m_ColumnIndex + 1, maxRows)); // Attack Move TOP-LEFT
+	outMoves.emplace_back(GetValidCell(m_RowIndex, m_ColumnIndex + 1, maxRows)); // first move forward
+	outMoves.emplace_back(GetValidCell(m_RowIndex + 1, m_ColumnIndex + 1, maxRows)); // Attack Move TOP-RIGHT
+	outMoves.emplace_back(GetValidCell(m_RowIndex - 1, m_ColumnIndex + 1, maxRows)); // Attack Move TOP-LEFT
 
 	return outMoves;
 }

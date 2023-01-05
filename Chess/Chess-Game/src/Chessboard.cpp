@@ -59,7 +59,7 @@ void Chessboard::GetChessPiece(double mouseX, double mouseY, int& outPieceID, Ch
 
 std::vector<int> Chessboard::GetPossibleMoves(int entityID)
 {
-	return m_Cells[entityID]->GetPossibleMoves(m_Rows);
+	return m_Cells[entityID]->GetPossibleMoves(m_Rows, *this);
 }
 
 bool Chessboard::DoesCellHaveEntity(double mouseX, double mouseY)
@@ -82,7 +82,7 @@ void Chessboard::MoveToNewCell(int entityID, const glm::vec2& newPosition, const
 	glm::vec2 outRowColumn;
 	int outTargetCell = 0;
 	ComputeCorrectCellPosition(newPosition, outCellPosition, outRowColumn, outTargetCell);
-	std::vector<int> possibleMoves = entity->GetPossibleMoves(m_Rows);
+	std::vector<int> possibleMoves = entity->GetPossibleMoves(m_Rows, *this);
 
 	for (int& i : possibleMoves)
 	{

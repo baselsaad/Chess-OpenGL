@@ -138,6 +138,9 @@ void Game::OnUpdate(const DeltaTime& deltaTime)
 
 		for (int& i : s_DragDropData.PossibleMovesToDraw)
 		{
+			if (i == Chessboard::INVALID)
+				continue;
+
 			glm::vec2 position2d = m_Chessboard.GetCellScreenPosition(i);
 			glm::vec3 position3d(position2d.x + 10.0f, position2d.y + 10.0f, 1.0f);
 

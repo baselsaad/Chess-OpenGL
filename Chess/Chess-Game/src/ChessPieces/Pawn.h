@@ -6,5 +6,5 @@ class Pawn : public ChessPiece
 {
 
 public:
-	virtual const std::vector<int> GetPossibleMoves(const int& maxRows) const override;
+	virtual const std::vector<int> GetPossibleMoves(const int& maxRows, const Chessboard& board) const override;
 };
