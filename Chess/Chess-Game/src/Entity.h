@@ -32,6 +32,9 @@ public:
 
 	inline void SetTransform(const glm::vec3& position, const glm::vec3& scale) { m_Position = position; m_Scale = scale; }
 
+	inline bool IsActive() const { return m_Active; }
+	inline void SetActive(bool active) { m_Active = active; }
+
 protected:
 	// Transform
 	glm::vec3 m_Position;
@@ -39,4 +42,6 @@ protected:
 	// Sprite
 	Texture* m_Texture;
 	Colors::RGBA m_Color;
+
+	bool m_Active;
 };

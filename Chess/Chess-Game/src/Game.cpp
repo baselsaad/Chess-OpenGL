@@ -188,9 +188,8 @@ void Game::AdjustBackgroundImage()
 void Game::OnMousePressed(MouseButtonPressedEvent& event)
 {
 	// event.GetYPosition() will get position from TOP-LEFT, viewport.y - event.GetYPosition will get from BOTTOM-LEFT
-	double yPos = Renderer::GetViewport().y - event.GetYPosition();
 	int& outEntityID = s_DragDropData.EntityID;
-	s_DragDropData.EntityPtr = m_Chessboard.GetChessPiece(event.GetXPosition(), yPos, outEntityID);
+	s_DragDropData.EntityPtr = m_Chessboard.GetChessPiece(event.GetXPosition(), event.GetYPosition(), outEntityID);
 
 	// copy the location in case the move was invalid, so we set it back 
 	if (s_DragDropData.EntityPtr != nullptr)
@@ -205,10 +204,7 @@ void Game::OnMouseReleased(MouseButtonReleasedEvent& event)
 {
 	if (s_DragDropData.EntityPtr != nullptr)
 	{
-		glm::vec3 entityLocation = s_DragDropData.EntityPtr->GetPositionCenteredInScreenSpace();
-		// target cell has allready entity, then move the seleceted entity to his orginal location back
-		glm::vec3 targetLocation = m_Chessboard.DoesCellHavePiece(entityLocation.x, entityLocation.y) ? s_DragDropData.OrginalPosition : entityLocation;
-
+		glm::vec2 targetLocation(event.GetXPosition(), event.GetYPosition());
 		m_Chessboard.MoveToNewCell(s_DragDropData.EntityID, targetLocation, s_DragDropData.OrginalPosition);
 	}
 
@@ -223,13 +219,7 @@ void Game::OnMouseMove(MouseMoveEvent& event)
 	if (s_DragDropData.EntityPtr == nullptr)
 		return;
 
-	double xOffset = event.GetXPosition();
-	double yOffset = (Renderer::GetViewport().y - event.GetYPosition());
-
-	auto& position = s_DragDropData.EntityPtr->GetPosition();
-	auto& orginPosition = s_DragDropData.EntityPtr->GetPositionCenteredInScreenSpace();
-	position.x += (xOffset - orginPosition.x);
-	position.y += (yOffset - orginPosition.y);
+	s_DragDropData.EntityPtr->OnDragToNewPosition({ event.GetXPosition(), event.GetYPosition() });
 }
 
 void Game::OnUpdateViewport()

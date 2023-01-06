@@ -88,7 +88,9 @@ bool Chessboard::DoesCellHavePiece(double mouseX, double mouseY) const
 
 bool Chessboard::DoesCellHavePiece(int cellIndex) const
 {
-	ASSERT(cellIndex >= 0 && cellIndex < m_Cells.size(), "Index is out of Range!!!");
+	if (cellIndex < 0 || cellIndex > m_Cells.size())
+		return true; // return true because do not want to move to this invalid cell, TODO: fix later (another way)
+
 	return m_Cells[cellIndex] != nullptr;
 }
 
@@ -112,8 +114,15 @@ void Chessboard::MoveToNewCell(int entityID, const glm::vec2& newPosition, const
 			// Translate Entity
 			entity->OnMoveToNewPosition(glm::vec2(outCellPosition.x, outCellPosition.y));
 
-			// Add Entity to Cell
+			
+			// Clear Orginal Position
 			m_Cells[entityID] = nullptr;
+
+			// Kill
+			if (m_Cells[outTargetCell] != nullptr)
+			{
+				m_Cells[outTargetCell]->SetActive(false);
+			}
 			m_Cells[outTargetCell] = entity;
 			entity->SetRowIndex(outRowColumn.x);
 			entity->SetColumnIndex(outRowColumn.y);
@@ -173,7 +182,7 @@ const glm::vec2 Chessboard::GetCellScreenPosition(int row, int column)
 
 const glm::vec2 Chessboard::GetCellScreenPosition(int cellIndex)
 {
-	ASSERT(cellIndex >= 0 && cellIndex < m_Cells.size() , "Index is out of range!");
+	ASSERT(cellIndex >= 0 && cellIndex < m_Cells.size(), "Index is out of range!");
 
 	int row = cellIndex % m_Columns;
 	int col = cellIndex / m_Columns;

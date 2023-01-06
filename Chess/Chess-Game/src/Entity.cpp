@@ -9,6 +9,7 @@ Entity::Entity(const glm::vec3& position, const glm::vec3& scale)
 	, m_Scale(scale)
 	, m_Texture(nullptr)
 	, m_Color()
+	, m_Active(true)
 {
 }
 

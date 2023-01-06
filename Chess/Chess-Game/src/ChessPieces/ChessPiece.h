@@ -4,88 +4,27 @@ class Chessboard;
 
 namespace ChessPieceUtil
 {
-	struct ArrayListConstIterator : public std::iterator<std::input_iterator_tag, int8_t>
-	{
-		using ValueType = int8_t;
-		using PointerType = const ValueType*;
-		using RefrenceType = const ValueType&;
-		PointerType m_Ptr;
-
-		ArrayListConstIterator(PointerType ptr)
-			: m_Ptr(ptr)
-		{
-		}
-
-		ArrayListConstIterator& operator++ ()
-		{
-			m_Ptr++;
-			return *this;
-		}
-
-		ArrayListConstIterator operator++ (int)
-		{
-			ArrayListConstIterator it = *this;
-			++(*this);
-			return it;
-		}
-
-		ArrayListConstIterator& operator-- ()
-		{
-			m_Ptr--;
-			return *this;
-		}
-
-		ArrayListConstIterator operator-- (int)
-		{
-			ArrayListConstIterator it = *this;
-			--(*this);
-			return it;
-		}
-
-		RefrenceType operator[] (int index)
-		{
-			return *(m_Ptr + index);
-		}
-
-		PointerType operator->()
-		{
-			return m_Ptr;
-		}
-
-		RefrenceType operator* ()
-		{
-			return *m_Ptr;
-		}
-
-		bool operator== (const ArrayListConstIterator& other) const
-		{
-			return m_Ptr == other.m_Ptr;
-		}
-
-		bool operator!= (const ArrayListConstIterator& other) const
-		{
-			return !(*this == other);
-		}
-	};
-
 	// Costum stack Array to avoid Heap-Allocations every frame using std::vector
 	struct Array
 	{
 		// maximum number of squares that a piece can potentially move to
-		static constexpr int MAX_POSSIBLE_CELLS_TO_MOVE = 30;
+		static constexpr int MAX_CELLS = 30;
 
-		std::array<int8_t, MAX_POSSIBLE_CELLS_TO_MOVE> MovesArray;
+		std::array<int8_t, MAX_CELLS> MovesArray;
 		int Count = 0;
 
+		using Iterator = std::array<int8_t, MAX_CELLS>::iterator;
+		using ConstIterator = std::array<int8_t, MAX_CELLS>::const_iterator;
+
 		Array()
-			: MovesArray(std::array<int8_t, MAX_POSSIBLE_CELLS_TO_MOVE>())
+			: MovesArray(std::array<int8_t, MAX_CELLS>())
 		{
 		}
 
 		Array(const Array& other)
 		{
 			// no need to Copy the whole array, only the valid
-			std::copy(other.begin(), other.end(), &MovesArray[0]);
+			std::copy(other.begin(), other.end(), MovesArray.begin());
 			Count = other.Count;
 		}
 
@@ -99,14 +38,24 @@ namespace ChessPieceUtil
 			Count = 0;
 		}
 
-		ArrayListConstIterator begin() const
+		Iterator begin()
 		{
-			return ArrayListConstIterator(&MovesArray[0]);
+			return MovesArray.begin();
 		}
 
-		ArrayListConstIterator end() const
+		ConstIterator begin() const
 		{
-			return ArrayListConstIterator(&MovesArray[0] + Count);
+			return MovesArray.begin();
+		}
+
+		Iterator end()
+		{
+			return MovesArray.begin() + Count;
+		}
+
+		ConstIterator end() const
+		{
+			return MovesArray.begin() + Count;
 		}
 
 	};

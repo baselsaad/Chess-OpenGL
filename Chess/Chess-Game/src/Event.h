@@ -1,6 +1,8 @@
 #pragma once
 #include <GLFW/glfw3.h>
 
+class Renderer;
+
 #define BIND_FUN(obj, fun)											\
 [&] (auto&&... args)												\
 {																	\
@@ -82,8 +84,10 @@ public:
 
 	inline MouseButtonKey GetButtonType() { return m_ButtonType; }
 
-	inline double GetXPosition() { return m_XPosition; }
-	inline double GetYPosition() { return m_YPosition; }
+	inline double GetXPosition() const { return m_XPosition; }
+
+	// from BOTTOM_LEFT not TOP_LEFT
+	inline double GetYPosition() const { return Renderer::GetViewport().y - m_YPosition; } 
 
 private:
 	MouseButtonKey m_ButtonType;
@@ -132,7 +136,8 @@ public:
 	}
 
 	inline double GetXPosition() const { return m_XPosition; }
-	inline double GetYPosition() const { return m_YPosition; }
+	// from BOTTOM_LEFT not TOP_LEFT
+	inline double GetYPosition() const { return Renderer::GetViewport().y - m_YPosition; } 
 
 	virtual EventType GetEventType() override
 	{
