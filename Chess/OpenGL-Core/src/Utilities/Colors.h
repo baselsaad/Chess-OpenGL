@@ -35,7 +35,7 @@ namespace Colors
 	};
 
 
-	static const RGBA Red{ 0.77f, 0.12f, 0.23f};				//#C41E3A
+	static const RGBA Red{ 0.77f, 0.12f, 0.23f };				//#C41E3A
 	static const RGBA Dark_Magenta{ 0.64f, 0.19f, 0.79f };		//#A330C9
 	static const RGBA Orange{ 0.89f, 0.49f, 0.04f };			//#FF7C0A
 	static const RGBA Dark_Cyan{ 0.20f, 0.58f, 0.50f };			//#33937F
@@ -49,6 +49,8 @@ namespace Colors
 	static const RGBA Tan{ 0.78f, 0.61f, 0.43f };				//#C69B6D
 	static const RGBA White{ 1.00f, 1.00f, 1.00f };				//#FFFFFF
 	static const RGBA Black{ 0.00f, 0.00f, 0.00f };				//#000000
+
+	static const RGBA HighLightColor{ 0.77f, 0.12f, 0.23f, 0.4f };
 
 	const std::vector<RGBA> ColorsArray =
 	{

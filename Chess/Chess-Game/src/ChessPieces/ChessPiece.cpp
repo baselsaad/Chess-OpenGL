@@ -10,6 +10,22 @@ ChessPiece::ChessPiece(const glm::vec3& position, const glm::vec3& scale)
 {
 }
 
+void ChessPiece::OnMoveToNewPosition(const glm::vec2& newPosition)
+{
+	m_FirstMove = false;
+
+	auto entityOrgin = GetPositionCenteredInScreenSpace();
+	m_Position.x += newPosition.x - entityOrgin.x;
+	m_Position.y += newPosition.y - entityOrgin.y;
+}
+
+void ChessPiece::OnDragToNewPosition(const glm::vec2& newPosition)
+{
+	auto entityOrgin = GetPositionCenteredInScreenSpace();
+	m_Position.x += newPosition.x - entityOrgin.x;
+	m_Position.y += newPosition.y - entityOrgin.y;
+}
+
 int ChessPiece::GetValidCell(const int& targetRow, const int& targetColumn, const int& maxRows)
 {
 	//Edge Case

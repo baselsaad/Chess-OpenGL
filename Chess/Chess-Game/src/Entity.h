@@ -3,7 +3,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 class Texture;
-namespace Colors { class RGBA; }
+namespace Colors { struct RGBA; }
 
 class Entity
 {
@@ -32,7 +32,7 @@ public:
 
 	inline void SetTransform(const glm::vec3& position, const glm::vec3& scale) { m_Position = position; m_Scale = scale; }
 
-private:
+protected:
 	// Transform
 	glm::vec3 m_Position;
 	glm::vec3 m_Scale;

@@ -100,6 +100,16 @@ void Renderer::DrawQuad(const glm::vec3& position, const glm::vec3& scale, const
 	DrawQuad(transform, texture);
 }
 
+void Renderer::DrawQuad(const glm::vec3& position, const glm::vec3& scale, const Colors::RGBA& color)
+{
+	glm::mat4 transform =
+		glm::translate(glm::mat4(1.0f), position)
+		* glm::mat4(1.0f)
+		* glm::scale(glm::mat4(1.0f), scale);
+
+	DrawQuad(transform, color);
+}
+
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib)
 {
 	ib.Bind();

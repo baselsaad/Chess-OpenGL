@@ -37,7 +37,7 @@ void Chessboard::AddNewChessPiece(ChessPiece* entity, int rowIndex, int colIndex
 	translation.y += newPosition.y - entityOrgin.y;
 }
 
-void Chessboard::GetChessPiece(double mouseX, double mouseY, int& outPieceID, ChessPiece** outPiecePtr)
+ChessPiece* Chessboard::GetChessPiece(double mouseX, double mouseY, int& outPieceID)
 {
 	const auto& indecis = GetRowAndColumnIndex(mouseX, mouseY);
 	const float& rowIndex = indecis.x;
@@ -49,26 +49,49 @@ void Chessboard::GetChessPiece(double mouseX, double mouseY, int& outPieceID, Ch
 	if (m_Cells[index] == nullptr)
 	{
 		outPieceID = Chessboard::INVALID;
-		*outPiecePtr = nullptr;
-		return;
+		return nullptr;
 	}
 
 	outPieceID = index;
-	*outPiecePtr = m_Cells[index];
+	return m_Cells[index];
+}
+
+const ChessPiece* Chessboard::GetChessPiece(double mouseX, double mouseY) const
+{
+	const auto& indecis = GetRowAndColumnIndex(mouseX, mouseY);
+	const float& rowIndex = indecis.x;
+	const float& columnIndex = indecis.y;
+	int index = (int)(columnIndex * m_Rows + rowIndex);
+
+	if (index <  0 && index > m_Cells.size())
+		return nullptr;
+
+
+	return m_Cells[index];
+}
+
+const ChessPiece* Chessboard::GetChessPiece(int cellIndex) const
+{
+	if (cellIndex <  0 && cellIndex > m_Cells.size())
+		return nullptr;
+
+	return m_Cells[cellIndex];
 }
 
 std::vector<int> Chessboard::GetPossibleMoves(int entityID)
 {
-	return m_Cells[entityID]->GetPossibleMoves(m_Rows, *this);
+	return m_Cells[entityID]->GetPossibleMoves(*this);
 }
 
-bool Chessboard::DoesCellHaveEntity(double mouseX, double mouseY)
+bool Chessboard::DoesCellHavePiece(double mouseX, double mouseY) const
 {
-	int unUsedEntityID = 0;
-	ChessPiece* ptr = nullptr;
-	GetChessPiece(mouseX, mouseY, unUsedEntityID, &ptr);
+	return GetChessPiece(mouseX, mouseY) != nullptr;
+}
 
-	return ptr != nullptr;
+bool Chessboard::DoesCellHavePiece(int cellIndex) const
+{
+	ASSERT(cellIndex >= 0 && cellIndex < m_Cells.size(), "Index is out of Range!!!");
+	return m_Cells[cellIndex] != nullptr;
 }
 
 void Chessboard::MoveToNewCell(int entityID, const glm::vec2& newPosition, const glm::vec3& orginalPosition)
@@ -82,17 +105,14 @@ void Chessboard::MoveToNewCell(int entityID, const glm::vec2& newPosition, const
 	glm::vec2 outRowColumn;
 	int outTargetCell = 0;
 	ComputeCorrectCellPosition(newPosition, outCellPosition, outRowColumn, outTargetCell);
-	std::vector<int> possibleMoves = entity->GetPossibleMoves(m_Rows, *this);
+	std::vector<int> possibleMoves = entity->GetPossibleMoves(*this);
 
 	for (int& i : possibleMoves)
 	{
 		if (i == outTargetCell)
 		{
 			// Translate Entity
-			auto& translation = entity->GetPosition();
-			auto& entityOrgin = entity->GetPositionCenteredInScreenSpace();
-			translation.x += outCellPosition.x - entityOrgin.x;
-			translation.y += outCellPosition.y - entityOrgin.y;
+			entity->OnMoveToNewPosition(glm::vec2(outCellPosition.x, outCellPosition.y));
 
 			// Add Entity to Cell
 			m_Cells[entityID] = nullptr;
@@ -105,11 +125,7 @@ void Chessboard::MoveToNewCell(int entityID, const glm::vec2& newPosition, const
 
 	// Move back 
 	ComputeCorrectCellPosition(orginalPosition, outCellPosition, outRowColumn, outTargetCell);
-	// Translate Entity
-	auto& translation = entity->GetPosition();
-	auto& entityOrgin = entity->GetPositionCenteredInScreenSpace();
-	translation.x += outCellPosition.x - entityOrgin.x;
-	translation.y += outCellPosition.y - entityOrgin.y;
+	entity->OnDragToNewPosition(glm::vec2(outCellPosition.x, outCellPosition.y));
 }
 
 //TODO: Another way to compute
@@ -126,7 +142,7 @@ void Chessboard::ComputeCorrectCellPosition(const glm::vec2& targetPosInScreenSp
 	outCellPosition.y = center.y;
 }
 
-const glm::vec2 Chessboard::GetRowAndColumnIndex(double mouseX, double mouseY)
+const glm::vec2 Chessboard::GetRowAndColumnIndex(double mouseX, double mouseY) const
 {
 	float rowWidth = Renderer::GetViewport().x / m_Rows;
 	float colHeight = Renderer::GetViewport().y / m_Columns;
@@ -181,12 +197,7 @@ void Chessboard::OnUpdateViewPort()
 			continue;
 
 		const glm::vec2 center = GetCellScreenPosition(piece->GetRowIndex(), piece->GetColumnIndex());
-
-		auto& translation = piece->GetPosition();
-		auto& entityOrgin = piece->GetPositionCenteredInScreenSpace();
-
-		translation.x += center.x - entityOrgin.x;
-		translation.y += center.y - entityOrgin.y;
+		piece->OnDragToNewPosition(center);
 	}
 }
 
