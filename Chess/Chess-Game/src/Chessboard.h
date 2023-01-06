@@ -1,5 +1,5 @@
 #pragma once
-class ChessPiece;
+#include "ChessPieces\ChessPiece.h"
 
 class Chessboard
 {
@@ -12,7 +12,7 @@ public:
 public:
 	void AddNewChessPiece(ChessPiece* entity, int rowIndex, int colIndex);
 	void MoveToNewCell(int entityID, const glm::vec2& newPosition, const glm::vec3& orginalPosition);
-	std::vector<int> GetPossibleMoves(int entityID);
+	const ChessPieceUtil::Array GetPossibleMoves(int entityID);
 
 	void OnUpdateViewPort();
 

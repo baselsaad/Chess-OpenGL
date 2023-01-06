@@ -4,13 +4,12 @@
 
 #include "Chessboard.h"
 
-const std::vector<int> Pawn::GetPossibleMoves(const Chessboard& board) const
+const ChessPieceUtil::Array Pawn::GetPossibleMoves(const Chessboard& board) const
 {
-	int maxRows = board.GetRowsCount();
-	std::vector<int> outMoves;
-	outMoves.reserve(4);
+	ChessPieceUtil::Array outMoves;
 
-	int moveDir = m_PieceColor == PieceColor::Black ? moveDir = -1 : +1;
+	int maxRows = board.GetRowsCount();
+	int moveDir = m_PieceColor == PieceColor::Black ? moveDir = -1 : 1;
 
 	// Forward Move
 	{
@@ -18,14 +17,14 @@ const std::vector<int> Pawn::GetPossibleMoves(const Chessboard& board) const
 
 		if (!board.DoesCellHavePiece(oneStepForward))
 		{
-			outMoves.emplace_back(oneStepForward);
+			outMoves.Add(oneStepForward);
 
 			// Tow-Step Forward Move
 			if (m_FirstMove)
 			{
 				int towStepForward = GetValidCell(m_RowIndex, m_ColumnIndex + (2 * moveDir), maxRows);
 				if (!board.DoesCellHavePiece(towStepForward))
-					outMoves.emplace_back(towStepForward);
+					outMoves.Add(towStepForward);
 			}
 		}
 	}
@@ -40,10 +39,10 @@ const std::vector<int> Pawn::GetPossibleMoves(const Chessboard& board) const
 
 		// if it has diffrent color then it is valid to attack 
 		if (topLeftPiece && topLeftPiece->GetPieceColor() != m_PieceColor)
-			outMoves.emplace_back(topLeft);
+			outMoves.Add(topLeft);
 
 		if (topRightPiece && topRightPiece->GetPieceColor() != m_PieceColor)
-			outMoves.emplace_back(topRight);
+			outMoves.Add(topRight);
 	}
 
 

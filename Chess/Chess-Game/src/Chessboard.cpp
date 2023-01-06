@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "OpenGL-Core.h"
 #include "Chessboard.h"
-#include "ChessPieces\ChessPiece.h"
-
 
 Chessboard::Chessboard(int rowsCount, int columnsCount)
 	: m_Rows(rowsCount)
@@ -63,7 +61,7 @@ const ChessPiece* Chessboard::GetChessPiece(double mouseX, double mouseY) const
 	const float& columnIndex = indecis.y;
 	int index = (int)(columnIndex * m_Rows + rowIndex);
 
-	if (index <  0 && index > m_Cells.size())
+	if (index <  0 || index > m_Cells.size())
 		return nullptr;
 
 
@@ -72,13 +70,13 @@ const ChessPiece* Chessboard::GetChessPiece(double mouseX, double mouseY) const
 
 const ChessPiece* Chessboard::GetChessPiece(int cellIndex) const
 {
-	if (cellIndex <  0 && cellIndex > m_Cells.size())
+	if (cellIndex <  0 || cellIndex > m_Cells.size())
 		return nullptr;
 
 	return m_Cells[cellIndex];
 }
 
-std::vector<int> Chessboard::GetPossibleMoves(int entityID)
+const ChessPieceUtil::Array Chessboard::GetPossibleMoves(int entityID)
 {
 	return m_Cells[entityID]->GetPossibleMoves(*this);
 }
@@ -105,9 +103,9 @@ void Chessboard::MoveToNewCell(int entityID, const glm::vec2& newPosition, const
 	glm::vec2 outRowColumn;
 	int outTargetCell = 0;
 	ComputeCorrectCellPosition(newPosition, outCellPosition, outRowColumn, outTargetCell);
-	std::vector<int> possibleMoves = entity->GetPossibleMoves(*this);
+	ChessPieceUtil::Array possibleMoves = entity->GetPossibleMoves(*this);
 
-	for (int& i : possibleMoves)
+	for (const auto& i : possibleMoves)
 	{
 		if (i == outTargetCell)
 		{
@@ -175,6 +173,8 @@ const glm::vec2 Chessboard::GetCellScreenPosition(int row, int column)
 
 const glm::vec2 Chessboard::GetCellScreenPosition(int cellIndex)
 {
+	ASSERT(cellIndex >= 0 && cellIndex < m_Cells.size() , "Index is out of range!");
+
 	int row = cellIndex % m_Columns;
 	int col = cellIndex / m_Columns;
 
