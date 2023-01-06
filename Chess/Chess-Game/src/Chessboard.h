@@ -9,30 +9,33 @@ public:
 	Chessboard(int rowsCount = 8, int columnsCount = 8);
 	~Chessboard();
 
-public:
-	void AddNewChessPiece(ChessPiece* entity, int rowIndex, int colIndex);
-	void MoveToNewCell(int entityID, const glm::vec2& newPosition, const glm::vec3& orginalPosition);
-	const ChessPieceUtil::Array GetPossibleMoves(int entityID);
+	enum class CellState
+	{
+		EmptyCell, OccupiedCell, NotValidCell
+	};
 
+public:
 	void OnUpdateViewPort();
+
+	void AddNewChessPiece(ChessPiece* entity, int rowIndex, int colIndex);
+	bool MoveToNewCell(int entityID, const glm::vec2& newPosition);
+	const Array GetPossibleMoves(int entityID);
 
 	ChessPiece* GetChessPiece(double mouseX, double mouseY, int& outEntityID);
 	const ChessPiece* GetChessPiece(double mouseX, double mouseY) const;
 	const ChessPiece* GetChessPiece(int cellIndex) const;
-	
-	bool DoesCellHavePiece(double mouseX, double mouseY) const;
-	bool DoesCellHavePiece(int cellIndex) const;
+	const CellState GetCellState(int cellIndex) const;
 
-	const glm::vec2 GetCellScreenPosition(int cellIndex);
+	glm::vec2 CalcCellScreenPosition(int cellIndex) const;
+	glm::vec2 CalcCellScreenPosition(int rowIndex, int columnIndex) const;
 
 	inline int GetRowsCount() const { return m_Rows; }
 	inline int GetColumnCount() const { return m_Columns; }
 
 private:
-	//Another way to compute
-	void ComputeCorrectCellPosition(const glm::vec2& targetPosInScreenSpcae, glm::vec2& outCellPosition, glm::vec2& outRowColumn, int& outNewIndex);
-	const glm::vec2 GetRowAndColumnIndex(double mouseX, double mouseY) const;
-	const glm::vec2 GetCellScreenPosition(int rowIndex, int columnIndex);
+	void MoveToNewCell(ChessPiece* entity, int targetCell, const glm::vec2& rowAndColumnIndex);
+	glm::vec2 GetRowAndColumnIndex(double mouseX, double mouseY) const;
+	
 
 private:
 	int m_Rows;

@@ -26,7 +26,7 @@ void ChessPiece::OnDragToNewPosition(const glm::vec2& newPosition)
 	m_Position.y += newPosition.y - entityOrgin.y;
 }
 
-int ChessPiece::GetValidCell(const int& targetRow, const int& targetColumn, const int& maxRows)
+int ChessPiece::GetCellIndex(const int& targetRow, const int& targetColumn, const int& maxRows)
 {
 	//Edge Case
 	if (targetRow < 0 || targetRow >= maxRows || targetColumn < 0 || targetColumn >= maxRows)

@@ -4,26 +4,28 @@
 
 #include "Chessboard.h"
 
-const ChessPieceUtil::Array Pawn::GetPossibleMoves(const Chessboard& board) const
+const Array Pawn::GetPossibleMoves(const Chessboard& board) const
 {
-	ChessPieceUtil::Array outMoves;
+	using State = Chessboard::CellState;
+
+	Array outMoves;
 
 	int maxRows = board.GetRowsCount();
 	int moveDir = m_PieceColor == PieceColor::Black ? moveDir = -1 : 1;
 
 	// Forward Move
 	{
-		int oneStepForward = GetValidCell(m_RowIndex, m_ColumnIndex + (1 * moveDir), maxRows);
+		int oneStepForward = GetCellIndex(m_RowIndex, m_ColumnIndex + (1 * moveDir), maxRows);
 
-		if (!board.DoesCellHavePiece(oneStepForward))
+		if (board.GetCellState(oneStepForward) == State::EmptyCell)
 		{
 			outMoves.Add(oneStepForward);
 
 			// Tow-Step Forward Move
 			if (m_FirstMove)
 			{
-				int towStepForward = GetValidCell(m_RowIndex, m_ColumnIndex + (2 * moveDir), maxRows);
-				if (!board.DoesCellHavePiece(towStepForward))
+				int towStepForward = GetCellIndex(m_RowIndex, m_ColumnIndex + (2 * moveDir), maxRows);
+				if (board.GetCellState(towStepForward) == State::EmptyCell)
 					outMoves.Add(towStepForward);
 			}
 		}
@@ -31,8 +33,8 @@ const ChessPieceUtil::Array Pawn::GetPossibleMoves(const Chessboard& board) cons
 
 	// Attack Moves
 	{
-		int topLeft = GetValidCell(m_RowIndex - 1, m_ColumnIndex + (1 * moveDir), maxRows);
-		int topRight = GetValidCell(m_RowIndex + 1, m_ColumnIndex + (1 * moveDir), maxRows);
+		int topLeft = GetCellIndex(m_RowIndex - 1, m_ColumnIndex + (1 * moveDir), maxRows);
+		int topRight = GetCellIndex(m_RowIndex + 1, m_ColumnIndex + (1 * moveDir), maxRows);
 
 		const ChessPiece* topLeftPiece = board.GetChessPiece(topLeft);
 		const ChessPiece* topRightPiece = board.GetChessPiece(topRight);

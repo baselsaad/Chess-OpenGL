@@ -2,6 +2,8 @@
 #include "OpenGL-Core.h"
 #include "Chessboard.h"
 
+using CellState = Chessboard::CellState;
+
 Chessboard::Chessboard(int rowsCount, int columnsCount)
 	: m_Rows(rowsCount)
 	, m_Columns(columnsCount)
@@ -11,6 +13,18 @@ Chessboard::Chessboard(int rowsCount, int columnsCount)
 
 Chessboard::~Chessboard()
 {
+}
+
+void Chessboard::OnUpdateViewPort()
+{
+	for (auto& piece : m_Cells)
+	{
+		if (piece == nullptr)
+			continue;
+
+		const glm::vec2 center = CalcCellScreenPosition(piece->GetRowIndex(), piece->GetColumnIndex());
+		piece->OnDragToNewPosition(center);
+	}
 }
 
 void Chessboard::AddNewChessPiece(ChessPiece* entity, int rowIndex, int colIndex)
@@ -26,7 +40,7 @@ void Chessboard::AddNewChessPiece(ChessPiece* entity, int rowIndex, int colIndex
 	entity->SetColumnIndex(colIndex);
 
 	// Get Cell Center-Position
-	glm::vec2 newPosition = GetCellScreenPosition(rowIndex, colIndex);
+	glm::vec2 newPosition = CalcCellScreenPosition(rowIndex, colIndex);
 
 	// Translate Entity
 	auto& translation = entity->GetPosition();
@@ -76,80 +90,66 @@ const ChessPiece* Chessboard::GetChessPiece(int cellIndex) const
 	return m_Cells[cellIndex];
 }
 
-const ChessPieceUtil::Array Chessboard::GetPossibleMoves(int entityID)
+const Array Chessboard::GetPossibleMoves(int entityID)
 {
 	return m_Cells[entityID]->GetPossibleMoves(*this);
 }
 
-bool Chessboard::DoesCellHavePiece(double mouseX, double mouseY) const
-{
-	return GetChessPiece(mouseX, mouseY) != nullptr;
-}
-
-bool Chessboard::DoesCellHavePiece(int cellIndex) const
+const CellState Chessboard::GetCellState(int cellIndex) const
 {
 	if (cellIndex < 0 || cellIndex > m_Cells.size())
-		return true; // return true because do not want to move to this invalid cell, TODO: fix later (another way)
-
-	return m_Cells[cellIndex] != nullptr;
+		return CellState::NotValidCell;
+	else if (m_Cells[cellIndex] == nullptr)
+		return CellState::EmptyCell;
+	else
+		return CellState::OccupiedCell;
 }
 
-void Chessboard::MoveToNewCell(int entityID, const glm::vec2& newPosition, const glm::vec3& orginalPosition)
+bool Chessboard::MoveToNewCell(int entityID, const glm::vec2& newPosition)
 {
 	ASSERT(entityID >= 0 && entityID < m_Cells.size(), "Invalid Entity ID!!");
 
 	ChessPiece* entity = m_Cells[entityID];
 
-	// Get Cell Center-Position
-	glm::vec2 outCellPosition;
-	glm::vec2 outRowColumn;
-	int outTargetCell = 0;
-	ComputeCorrectCellPosition(newPosition, outCellPosition, outRowColumn, outTargetCell);
-	ChessPieceUtil::Array possibleMoves = entity->GetPossibleMoves(*this);
+	glm::vec2 indices = GetRowAndColumnIndex(newPosition.x, newPosition.y);
+	int targetCell = indices.y * m_Rows + indices.x;
 
-	for (const auto& i : possibleMoves)
+	Array possibleMoves = entity->GetPossibleMoves(*this);
+
+	for (const auto& cell : possibleMoves)
 	{
-		if (i == outTargetCell)
+		if (cell == targetCell)
 		{
-			// Translate Entity
-			entity->OnMoveToNewPosition(glm::vec2(outCellPosition.x, outCellPosition.y));
-
-			
-			// Clear Orginal Position
+			// Clear orginal cell
 			m_Cells[entityID] = nullptr;
+			MoveToNewCell(entity, targetCell, indices);
 
-			// Kill
-			if (m_Cells[outTargetCell] != nullptr)
-			{
-				m_Cells[outTargetCell]->SetActive(false);
-			}
-			m_Cells[outTargetCell] = entity;
-			entity->SetRowIndex(outRowColumn.x);
-			entity->SetColumnIndex(outRowColumn.y);
-			return;
+			return true;
 		}
 	}
 
-	// Move back 
-	ComputeCorrectCellPosition(orginalPosition, outCellPosition, outRowColumn, outTargetCell);
-	entity->OnDragToNewPosition(glm::vec2(outCellPosition.x, outCellPosition.y));
+	return false;
 }
 
-//TODO: Another way to compute
-void Chessboard::ComputeCorrectCellPosition(const glm::vec2& targetPosInScreenSpcae, glm::vec2& outCellPosition, glm::vec2& outRowColumn, int& outNewIndex)
+void Chessboard::MoveToNewCell(ChessPiece* entity, int targetCell, const glm::vec2& rowAndColumnIndex)
 {
-	glm::vec2 indices = GetRowAndColumnIndex(targetPosInScreenSpcae.x, targetPosInScreenSpcae.y);
-	outRowColumn.x = indices.x;
-	outRowColumn.y = indices.y;
-	outNewIndex = indices.y * m_Rows + indices.x;
+	const glm::vec2 centerCell = CalcCellScreenPosition(rowAndColumnIndex.x, rowAndColumnIndex.y);
 
-	const glm::vec2 center = GetCellScreenPosition(indices.x, indices.y);
+	// Translate Entity
+	entity->OnMoveToNewPosition(glm::vec2(centerCell.x, centerCell.y));
 
-	outCellPosition.x = center.x;
-	outCellPosition.y = center.y;
+	// Kill
+	if (m_Cells[targetCell] != nullptr)
+	{
+		m_Cells[targetCell]->SetActive(false);
+	}
+
+	m_Cells[targetCell] = entity;
+	entity->SetRowIndex(rowAndColumnIndex.x);
+	entity->SetColumnIndex(rowAndColumnIndex.y);
 }
 
-const glm::vec2 Chessboard::GetRowAndColumnIndex(double mouseX, double mouseY) const
+glm::vec2 Chessboard::GetRowAndColumnIndex(double mouseX, double mouseY) const
 {
 	float rowWidth = Renderer::GetViewport().x / m_Rows;
 	float colHeight = Renderer::GetViewport().y / m_Columns;
@@ -163,7 +163,7 @@ const glm::vec2 Chessboard::GetRowAndColumnIndex(double mouseX, double mouseY) c
 	return glm::vec2(safeRowIndex, safeColumnIndex);
 }
 
-const glm::vec2 Chessboard::GetCellScreenPosition(int row, int column)
+glm::vec2 Chessboard::CalcCellScreenPosition(int row, int column) const
 {
 	// width and height are the Top-Right Position of the first Cell in Screen Space
 	float rowWidth = Renderer::GetViewport().x / m_Rows;
@@ -180,7 +180,7 @@ const glm::vec2 Chessboard::GetCellScreenPosition(int row, int column)
 	return glm::vec2(centerPosX, centerPosY);
 }
 
-const glm::vec2 Chessboard::GetCellScreenPosition(int cellIndex)
+glm::vec2 Chessboard::CalcCellScreenPosition(int cellIndex) const
 {
 	ASSERT(cellIndex >= 0 && cellIndex < m_Cells.size(), "Index is out of range!");
 
@@ -197,16 +197,3 @@ const glm::vec2 Chessboard::GetCellScreenPosition(int cellIndex)
 
 	return glm::vec2(selectedRightPosition, selectedTopPosition);
 }
-
-void Chessboard::OnUpdateViewPort()
-{
-	for (auto& piece : m_Cells)
-	{
-		if (piece == nullptr)
-			continue;
-
-		const glm::vec2 center = GetCellScreenPosition(piece->GetRowIndex(), piece->GetColumnIndex());
-		piece->OnDragToNewPosition(center);
-	}
-}
-

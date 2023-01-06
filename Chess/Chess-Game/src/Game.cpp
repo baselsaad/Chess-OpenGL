@@ -28,7 +28,7 @@ ChessTextures::ChessTextures(const Color& color)
 struct DragAndDrop
 {
 	glm::vec3 OrginalPosition;
-	ChessPieceUtil::Array PossibleMovesToDraw;
+	Array PossibleMovesToDraw;
 
 	int EntityID = Chessboard::INVALID;
 	ChessPiece* EntityPtr = nullptr;
@@ -147,7 +147,7 @@ void Game::OnUpdate(const DeltaTime& deltaTime)
 
 		for (const int8_t& i : s_DragDropData.PossibleMovesToDraw)
 		{
-			glm::vec2 position2d = m_Chessboard.GetCellScreenPosition(i);
+			glm::vec2 position2d = m_Chessboard.CalcCellScreenPosition(i);
 			glm::vec3 position3d(position2d.x + 5.0f, position2d.y + 5.0f, 1.0f);
 
 			//Renderer::DrawQuad(position3d, glm::vec3(xNewScale, yNewScale, 1.0f), &m_PossibleMovesTexture);
@@ -205,7 +205,10 @@ void Game::OnMouseReleased(MouseButtonReleasedEvent& event)
 	if (s_DragDropData.EntityPtr != nullptr)
 	{
 		glm::vec2 targetLocation(event.GetXPosition(), event.GetYPosition());
-		m_Chessboard.MoveToNewCell(s_DragDropData.EntityID, targetLocation, s_DragDropData.OrginalPosition);
+		bool state = m_Chessboard.MoveToNewCell(s_DragDropData.EntityID, targetLocation);
+
+		if (!state)
+			s_DragDropData.EntityPtr->OnDragToNewPosition(s_DragDropData.OrginalPosition);
 	}
 
 	// reset

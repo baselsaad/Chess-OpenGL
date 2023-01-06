@@ -2,65 +2,63 @@
 #include "Entity.h"
 class Chessboard;
 
-namespace ChessPieceUtil
+// Costum stack Array to avoid Heap-Allocations every frame using std::vector
+struct Array
 {
-	// Costum stack Array to avoid Heap-Allocations every frame using std::vector
-	struct Array
+	// maximum number of squares that a piece can potentially move to
+	static constexpr int MAX_CELLS = 30;
+
+	std::array<int8_t, MAX_CELLS> MovesArray;
+	int Count = 0;
+
+	using Iterator = std::array<int8_t, MAX_CELLS>::iterator;
+	using ConstIterator = std::array<int8_t, MAX_CELLS>::const_iterator;
+
+	Array()
+		: MovesArray(std::array<int8_t, MAX_CELLS>())
 	{
-		// maximum number of squares that a piece can potentially move to
-		static constexpr int MAX_CELLS = 30;
+	}
 
-		std::array<int8_t, MAX_CELLS> MovesArray;
-		int Count = 0;
+	Array(const Array& other)
+	{
+		// no need to Copy the whole array, only the valid
+		std::copy(other.begin(), other.end(), MovesArray.begin());
+		Count = other.Count;
+	}
 
-		using Iterator = std::array<int8_t, MAX_CELLS>::iterator;
-		using ConstIterator = std::array<int8_t, MAX_CELLS>::const_iterator;
+	void Add(const int8_t& element)
+	{
+		MovesArray[Count++] = element;
+	}
 
-		Array()
-			: MovesArray(std::array<int8_t, MAX_CELLS>())
-		{
-		}
+	void Clear()
+	{
+		Count = 0;
+	}
 
-		Array(const Array& other)
-		{
-			// no need to Copy the whole array, only the valid
-			std::copy(other.begin(), other.end(), MovesArray.begin());
-			Count = other.Count;
-		}
+	Iterator begin()
+	{
+		return MovesArray.begin();
+	}
 
-		void Add(const int8_t& element)
-		{
-			MovesArray[Count++] = element;
-		}
+	ConstIterator begin() const
+	{
+		return MovesArray.begin();
+	}
 
-		void Clear()
-		{
-			Count = 0;
-		}
+	Iterator end()
+	{
+		return MovesArray.begin() + Count;
+	}
 
-		Iterator begin()
-		{
-			return MovesArray.begin();
-		}
+	ConstIterator end() const
+	{
+		return MovesArray.begin() + Count;
+	}
 
-		ConstIterator begin() const
-		{
-			return MovesArray.begin();
-		}
+};
 
-		Iterator end()
-		{
-			return MovesArray.begin() + Count;
-		}
 
-		ConstIterator end() const
-		{
-			return MovesArray.begin() + Count;
-		}
-
-	};
-
-}
 
 enum class PieceColor
 {
@@ -79,7 +77,7 @@ public:
 	/*
 	* returns Array of Possible Cells that can move to
 	*/
-	virtual const ChessPieceUtil::Array GetPossibleMoves(const Chessboard& board) const
+	virtual const Array GetPossibleMoves(const Chessboard& board) const
 	{
 		ASSERT(false, "There is no Implementation for the Possible Moves!!");
 		return {};
@@ -98,7 +96,7 @@ public:
 	inline PieceColor GetPieceColor() const { return m_PieceColor; }
 
 protected:
-	static int GetValidCell(const int& targetRow, const int& targetColumn, const int& maxRows);
+	static int GetCellIndex(const int& targetRow, const int& targetColumn, const int& maxRows);
 
 	int m_RowIndex;
 	int m_ColumnIndex;
