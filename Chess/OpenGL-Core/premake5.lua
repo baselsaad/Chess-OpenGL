@@ -14,10 +14,13 @@ project "OpenGL-Core"
 	{
 		"src/**.h",
 		"src/**.cpp",
+
 		"vendor/stb_image/**.h",
 		"vendor/stb_image/**.cpp",
+
 		"vendor/glm/**.hpp",
 		"vendor/glm/**.inl",
+		
 		"vendor/spdlog/inlcude/spdlog/spdlog.h",
 		"vendor/spdlog/inlcude/spdlog/fmt/ostr.h",
 		"vendor/spdlog/inlcude/spdlog/sinks/stdout_color_sinks.h"
@@ -31,7 +34,7 @@ project "OpenGL-Core"
 	includedirs
 	{
 		"src",
-		"vendor/spdlog/include",
+		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLEW}",
 		"%{IncludeDir.glm}",

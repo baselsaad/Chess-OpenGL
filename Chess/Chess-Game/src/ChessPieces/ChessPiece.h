@@ -5,7 +5,7 @@ class Chessboard;
 // Costum stack Array to avoid Heap-Allocations every frame using std::vector
 struct Array
 {
-	// maximum number of squares that a piece can potentially move to
+	// maximum number of squares that a piece can potentially move to in single move
 	static constexpr int MAX_CELLS = 30;
 
 	std::array<int8_t, MAX_CELLS> MovesArray;
@@ -62,7 +62,7 @@ struct Array
 
 enum class PieceColor
 {
-	White, Black
+	White, Black, None
 };
 
 class ChessPiece : public Entity

@@ -29,10 +29,10 @@ namespace Defaults
 	static constexpr float Positions[PositionsCount] =
 	{
 		// Positions										// Texture Coords
-		MIN_POSITION_OFFSET,	MIN_POSITION_OFFSET,			0.0f, 0.0f, // 0 bottom_left 
-		MAX_POSITION_OFFSET,	MIN_POSITION_OFFSET,			1.0f, 0.0f, // 1 bottom_right
-		MAX_POSITION_OFFSET,	MAX_POSITION_OFFSET,			1.0f, 1.0f, // 2 top_right
-		MIN_POSITION_OFFSET,	MAX_POSITION_OFFSET,			0.0f, 1.0f  // 3 top_left
+		MIN_POSITION_OFFSET,	MIN_POSITION_OFFSET,		0.0f, 0.0f, // 0 bottom_left 
+		MAX_POSITION_OFFSET,	MIN_POSITION_OFFSET,		1.0f, 0.0f, // 1 bottom_right
+		MAX_POSITION_OFFSET,	MAX_POSITION_OFFSET,		1.0f, 1.0f, // 2 top_right
+		MIN_POSITION_OFFSET,	MAX_POSITION_OFFSET,		0.0f, 1.0f  // 3 top_left
 	};
 
 	static constexpr uint32_t Indices[IndicesCount] =

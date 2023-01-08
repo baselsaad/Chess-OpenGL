@@ -6,7 +6,9 @@
 
 ChessPiece::ChessPiece(const glm::vec3& position, const glm::vec3& scale)
 	: Entity(position, scale)
-	, m_RowIndex(0), m_ColumnIndex(0), m_FirstMove(true)
+	, m_RowIndex(0), m_ColumnIndex(0)
+	, m_PieceColor(PieceColor::None)
+	, m_FirstMove(true)
 {
 }
 

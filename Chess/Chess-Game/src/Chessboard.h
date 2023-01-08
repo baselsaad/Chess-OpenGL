@@ -17,11 +17,11 @@ public:
 public:
 	void OnUpdateViewPort();
 
-	void AddNewChessPiece(ChessPiece* entity, int rowIndex, int colIndex);
-	bool MoveToNewCell(int entityID, const glm::vec2& newPosition);
-	const Array GetPossibleMoves(int entityID);
+	void AddNewChessPiece(ChessPiece* piece, int rowIndex, int colIndex);
+	bool MoveToNewCell(int pieceID, const glm::vec2& newPosition);
+	const Array GetPossibleMoves(int pieceID);
 
-	ChessPiece* GetChessPiece(double mouseX, double mouseY, int& outEntityID);
+	ChessPiece* GetChessPiece(double mouseX, double mouseY, int& outpieceID);
 	const ChessPiece* GetChessPiece(double mouseX, double mouseY) const;
 	const ChessPiece* GetChessPiece(int cellIndex) const;
 	const CellState GetCellState(int cellIndex) const;
@@ -33,7 +33,7 @@ public:
 	inline int GetColumnCount() const { return m_Columns; }
 
 private:
-	void MoveToNewCell(ChessPiece* entity, int targetCell, const glm::vec2& rowAndColumnIndex);
+	void MoveToNewCell(ChessPiece* piece, int targetCell, const glm::vec2& rowAndColumnIndex);
 	glm::vec2 GetRowAndColumnIndex(double mouseX, double mouseY) const;
 	
 

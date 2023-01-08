@@ -12,43 +12,44 @@
 
 #include "ChessPieces\ChessPiece.h"
 #include "ChessPieces\Pawn.h"
+#include "ChessPieces\King.h"
 
 ChessTextures::ChessTextures(const Color& color)
-	: SelectedColor(color == Color::Black ? "Black" : "White")
-	, Pawn("res/textures/" + SelectedColor + "Pawn.png")
-	, Bishop("res/textures/" + SelectedColor + "Bishop.png")
-	, Knight("res/textures/" + SelectedColor + "Knight.png")
-	, Rook("res/textures/" + SelectedColor + "Rook.png")
-	, Queen("res/textures/" + SelectedColor + "Queen.png")
-	, King("res/textures/" + SelectedColor + "King.png")
+	: SelectedColor(color)
+	, Pawn("res/textures/" + ToString(color) + "Pawn.png")
+	, Bishop("res/textures/" + ToString(color) + "Bishop.png")
+	, Knight("res/textures/" + ToString(color) + "Knight.png")
+	, Rook("res/textures/" + ToString(color) + "Rook.png")
+	, Queen("res/textures/" + ToString(color) + "Queen.png")
+	, King("res/textures/" + ToString(color) + "King.png")
 {
 }
 
 // Mouse Drag and Drop
 struct DragAndDrop
 {
-	glm::vec3 OrginalPosition;
+	glm::vec3 OrginalPosition = { 0.0f,0.0f,0.0f };
 	Array PossibleMovesToDraw;
 
-	int EntityID = Chessboard::INVALID;
+	int PieceID = Chessboard::INVALID;
 	ChessPiece* EntityPtr = nullptr;
 };
 static DragAndDrop s_DragDropData;
 
-Game::Game(int height, int width)
+Game::Game()
 	: m_BackgroundTexture("res/textures/background.png")
 	, m_PossibleMovesTexture("res/textures/PossibleMoves.png")
 	, m_BackgroundEntity()
-	, m_WhitePieces(ChessTextures::Color::White)
-	, m_BlackPieces(ChessTextures::Color::Black)
+	, m_WhitePiecesTex(ChessTextures::Color::White)
+	, m_BlackPiecesTex(ChessTextures::Color::Black)
 {
 }
 
 void Game::SetupPlayerInput(PlayerInput& input)
 {
-	input.BindActionEvent(EventType::MouseButtonPressed, this, &Game::OnMousePressed);
-	input.BindActionEvent(EventType::MouseButtonReleased, this, &Game::OnMouseReleased);
-	input.BindActionEvent(EventType::MouseMove, this, &Game::OnMouseMove);
+	input.BindAction(EventType::MouseButtonPressed, this, &Game::OnMousePressed);
+	input.BindAction(EventType::MouseButtonReleased, this, &Game::OnMouseReleased);
+	input.BindAction(EventType::MouseMove, this, &Game::OnMouseMove);
 }
 
 void Game::OnStart()
@@ -57,13 +58,13 @@ void Game::OnStart()
 	m_BackgroundEntity.SetTexture(&m_BackgroundTexture);
 	AdjustBackgroundImage();
 
-	CreateChessPieces(m_EntityContainer, m_WhitePieces, 1, 0);
-	CreateChessPieces(m_EntityContainer, m_BlackPieces, 6, 7);
+	CreateChessPieces(m_EntityContainer, m_WhitePiecesTex, 1, 0);
+	CreateChessPieces(m_EntityContainer, m_BlackPiecesTex, 6, 7);
 }
 
 void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& textures, int pawns, int rest)
 {
-	PieceColor color = textures.SelectedColor == "Black" ? PieceColor::Black : PieceColor::White;
+	PieceColor color = textures.SelectedColor == ChessTextures::Color::Black ? PieceColor::Black : PieceColor::White;
 
 	for (int i = 0; i < 8; i++)
 	{
@@ -106,7 +107,7 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 		}
 		else if (i == 4) //King
 		{
-			ChessPiece* king = container.CreateNewEntity<ChessPiece>();
+			King* king = container.CreateNewEntity<King>();
 			king->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
 			king->SetTexture(&textures.King);
 			king->SetPieceColor(color);
@@ -185,39 +186,39 @@ void Game::AdjustBackgroundImage()
 	m_BackgroundEntity.GetPosition().y += windowCenterY - quadCenterY;
 }
 
-void Game::OnMousePressed(MouseButtonPressedEvent& event)
+void Game::OnMousePressed(const MouseButtonPressedEvent& event)
 {
 	// event.GetYPosition() will get position from TOP-LEFT, viewport.y - event.GetYPosition will get from BOTTOM-LEFT
-	int& outEntityID = s_DragDropData.EntityID;
-	s_DragDropData.EntityPtr = m_Chessboard.GetChessPiece(event.GetXPosition(), event.GetYPosition(), outEntityID);
+	int& outPieceID = s_DragDropData.PieceID;
+	s_DragDropData.EntityPtr = m_Chessboard.GetChessPiece(event.GetXPosition(), event.GetYPosition(), outPieceID);
 
 	// copy the location in case the move was invalid, so we set it back 
 	if (s_DragDropData.EntityPtr != nullptr)
 	{
 		s_DragDropData.OrginalPosition = s_DragDropData.EntityPtr->GetPositionCenteredInScreenSpace();
-		s_DragDropData.PossibleMovesToDraw = m_Chessboard.GetPossibleMoves(s_DragDropData.EntityID);
+		s_DragDropData.PossibleMovesToDraw = m_Chessboard.GetPossibleMoves(s_DragDropData.PieceID);
 	}
 
 }
 
-void Game::OnMouseReleased(MouseButtonReleasedEvent& event)
+void Game::OnMouseReleased(const MouseButtonReleasedEvent& event)
 {
 	if (s_DragDropData.EntityPtr != nullptr)
 	{
 		glm::vec2 targetLocation(event.GetXPosition(), event.GetYPosition());
-		bool state = m_Chessboard.MoveToNewCell(s_DragDropData.EntityID, targetLocation);
+		bool success = m_Chessboard.MoveToNewCell(s_DragDropData.PieceID, targetLocation);
 
-		if (!state)
+		if (!success)
 			s_DragDropData.EntityPtr->OnDragToNewPosition(s_DragDropData.OrginalPosition);
 	}
 
 	// reset
-	s_DragDropData.EntityID = Chessboard::INVALID;
+	s_DragDropData.PieceID = Chessboard::INVALID;
 	s_DragDropData.EntityPtr = nullptr;
 	s_DragDropData.PossibleMovesToDraw.Clear();
 }
 
-void Game::OnMouseMove(MouseMoveEvent& event)
+void Game::OnMouseMove(const MouseMoveEvent& event)
 {
 	if (s_DragDropData.EntityPtr == nullptr)
 		return;

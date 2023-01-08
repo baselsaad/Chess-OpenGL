@@ -9,6 +9,8 @@ Chessboard::Chessboard(int rowsCount, int columnsCount)
 	, m_Columns(columnsCount)
 {
 	m_Cells.resize(rowsCount * columnsCount);
+
+	std::memset(&m_Cells[0], NULL, rowsCount * columnsCount);
 }
 
 Chessboard::~Chessboard()
@@ -105,24 +107,24 @@ const CellState Chessboard::GetCellState(int cellIndex) const
 		return CellState::OccupiedCell;
 }
 
-bool Chessboard::MoveToNewCell(int entityID, const glm::vec2& newPosition)
+bool Chessboard::MoveToNewCell(int pieceID, const glm::vec2& newPosition)
 {
-	ASSERT(entityID >= 0 && entityID < m_Cells.size(), "Invalid Entity ID!!");
+	ASSERT(pieceID >= 0 && pieceID < m_Cells.size(), "Invalid Entity ID!!");
 
-	ChessPiece* entity = m_Cells[entityID];
+	ChessPiece* piece = m_Cells[pieceID];
 
 	glm::vec2 indices = GetRowAndColumnIndex(newPosition.x, newPosition.y);
 	int targetCell = indices.y * m_Rows + indices.x;
 
-	Array possibleMoves = entity->GetPossibleMoves(*this);
+	Array possibleMoves = piece->GetPossibleMoves(*this);
 
 	for (const auto& cell : possibleMoves)
 	{
 		if (cell == targetCell)
 		{
 			// Clear orginal cell
-			m_Cells[entityID] = nullptr;
-			MoveToNewCell(entity, targetCell, indices);
+			m_Cells[pieceID] = nullptr;
+			MoveToNewCell(piece, targetCell, indices);
 
 			return true;
 		}
@@ -131,12 +133,12 @@ bool Chessboard::MoveToNewCell(int entityID, const glm::vec2& newPosition)
 	return false;
 }
 
-void Chessboard::MoveToNewCell(ChessPiece* entity, int targetCell, const glm::vec2& rowAndColumnIndex)
+void Chessboard::MoveToNewCell(ChessPiece* piece, int targetCell, const glm::vec2& rowAndColumnIndex)
 {
-	const glm::vec2 centerCell = CalcCellScreenPosition(rowAndColumnIndex.x, rowAndColumnIndex.y);
+	const glm::vec2 cell = CalcCellScreenPosition(rowAndColumnIndex.x, rowAndColumnIndex.y);
 
 	// Translate Entity
-	entity->OnMoveToNewPosition(glm::vec2(centerCell.x, centerCell.y));
+	piece->OnMoveToNewPosition(glm::vec2(cell.x, cell.y));
 
 	// Kill
 	if (m_Cells[targetCell] != nullptr)
@@ -144,9 +146,9 @@ void Chessboard::MoveToNewCell(ChessPiece* entity, int targetCell, const glm::ve
 		m_Cells[targetCell]->SetActive(false);
 	}
 
-	m_Cells[targetCell] = entity;
-	entity->SetRowIndex(rowAndColumnIndex.x);
-	entity->SetColumnIndex(rowAndColumnIndex.y);
+	m_Cells[targetCell] = piece;
+	piece->SetRowIndex(rowAndColumnIndex.x);
+	piece->SetColumnIndex(rowAndColumnIndex.y);
 }
 
 glm::vec2 Chessboard::GetRowAndColumnIndex(double mouseX, double mouseY) const

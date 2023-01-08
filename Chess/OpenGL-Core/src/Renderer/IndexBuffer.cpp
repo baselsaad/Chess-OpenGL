@@ -3,7 +3,8 @@
 #include "Utilities\Debug.h"
 
 IndexBuffer::IndexBuffer(const uint32_t* data, uint32_t count)
-	: m_Count(count)
+	: m_RendererID(0)
+	, m_Count(count)
 {
 	ASSERT(sizeof(uint32_t) == sizeof(GLuint), "");
 

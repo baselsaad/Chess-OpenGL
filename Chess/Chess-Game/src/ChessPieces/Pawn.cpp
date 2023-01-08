@@ -6,8 +6,7 @@
 
 const Array Pawn::GetPossibleMoves(const Chessboard& board) const
 {
-	using State = Chessboard::CellState;
-
+	using CellState = Chessboard::CellState;
 	Array outMoves;
 
 	int maxRows = board.GetRowsCount();
@@ -17,7 +16,7 @@ const Array Pawn::GetPossibleMoves(const Chessboard& board) const
 	{
 		int oneStepForward = GetCellIndex(m_RowIndex, m_ColumnIndex + (1 * moveDir), maxRows);
 
-		if (board.GetCellState(oneStepForward) == State::EmptyCell)
+		if (board.GetCellState(oneStepForward) == CellState::EmptyCell)
 		{
 			outMoves.Add(oneStepForward);
 
@@ -25,7 +24,7 @@ const Array Pawn::GetPossibleMoves(const Chessboard& board) const
 			if (m_FirstMove)
 			{
 				int towStepForward = GetCellIndex(m_RowIndex, m_ColumnIndex + (2 * moveDir), maxRows);
-				if (board.GetCellState(towStepForward) == State::EmptyCell)
+				if (board.GetCellState(towStepForward) == CellState::EmptyCell)
 					outMoves.Add(towStepForward);
 			}
 		}

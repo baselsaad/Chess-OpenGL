@@ -39,10 +39,10 @@ void Application::OnStart()
 	s_Running = true;
 	SetupEventCallback();
 
-	m_PlayerInput.BindActionEvent(EventType::CloseWindow, this, &Application::OnClose);
-	m_PlayerInput.BindActionEvent(EventType::ResizeWindow, this, &Application::OnResizeWindow);
+	m_PlayerInput.BindAction(EventType::CloseWindow, this, &Application::OnClose);
+	m_PlayerInput.BindAction(EventType::ResizeWindow, this, &Application::OnResizeWindow);
 
-	m_Game = new Game(m_Window->GetWindowHeight(), m_Window->GetWindowWidth());
+	m_Game = new Game();
 	m_Game->OnStart();
 	m_Game->SetupPlayerInput(m_PlayerInput);
 }
@@ -85,19 +85,17 @@ void Application::OnDestroy()
 	m_Game->OnDestroy();
 }
 
-void Application::OnClose(CloseWindowEvent& event)
+void Application::OnClose(const CloseWindowEvent& event)
 {
 	s_Running = false;
 }
 
-void Application::OnResizeWindow(ResizeWindowEvent& event)
+void Application::OnResizeWindow(const ResizeWindowEvent& event)
 {
 	Renderer::UpdateViewport(event.GetWidth(), event.GetHeight());
 	
 	m_Window->UpdateWindowSize(event.GetWidth(), event.GetHeight());
 	m_Game->OnUpdateViewport();
-
-	//Debug::Info("Resize: Width {}, Height {}",event.GetWidth(),event.GetHeight());
 }
 
 void Application::SetupEventCallback()
@@ -161,7 +159,7 @@ void Application::SetupEventCallback()
 	{
 		auto callback = [](GLFWwindow* window, double x, double y)
 		{
-			auto& func = *(EventFuncType*)glfwGetWindowUserPointer(window);
+			auto& func = *(std::function<void(Event&)>*)glfwGetWindowUserPointer(window);
 
 			MouseMoveEvent event((float)x, (float)y);
 			func(event);

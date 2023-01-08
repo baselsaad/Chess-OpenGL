@@ -19,7 +19,13 @@ class MouseMoveEvent;
 // Assets
 struct ChessTextures
 {
-	std::string SelectedColor;
+	enum class Color
+	{
+		White, Black
+	};
+
+	Color SelectedColor;
+
 	Texture Pawn;
 	Texture Bishop;
 	Texture Knight;
@@ -27,18 +33,22 @@ struct ChessTextures
 	Texture Queen;
 	Texture King;
 
-	enum class Color
-	{
-		White, Black
-	};
-
 	ChessTextures(const Color& color);
+
+	inline static std::string ToString(Color color)
+	{
+		switch (color)
+		{
+			case Color::Black: return "Black";
+			case Color::White: return "White";
+		}
+	}
 };
 
 class Game
 {
 public:
-	Game(int height = 700, int width = 700);
+	Game();
 	~Game() = default;
 
 public:
@@ -48,9 +58,9 @@ public:
 	void SetupPlayerInput(PlayerInput& input);
 	void OnDestroy();
 
-	void OnMousePressed(MouseButtonPressedEvent& event);
-	void OnMouseReleased(MouseButtonReleasedEvent& event);
-	void OnMouseMove(MouseMoveEvent& event);
+	void OnMousePressed(const MouseButtonPressedEvent& event);
+	void OnMouseReleased(const MouseButtonReleasedEvent& event);
+	void OnMouseMove(const MouseMoveEvent& event);
 
 	void OnUpdateViewport();
 
@@ -59,9 +69,8 @@ public:
 
 
 private:
-	// Test
-	ChessTextures m_WhitePieces;
-	ChessTextures m_BlackPieces;
+	ChessTextures m_WhitePiecesTex;
+	ChessTextures m_BlackPiecesTex;
 	Texture m_BackgroundTexture;
 	Texture m_PossibleMovesTexture;
 

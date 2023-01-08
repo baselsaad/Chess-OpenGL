@@ -4,6 +4,7 @@
 
 
 VertexBuffer::VertexBuffer(const void* data, uint32_t size)
+	: m_RendererID(0)
 {
 	ASSERT(sizeof(uint32_t) == sizeof(GLuint), "OpenGL GLuint != uint32_t");
 
@@ -16,6 +17,7 @@ VertexBuffer::VertexBuffer(const void* data, uint32_t size)
 }
 
 VertexBuffer::VertexBuffer(uint32_t size)
+	: m_RendererID(0)
 {
 	ASSERT(sizeof(uint32_t) == sizeof(GLuint), "OpenGL GLuint != uint32_t");
 

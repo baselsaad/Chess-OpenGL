@@ -6,6 +6,7 @@
 OpenGLWindow::OpenGLWindow(const WindowData& data)
 	: m_Width(data.Width)
 	, m_Height(data.Height)
+	, m_Vsync(true)
 {
 	int state = glfwInit();
 	ASSERT(state == GLFW_TRUE, "GLFW cannot be initialized!");

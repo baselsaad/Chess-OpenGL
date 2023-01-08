@@ -4,7 +4,8 @@
 
 
 Shader::Shader(const std::string& filePath)
-	: m_FilePath(filePath), m_RendererID(0)
+	: m_RendererID(0)
+	, m_FilePath(filePath)
 {
 	Shaders shadersSource = ParaseShader(m_FilePath);
 	m_RendererID = CreateShader(shadersSource.FragmentShader, shadersSource.VertexShader);

@@ -65,7 +65,7 @@ void Renderer::ShutDown()
 
 void Renderer::DrawQuad(const glm::mat4& transform, const Texture* texture)
 {
-	ASSERT(s_Data , "Renderer should only be initialized !!");
+	ASSERT(s_Data , "Renderer should be initialized !!");
 
 	glm::mat4 mvp = s_Data->ProjectionView * transform;
 
@@ -80,7 +80,7 @@ void Renderer::DrawQuad(const glm::mat4& transform, const Texture* texture)
 
 void Renderer::DrawQuad(const glm::mat4& transform, const Colors::RGBA& color)
 {
-	ASSERT(s_Data , "Renderer should only be initialized !!");
+	ASSERT(s_Data , "Renderer should be initialized !!");
 	glm::mat4 mvp = s_Data->ProjectionView * transform;
 
 	s_Data->ColorShader.Bind();

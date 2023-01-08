@@ -3,11 +3,6 @@
 #include "PlayerInput.h"
 
 class OpenGLWindow;
-class GLFWWindow;
-class DeltaTime;
-class EntityContainer;
-
-enum class EventType;
 class Event;
 class ResizeWindowEvent;
 class CloseWindowEvent;
@@ -25,8 +20,8 @@ public:
 	void SetupEventCallback();
 	void OnDestroy();
 
-	void OnClose(CloseWindowEvent& event);
-	void OnResizeWindow(ResizeWindowEvent& event);
+	void OnClose(const CloseWindowEvent& event);
+	void OnResizeWindow(const ResizeWindowEvent& event);
 
 private:
 	OpenGLWindow* m_Window;
