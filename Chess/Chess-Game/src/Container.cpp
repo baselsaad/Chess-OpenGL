@@ -21,6 +21,6 @@ void EntityContainer::OnRender()
 	for (Entity* entity : m_EntityPool)
 	{
 		if (entity->IsActive())
-			Renderer::DrawQuad(entity->GetTransformationMatrix(), entity->GetTexture());
+			Renderer::Draw(entity->GetTransformationMatrix(), entity->GetTexture());
 	}
 }

@@ -67,11 +67,11 @@ void Application::Run()
 		}
 		m_Window->Swap();
 
-		//Debug::Log("Vsync: {0}, FPS ({2} ms): {1}, DrawCalls: {3}", 
-		//	m_Window->IsVsyncOn(),
-		//	m_DeltaTime.GetFramePerSecounds(),
-		//	m_DeltaTime.GetMilliSeconds(),
-		//	Renderer::GetDrawCalls());
+		Debug::Log("Vsync: {0}, FPS ({2} ms): {1}, DrawCalls: {3}", 
+			m_Window->IsVsyncOn(),
+			m_DeltaTime.GetFramePerSecounds(),
+			m_DeltaTime.GetMilliSeconds(),
+			Renderer::GetDrawCalls());
 	}
 
 	// OnDestroy

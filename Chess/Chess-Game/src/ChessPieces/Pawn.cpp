@@ -9,8 +9,8 @@ const Array Pawn::GetPossibleMoves(const Chessboard& board) const
 	using CellState = Chessboard::CellState;
 	Array outMoves;
 
+	int moveDir = (int)m_PieceColor;
 	int maxRows = board.GetRowsCount();
-	int moveDir = m_PieceColor == PieceColor::Black ? moveDir = -1 : 1;
 
 	// Forward Move
 	{
@@ -49,3 +49,4 @@ const Array Pawn::GetPossibleMoves(const Chessboard& board) const
 
 	return outMoves;
 }
+

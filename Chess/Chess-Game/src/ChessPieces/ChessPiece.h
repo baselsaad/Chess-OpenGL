@@ -21,6 +21,8 @@ struct Array
 
 	Array(const Array& other)
 	{
+		ASSERT(Count < MAX_CELLS, "");
+
 		// no need to Copy the whole array, only the valid
 		std::copy(other.begin(), other.end(), MovesArray.begin());
 		Count = other.Count;
@@ -58,11 +60,17 @@ struct Array
 
 };
 
-
-
 enum class PieceColor
 {
-	White, Black, None
+	// (-1 moveDir = Bottom, 1 moveDir = Up)
+	Black = -1,
+	None = 0,
+	White = 1
+};
+
+enum class PieceType
+{
+	Pawn = 0, Knight, Rook, Bishop, Queen, King
 };
 
 class ChessPiece : public Entity
@@ -70,27 +78,21 @@ class ChessPiece : public Entity
 public:
 	ChessPiece(const glm::vec3& position = { 1.0f, 1.0f, 1.0f }, const glm::vec3& scale = { 1.0f, 1.0f, 1.0f });
 	~ChessPiece() = default;
-
-
 public:
-
 	/*
 	* returns Array of Possible Cells that can move to
 	*/
-	virtual const Array GetPossibleMoves(const Chessboard& board) const
-	{
-		ASSERT(false, "There is no Implementation for the Possible Moves!!");
-		return {};
-	}
+	virtual const Array GetPossibleMoves(const Chessboard& board) const { ASSERT(false, "No Impl!!"); return {}; }
+	virtual PieceType GetPieceType() const { ASSERT(false, "No Impl!!"); return {}; };
 
 	void OnMoveToNewPosition(const glm::vec2& newPosition); // used for valid movement
 	void OnDragToNewPosition(const glm::vec2& newPosition); // used for DragAndDrop
 
 	inline void SetRowIndex(int rowIndex) { m_RowIndex = rowIndex; }
-	inline int GetRowIndex() { return m_RowIndex; }
+	inline int GetRowIndex() const { return m_RowIndex; }
 
 	inline void SetColumnIndex(int colIndex) { m_ColumnIndex = colIndex; }
-	inline int GetColumnIndex() { return m_ColumnIndex; }
+	inline int GetColumnIndex() const { return m_ColumnIndex; }
 
 	inline void SetPieceColor(PieceColor color) { m_PieceColor = color; }
 	inline PieceColor GetPieceColor() const { return m_PieceColor; }

@@ -23,10 +23,10 @@ public:
 	static void Init(const glm::vec2& viewport);
 	static void ShutDown();
 
-	static void DrawQuad(const glm::mat4& transform, const Texture* texture);
-	static void DrawQuad(const glm::mat4& transform, const Colors::RGBA& color);
-	static void DrawQuad(const glm::vec3& position,const glm::vec3& scale, const Texture* texture);
-	static void DrawQuad(const glm::vec3& position,const glm::vec3& scale, const Colors::RGBA& color);
+	static void Draw(const glm::mat4& transform, const Texture* texture);
+	static void Draw(const glm::mat4& transform, const Colors::RGBA& color);
+	static void Draw(const glm::vec3& position,const glm::vec3& scale, const Texture* texture);
+	static void Draw(const glm::vec3& position,const glm::vec3& scale, const Colors::RGBA& color);
 
 	static void ResetStats();
 	static int GetDrawCalls();

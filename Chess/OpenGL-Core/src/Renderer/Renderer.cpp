@@ -63,7 +63,7 @@ void Renderer::ShutDown()
 	delete s_Data;
 }
 
-void Renderer::DrawQuad(const glm::mat4& transform, const Texture* texture)
+void Renderer::Draw(const glm::mat4& transform, const Texture* texture)
 {
 	ASSERT(s_Data , "Renderer should be initialized !!");
 
@@ -78,7 +78,7 @@ void Renderer::DrawQuad(const glm::mat4& transform, const Texture* texture)
 	Draw(s_Data->VertexArray, s_Data->IndexBuffer);
 }
 
-void Renderer::DrawQuad(const glm::mat4& transform, const Colors::RGBA& color)
+void Renderer::Draw(const glm::mat4& transform, const Colors::RGBA& color)
 {
 	ASSERT(s_Data , "Renderer should be initialized !!");
 	glm::mat4 mvp = s_Data->ProjectionView * transform;
@@ -90,24 +90,24 @@ void Renderer::DrawQuad(const glm::mat4& transform, const Colors::RGBA& color)
 	Draw(s_Data->VertexArray, s_Data->IndexBuffer);
 }
 
-void Renderer::DrawQuad(const glm::vec3& position, const glm::vec3& scale, const Texture* texture)
+void Renderer::Draw(const glm::vec3& position, const glm::vec3& scale, const Texture* texture)
 {
 	glm::mat4 transform =
 		glm::translate(glm::mat4(1.0f), position)
 		* glm::mat4(1.0f)
 		* glm::scale(glm::mat4(1.0f), scale);
 
-	DrawQuad(transform, texture);
+	Draw(transform, texture);
 }
 
-void Renderer::DrawQuad(const glm::vec3& position, const glm::vec3& scale, const Colors::RGBA& color)
+void Renderer::Draw(const glm::vec3& position, const glm::vec3& scale, const Colors::RGBA& color)
 {
 	glm::mat4 transform =
 		glm::translate(glm::mat4(1.0f), position)
 		* glm::mat4(1.0f)
 		* glm::scale(glm::mat4(1.0f), scale);
 
-	DrawQuad(transform, color);
+	Draw(transform, color);
 }
 
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib)

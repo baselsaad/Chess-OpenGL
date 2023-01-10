@@ -67,6 +67,7 @@ public:
 	void AdjustBackgroundImage();
 	void DrawBackgroundManually();
 
+	void DrawPossibleMoves();
 
 private:
 	ChessTextures m_WhitePiecesTex;
