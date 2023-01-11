@@ -8,7 +8,7 @@ const Array Rook::GetPossibleMoves(const Chessboard& board) const
 	Array outMoves;
 	int moveDir = (int)GetPieceColor();
 
-	std::array<std::pair<int, int>, 8> possibleMoves =
+	std::array<std::pair<int, int>, 4> possibleMoves =
 	{
 		std::pair(0, (+1 * moveDir)),	// Up
 		std::pair(-1, 0),				// Left
@@ -29,32 +29,26 @@ void Rook::TryToAddMoves(int row, int column, const Chessboard& board, Array& ou
 {
 	using CellState = Chessboard::CellState;
 
-	int increamentRow = GetRowIndex();
-	int increamentCol = GetColumnIndex();
+	int targetRow = m_RowIndex + row;
+	int targetCol = m_ColumnIndex + column;
+	int targetCell = GetCellIndex(targetRow, targetCol, board.GetRowsCount());
 
-	while (true)
+	while (board.GetCellState(targetCell) != CellState::NotValidCell)
 	{
-		increamentRow += row;
-		increamentCol += column;
-		int targetCell = GetCellIndex(increamentRow, increamentCol, board.GetRowsCount());
-
-		bool notValidCell = board.GetCellState(targetCell) == CellState::NotValidCell;
-		if (notValidCell)
-			break;
-
 		const ChessPiece* piece = board.GetChessPiece(targetCell);
-		if (piece && piece->GetPieceColor() == GetPieceColor())
+		if (piece != nullptr)// => there is a piece and we can not move anymore
 		{
-			return;
-		}
-		else if (piece && piece->GetPieceColor() != GetPieceColor())
-		{
-			outMoves.Add(targetCell);
+			if (piece->GetPieceColor() != GetPieceColor())
+				outMoves.Add(targetCell);
+
 			break;
 		}
-
 
 		outMoves.Add(targetCell);
+
+		targetRow += row;
+		targetCol += column;
+		targetCell = GetCellIndex(targetRow, targetCol, board.GetRowsCount());
 	}
 
 }

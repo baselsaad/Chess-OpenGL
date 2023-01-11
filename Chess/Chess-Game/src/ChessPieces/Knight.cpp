@@ -18,18 +18,21 @@ const Array Knight::GetPossibleMoves(const Chessboard& board) const
 	};
 
 	/**
-	*			*	*	*	
-	*					*
+			**	**	**	**	
+						**
+						**
+						**
 	*/
 	for (const auto& target : possibleMoves)
 	{
 		TryToAddMoves(target.first, target.second, board, outMoves);
 	}
 
-	/**
-	*		*
-	*		*
-	*		*  *
+	/*
+			**
+			**
+			**
+			**  **
 	*/
 	for (const auto& target : possibleMoves)
 	{

@@ -36,32 +36,26 @@ void Queen::TryToAddMoves(int row, int column, const Chessboard& board, Array& o
 {
 	using CellState = Chessboard::CellState;
 
-	int increamentRow = GetRowIndex();
-	int increamentCol = GetColumnIndex();
+	int targetRow = m_RowIndex + row;
+	int targetCol = m_ColumnIndex + column;
+	int targetCell = GetCellIndex(targetRow, targetCol, board.GetRowsCount());
 
-	while (true)
+	while (board.GetCellState(targetCell) != CellState::NotValidCell)
 	{
-		increamentRow += row;
-		increamentCol += column;
-		int targetCell = GetCellIndex(increamentRow, increamentCol, board.GetRowsCount());
-
-		bool notValidCell = board.GetCellState(targetCell) == CellState::NotValidCell;
-		if (notValidCell)
-			break;
-
 		const ChessPiece* piece = board.GetChessPiece(targetCell);
-		if (piece && piece->GetPieceColor() == GetPieceColor())
+		if (piece != nullptr)// => there is a piece and we can not move anymore
 		{
+			if (piece->GetPieceColor() != GetPieceColor())// if piece for enemy, add it and break
+				outMoves.Add(targetCell);
+
 			return;
 		}
-		else if (piece && piece->GetPieceColor() != GetPieceColor())
-		{
-			outMoves.Add(targetCell);
-			break;
-		}
-
 
 		outMoves.Add(targetCell);
+
+		targetRow += row;
+		targetCol += column;
+		targetCell = GetCellIndex(targetRow, targetCol, board.GetRowsCount());
 	}
 
 }

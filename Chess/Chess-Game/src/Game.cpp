@@ -147,33 +147,11 @@ void Game::OnUpdate(const DeltaTime& deltaTime)
 
 void Game::OnDestroy()
 {
-}
 
-void Game::AdjustBackgroundImage()
-{
-	const glm::vec2& viewport = Renderer::GetViewport();
-	// Calculate the Scale for the background to fit to the window
-	const float xNewScale = viewport.x / Defaults::MAX_POSITION_OFFSET;
-	const float yNewScale = viewport.y / Defaults::MAX_POSITION_OFFSET;
-
-	m_BackgroundEntity.GetScale().x = xNewScale;
-	m_BackgroundEntity.GetScale().y = yNewScale;
-
-	// center of the window
-	const float windowCenterX = viewport.x / 2.0f;
-	const float windowCenterY = viewport.y / 2.0f;
-
-	// center of the quad
-	float quadCenterX = m_BackgroundEntity.GetPositionCenteredInScreenSpace().x;
-	float quadCenterY = m_BackgroundEntity.GetPositionCenteredInScreenSpace().y;
-
-	m_BackgroundEntity.GetPosition().x += windowCenterX - quadCenterX;
-	m_BackgroundEntity.GetPosition().y += windowCenterY - quadCenterY;
 }
 
 void Game::OnMousePressed(const MouseButtonPressedEvent& event)
 {
-	// event.GetYPosition() will get position from TOP-LEFT, viewport.y - event.GetYPosition will get from BOTTOM-LEFT
 	int& outPieceID = s_DragDropData.PieceID;
 	s_DragDropData.SelectedPiece = m_Chessboard.GetChessPiece(event.GetXPosition(), event.GetYPosition(), outPieceID);
 
@@ -214,7 +192,29 @@ void Game::OnMouseMove(const MouseMoveEvent& event)
 void Game::OnUpdateViewport()
 {
 	AdjustBackgroundImage();
-	m_Chessboard.OnUpdateViewPort();// To Update Cells
+	m_Chessboard.OnUpdateViewPort();// Update Cells
+}
+
+void Game::AdjustBackgroundImage()
+{
+	const glm::vec2& viewport = Renderer::GetViewport();
+	// Calculate the Scale for the background to fit to the window
+	const float xNewScale = viewport.x / Defaults::MAX_POSITION_OFFSET;
+	const float yNewScale = viewport.y / Defaults::MAX_POSITION_OFFSET;
+
+	m_BackgroundEntity.GetScale().x = xNewScale;
+	m_BackgroundEntity.GetScale().y = yNewScale;
+
+	// center of the window
+	const float windowCenterX = viewport.x / 2.0f;
+	const float windowCenterY = viewport.y / 2.0f;
+
+	// center of the quad
+	float quadCenterX = m_BackgroundEntity.GetPositionCenteredInScreenSpace().x;
+	float quadCenterY = m_BackgroundEntity.GetPositionCenteredInScreenSpace().y;
+
+	m_BackgroundEntity.GetPosition().x += windowCenterX - quadCenterX;
+	m_BackgroundEntity.GetPosition().y += windowCenterY - quadCenterY;
 }
 
 void Game::DrawBackgroundManually()

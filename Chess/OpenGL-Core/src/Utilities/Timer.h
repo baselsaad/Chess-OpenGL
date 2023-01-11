@@ -1,7 +1,8 @@
 #pragma once
 
 
-class Timer {
+class Timer
+{
 
 public:
 	Timer(const char* name = "Unknown");
@@ -35,10 +36,10 @@ private:
 #define FUNC_NAME "__FUNCTION__ not supported in your Compiler"
 #endif
 
-#if (UE_BUILD_SHIPPING || UE_BUILD_TEST)
-#define SCOPE_TIMER_NAME(name)
-#define SCOPE_TIMER()
-#else 
+#if (DEBUG)
 #define SCOPE_TIMER_NAME(name) Timer timer(name)
 #define SCOPE_TIMER() SCOPE_TIMER_NAME(FUNC_NAME)
+#else 
+#define SCOPE_TIMER_NAME(name)
+#define SCOPE_TIMER()
 #endif

@@ -2,6 +2,8 @@
 #include "OpenGL-Core.h"
 #include "PlayerInput.h"
 
+#include "Utilities\Timer.h"
+
 void PlayerInput::OnEvent(Event& e)
 {
 	auto finder = m_BoundFunctions.find(e.GetEventType());

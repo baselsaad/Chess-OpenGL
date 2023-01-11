@@ -63,7 +63,6 @@ public:
 	void OnMouseMove(const MouseMoveEvent& event);
 
 	void OnUpdateViewport();
-
 	void AdjustBackgroundImage();
 	void DrawBackgroundManually();
 

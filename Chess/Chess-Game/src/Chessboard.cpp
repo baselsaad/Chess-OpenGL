@@ -113,17 +113,18 @@ bool Chessboard::MoveToNewCell(int pieceID, const glm::vec2& newPosition)
 
 	ChessPiece* piece = m_Cells[pieceID];
 
+	// Calculate the target cell based on the position where the mouse drops the piece
 	glm::vec2 indices = GetRowAndColumnIndex(newPosition.x, newPosition.y);
 	int targetCell = indices.y * m_Rows + indices.x;
 
+	// No need to calculate the possiblemoves again!!
 	Array possibleMoves = piece->GetPossibleMoves(*this);
 
 	for (const auto& cell : possibleMoves)
 	{
 		if (cell == targetCell)
 		{
-			// Clear orginal cell
-			m_Cells[pieceID] = nullptr;
+			m_Cells[pieceID] = nullptr; // Clear orginal cell
 			MoveToNewCell(piece, targetCell, indices);
 
 			return true;
