@@ -37,6 +37,22 @@ struct DragAndDrop
 
 	int PieceID = Chessboard::INVALID;
 	ChessPiece* SelectedPiece = nullptr;
+	TeamColor CurrentTurn = TeamColor::White;
+
+
+	void Reset()
+	{
+		// reset
+		PieceID = Chessboard::INVALID;
+		SelectedPiece = nullptr;
+		PossibleMovesToDraw.Clear();
+	}
+
+	void ChangeTurn()
+	{
+		CurrentTurn = CurrentTurn == TeamColor::Black ? TeamColor::White : TeamColor::Black;
+	}
+
 };
 static DragAndDrop s_DragDropData;
 
@@ -68,7 +84,7 @@ void Game::OnStart()
 
 void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& textures, int pawns, int rest)
 {
-	PieceColor color = textures.SelectedColor == ChessTextures::Color::Black ? PieceColor::Black : PieceColor::White;
+	TeamColor color = textures.SelectedColor == ChessTextures::Color::Black ? TeamColor::Black : TeamColor::White;
 
 	for (int i = 0; i < 8; i++)
 	{
@@ -78,7 +94,7 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 			Rook* rook = container.CreateNewEntity<Rook>();
 			rook->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
 			rook->SetTexture(&textures.Rook);
-			rook->SetPieceColor(color);
+			rook->SetTeamColor(color);
 
 			m_Chessboard.AddNewChessPiece(rook, i, rest);
 		}
@@ -87,7 +103,7 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 			Knight* knight = container.CreateNewEntity<Knight>();
 			knight->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
 			knight->SetTexture(&textures.Knight);
-			knight->SetPieceColor(color);
+			knight->SetTeamColor(color);
 
 			m_Chessboard.AddNewChessPiece(knight, i, rest);
 		}
@@ -96,7 +112,7 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 			Bishop* bishop = container.CreateNewEntity<Bishop>();
 			bishop->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
 			bishop->SetTexture(&textures.Bishop);
-			bishop->SetPieceColor(color);
+			bishop->SetTeamColor(color);
 
 			m_Chessboard.AddNewChessPiece(bishop, i, rest);
 		}
@@ -105,7 +121,7 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 			Queen* queen = container.CreateNewEntity<Queen>();
 			queen->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
 			queen->SetTexture(&textures.Queen);
-			queen->SetPieceColor(color);
+			queen->SetTeamColor(color);
 
 			m_Chessboard.AddNewChessPiece(queen, i, rest);
 		}
@@ -114,7 +130,7 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 			King* king = container.CreateNewEntity<King>();
 			king->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
 			king->SetTexture(&textures.King);
-			king->SetPieceColor(color);
+			king->SetTeamColor(color);
 
 			m_Chessboard.AddNewChessPiece(king, i, rest);
 		}
@@ -126,7 +142,7 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 		Pawn* pawn = container.CreateNewEntity<Pawn>();
 		pawn->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
 		pawn->SetTexture(&textures.Pawn);
-		pawn->SetPieceColor(color);
+		pawn->SetTeamColor(color);
 
 		m_Chessboard.AddNewChessPiece(pawn, i, pawns);
 	}
@@ -156,10 +172,14 @@ void Game::OnMousePressed(const MouseButtonPressedEvent& event)
 	s_DragDropData.SelectedPiece = m_Chessboard.GetChessPiece(event.GetXPosition(), event.GetYPosition(), outPieceID);
 
 	// copy the location in case the move was invalid, so we set it back 
-	if (s_DragDropData.SelectedPiece != nullptr)
+	if (s_DragDropData.SelectedPiece != nullptr && s_DragDropData.SelectedPiece->GetTeamColor() == s_DragDropData.CurrentTurn)
 	{
 		s_DragDropData.OrginalPosition = s_DragDropData.SelectedPiece->GetPositionCenteredInScreenSpace();
 		s_DragDropData.PossibleMovesToDraw = s_DragDropData.SelectedPiece->GetPossibleMoves(m_Chessboard);
+	}
+	else
+	{
+		s_DragDropData.Reset();
 	}
 
 }
@@ -171,14 +191,14 @@ void Game::OnMouseReleased(const MouseButtonReleasedEvent& event)
 		glm::vec2 targetLocation(event.GetXPosition(), event.GetYPosition());
 		bool success = m_Chessboard.MoveToNewCell(s_DragDropData.PieceID, targetLocation);
 
-		if (!success)
+		if (success)
+			s_DragDropData.ChangeTurn();
+		else
 			s_DragDropData.SelectedPiece->OnDragToNewPosition(s_DragDropData.OrginalPosition);
+
 	}
 
-	// reset
-	s_DragDropData.PieceID = Chessboard::INVALID;
-	s_DragDropData.SelectedPiece = nullptr;
-	s_DragDropData.PossibleMovesToDraw.Clear();
+	s_DragDropData.Reset();
 }
 
 void Game::OnMouseMove(const MouseMoveEvent& event)
@@ -242,7 +262,7 @@ void Game::DrawBackgroundManually()
 			const glm::vec3 transform(xOffset, yOffset, 1.0f);
 			const glm::vec3 scale(xNewScale, yNewScale, 1.0f);
 
-			Renderer::Draw(transform , scale, color);
+			Renderer::Draw(transform, scale, color);
 
 			xOffset += quadWidth;
 		}

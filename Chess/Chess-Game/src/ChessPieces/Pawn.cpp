@@ -39,10 +39,10 @@ const Array Pawn::GetPossibleMoves(const Chessboard& board) const
 		const ChessPiece* topRightPiece = board.GetChessPiece(topRight);
 
 		// if it has diffrent color then it is valid to attack 
-		if (topLeftPiece && topLeftPiece->GetPieceColor() != m_PieceColor)
+		if (topLeftPiece && topLeftPiece->GetTeamColor() != m_PieceColor)
 			outMoves.Add(topLeft);
 
-		if (topRightPiece && topRightPiece->GetPieceColor() != m_PieceColor)
+		if (topRightPiece && topRightPiece->GetTeamColor() != m_PieceColor)
 			outMoves.Add(topRight);
 	}
 

@@ -6,7 +6,7 @@
 const Array Knight::GetPossibleMoves(const Chessboard& board) const
 {
 	Array outMoves;
-	int moveDir = (int)GetPieceColor();
+	int moveDir = (int)GetTeamColor();
 
 	std::array<std::pair<int, int>, 4> possibleMoves =
 	{
@@ -53,7 +53,7 @@ void Knight::TryToAddMoves(int row, int column, const Chessboard& board, Array& 
 		return;
 
 	const ChessPiece* piece = board.GetChessPiece(targetCell);
-	if (piece && piece->GetPieceColor() == GetPieceColor())
+	if (piece && piece->GetTeamColor() == GetTeamColor())
 		return;
 
 

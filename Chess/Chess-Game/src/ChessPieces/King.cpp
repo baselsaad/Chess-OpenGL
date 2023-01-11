@@ -42,7 +42,7 @@ bool King::CheckMove(const Chessboard& board, int cellIndex) const
 	{
 		const ChessPiece* piece = board.GetChessPiece(cellIndex);
 		// if there is no piece , or the piece is for the other team
-		if (piece == nullptr || piece->GetPieceColor() != m_PieceColor)
+		if (piece == nullptr || piece->GetTeamColor() != m_PieceColor)
 			return true;
 	}
 

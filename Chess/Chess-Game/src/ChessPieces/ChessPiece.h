@@ -60,7 +60,7 @@ struct Array
 
 };
 
-enum class PieceColor
+enum class TeamColor
 {
 	// (-1 moveDir = Bottom, 1 moveDir = Up)
 	Black = -1,
@@ -94,8 +94,8 @@ public:
 	inline void SetColumnIndex(int colIndex) { m_ColumnIndex = colIndex; }
 	inline int GetColumnIndex() const { return m_ColumnIndex; }
 
-	inline void SetPieceColor(PieceColor color) { m_PieceColor = color; }
-	inline PieceColor GetPieceColor() const { return m_PieceColor; }
+	inline void SetTeamColor(TeamColor color) { m_PieceColor = color; }
+	inline TeamColor GetTeamColor() const { return m_PieceColor; }
 
 protected:
 	static int GetCellIndex(const int& targetRow, const int& targetColumn, const int& maxRows);
@@ -103,7 +103,7 @@ protected:
 	int m_RowIndex;
 	int m_ColumnIndex;
 	bool m_FirstMove;
-	PieceColor m_PieceColor;
+	TeamColor m_PieceColor;
 
 
 };

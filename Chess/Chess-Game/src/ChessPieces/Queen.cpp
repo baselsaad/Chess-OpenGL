@@ -6,7 +6,7 @@
 const Array Queen::GetPossibleMoves(const Chessboard& board) const
 {
 	Array outMoves;
-	int moveDir = (int)GetPieceColor();
+	int moveDir = (int)GetTeamColor();
 
 	std::array<std::pair<int, int>, 8> possibleMoves =
 	{
@@ -45,7 +45,7 @@ void Queen::TryToAddMoves(int row, int column, const Chessboard& board, Array& o
 		const ChessPiece* piece = board.GetChessPiece(targetCell);
 		if (piece != nullptr)// => there is a piece and we can not move anymore
 		{
-			if (piece->GetPieceColor() != GetPieceColor())// if piece for enemy, add it and break
+			if (piece->GetTeamColor() != GetTeamColor())// if piece for enemy, add it and break
 				outMoves.Add(targetCell);
 
 			return;
