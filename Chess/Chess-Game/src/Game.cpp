@@ -6,9 +6,11 @@
 #include "Utilities\DeltaTime.h"
 #include "Utilities\Log.h"
 #include "Utilities\Debug.h"
-#include "Utilities\Timer.h"	
-#include "Event.h"
-#include "PlayerInput.h"
+#include "Utilities\Timer.h"
+
+#include "Event\Event.h"
+#include "Event\Input.h"
+#include "Event\PlayerInput.h"
 
 #include "ChessPieces\ChessPiece.h"
 #include "ChessPieces\Pawn.h"
@@ -39,7 +41,6 @@ struct DragAndDrop
 	ChessPiece* SelectedPiece = nullptr;
 	TeamColor CurrentTurn = TeamColor::White;
 
-
 	void Reset()
 	{
 		// reset
@@ -52,7 +53,6 @@ struct DragAndDrop
 	{
 		CurrentTurn = CurrentTurn == TeamColor::Black ? TeamColor::White : TeamColor::Black;
 	}
-
 };
 static DragAndDrop s_DragDropData;
 
@@ -69,7 +69,6 @@ void Game::SetupPlayerInput(PlayerInput& input)
 {
 	input.BindAction(EventType::MouseButtonPressed, this, &Game::OnMousePressed);
 	input.BindAction(EventType::MouseButtonReleased, this, &Game::OnMouseReleased);
-	input.BindAction(EventType::MouseMove, this, &Game::OnMouseMove);
 }
 
 void Game::OnStart()
@@ -151,6 +150,19 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 
 void Game::OnUpdate(const DeltaTime& deltaTime)
 {
+	OnRender();
+
+	if (Input::IsMouseButtonDown(MouseButtonKey::Left))
+	{
+		if (s_DragDropData.SelectedPiece != nullptr)
+		{
+			s_DragDropData.SelectedPiece->OnDragToNewPosition(Input::GetMousePosition());
+		}
+	}
+}
+
+void Game::OnRender()
+{
 	// Background
 	Renderer::Draw(m_BackgroundEntity.GetTransformationMatrix(), m_BackgroundEntity.GetTexture());
 	//DrawBackgroundManually();
@@ -163,13 +175,27 @@ void Game::OnUpdate(const DeltaTime& deltaTime)
 
 void Game::OnDestroy()
 {
-
 }
 
 void Game::OnMousePressed(const MouseButtonPressedEvent& event)
 {
+	OnSelect(event.GetXPosition(), event.GetYPosition());
+}
+
+void Game::OnMouseReleased(const MouseButtonReleasedEvent& event)
+{
+	OnDeselect(event.GetXPosition(), event.GetYPosition());
+}
+
+void Game::OnSelect(float xPos, float yPos)
+{
+	if (s_DragDropData.SelectedPiece != nullptr)
+	{
+		OnDeselect(xPos, yPos);
+	}
+
 	int& outPieceID = s_DragDropData.PieceID;
-	s_DragDropData.SelectedPiece = m_Chessboard.GetChessPiece(event.GetXPosition(), event.GetYPosition(), outPieceID);
+	s_DragDropData.SelectedPiece = m_Chessboard.GetChessPiece(xPos, yPos, outPieceID);
 
 	// copy the location in case the move was invalid, so we set it back 
 	if (s_DragDropData.SelectedPiece != nullptr && s_DragDropData.SelectedPiece->GetTeamColor() == s_DragDropData.CurrentTurn)
@@ -181,32 +207,25 @@ void Game::OnMousePressed(const MouseButtonPressedEvent& event)
 	{
 		s_DragDropData.Reset();
 	}
-
 }
 
-void Game::OnMouseReleased(const MouseButtonReleasedEvent& event)
+void Game::OnDeselect(float xPos, float yPos)
 {
 	if (s_DragDropData.SelectedPiece != nullptr)
 	{
-		glm::vec2 targetLocation(event.GetXPosition(), event.GetYPosition());
+		glm::vec2 targetLocation(xPos, yPos);
 		bool success = m_Chessboard.MoveToNewCell(s_DragDropData.PieceID, targetLocation);
 
 		if (success)
+		{
 			s_DragDropData.ChangeTurn();
+			s_DragDropData.Reset();
+		}
 		else
+		{
 			s_DragDropData.SelectedPiece->OnDragToNewPosition(s_DragDropData.OrginalPosition);
-
+		}
 	}
-
-	s_DragDropData.Reset();
-}
-
-void Game::OnMouseMove(const MouseMoveEvent& event)
-{
-	if (s_DragDropData.SelectedPiece == nullptr)
-		return;
-
-	s_DragDropData.SelectedPiece->OnDragToNewPosition({ event.GetXPosition(), event.GetYPosition() });
 }
 
 void Game::OnUpdateViewport()
@@ -283,12 +302,11 @@ void Game::DrawPossibleMoves()
 	const float xNewScale = (quadWidth - 10.0f) / (Defaults::MAX_POSITION_OFFSET);
 	const float yNewScale = (quadHeight - 10.0f) / (Defaults::MAX_POSITION_OFFSET);
 
-	for (const int8_t& i : s_DragDropData.PossibleMovesToDraw)
+	for (const auto& i : s_DragDropData.PossibleMovesToDraw)
 	{
-		glm::vec2 position2d = m_Chessboard.CalcCellScreenPosition(i);
+		glm::vec2 position2d = m_Chessboard.CalcCellScreenPosition(i.TargetCell);
 		glm::vec3 position3d(position2d.x + 5.0f, position2d.y + 5.0f, 1.0f);
 
-		//Renderer::Draw(position3d, glm::vec3(xNewScale, yNewScale, 1.0f), &m_PossibleMovesTexture);
 		Renderer::Draw(position3d, glm::vec3(xNewScale, yNewScale, 1.0f), Colors::HighLightColor);
 	}
 

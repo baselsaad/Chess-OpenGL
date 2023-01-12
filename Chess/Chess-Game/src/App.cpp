@@ -2,7 +2,8 @@
 #include "OpenGL-Core.h"
 #include "App.h"
 
-#include "Event.h"
+#include "Event\Input.h"
+#include "Event\Event.h"
 #include "Game.h"
 #include "Renderer\Defaults.h"
 #include "Utilities\Log.h"
@@ -38,6 +39,7 @@ void Application::OnStart()
 {
 	s_Running = true;
 	SetupEventCallback();
+	Input::Init(m_Window);
 
 	m_PlayerInput.BindAction(EventType::CloseWindow, this, &Application::OnClose);
 	m_PlayerInput.BindAction(EventType::ResizeWindow, this, &Application::OnResizeWindow);
@@ -93,7 +95,7 @@ void Application::OnClose(const CloseWindowEvent& event)
 void Application::OnResizeWindow(const ResizeWindowEvent& event)
 {
 	Renderer::UpdateViewport(event.GetWidth(), event.GetHeight());
-	
+
 	m_Window->UpdateWindowSize(event.GetWidth(), event.GetHeight());
 	m_Game->OnUpdateViewport();
 }

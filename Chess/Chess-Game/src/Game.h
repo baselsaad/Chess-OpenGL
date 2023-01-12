@@ -55,12 +55,15 @@ public:
 	void OnStart();
 	void CreateChessPieces(const EntityContainer& container, ChessTextures& textures, int pawns, int rest);
 	void OnUpdate(const DeltaTime& deltaTime);
+	void OnRender();
 	void SetupPlayerInput(PlayerInput& input);
 	void OnDestroy();
 
 	void OnMousePressed(const MouseButtonPressedEvent& event);
 	void OnMouseReleased(const MouseButtonReleasedEvent& event);
-	void OnMouseMove(const MouseMoveEvent& event);
+
+	void OnSelect(float xPos, float yPos);
+	void OnDeselect(float xPos, float yPos);
 
 	void OnUpdateViewport();
 	void AdjustBackgroundImage();

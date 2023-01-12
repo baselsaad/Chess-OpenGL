@@ -28,7 +28,17 @@ const Array King::GetPossibleMoves(const Chessboard& board) const
 	for (const int& targetCell : possibleMoves)
 	{
 		if (CheckMove(board, targetCell))
-			outMoves.Add(targetCell);
+		{
+			Move move;
+			move.TargetCell = targetCell;
+			outMoves.Add(move);
+		}
+	}
+
+	// Check for "is king in check before"
+	{
+		TryKingSideCastle(board, outMoves);
+		TryQueenSideCastle(board, outMoves);
 	}
 
 	return outMoves;
@@ -47,5 +57,57 @@ bool King::CheckMove(const Chessboard& board, int cellIndex) const
 	}
 
 	return false;
+}
+
+void King::TryQueenSideCastle(const Chessboard& board, Array& outMoves) const
+{
+	if (!m_FirstMove)
+		return;
+
+	// rook was killed or moved before
+	const ChessPiece* rook = board.GetChessPiece(GetCellIndex(m_RowIndex - 4, m_ColumnIndex, board.GetRowsCount()));
+	if (rook == nullptr || !rook->IsActive() || !rook->IsFirstMove())
+		return;
+
+	for (int i = 1; i <= 3; i++)
+	{
+		int row = m_RowIndex - i;
+		int cellIndex = GetCellIndex(row, m_ColumnIndex, board.GetRowsCount());
+
+		if (board.GetChessPiece(cellIndex) != nullptr)
+			return;
+	}
+
+	Move move;
+	move.TargetCell = GetCellIndex(m_RowIndex - 2, m_ColumnIndex, board.GetRowsCount());
+	move.Flag = MovesFlag::QueenSideCastling;
+	outMoves.Add(move);
+
+}
+
+void King::TryKingSideCastle(const Chessboard& board, Array& outMoves) const
+{
+	if (!m_FirstMove)
+		return;
+
+	// rook was killed or moved before
+
+	const ChessPiece* rook = board.GetChessPiece(GetCellIndex(m_RowIndex + 3, m_ColumnIndex, board.GetRowsCount()));
+	if (rook == nullptr || !rook->IsActive() || !rook->IsFirstMove())
+		return;
+
+	for (int i = 1; i <= 2; i++)
+	{
+		int row = m_RowIndex + i;
+		int cellIndex = GetCellIndex(row, m_ColumnIndex, board.GetRowsCount());
+
+		if (board.GetChessPiece(cellIndex) != nullptr)
+			return;
+	}
+
+	Move move;
+	move.TargetCell = GetCellIndex(m_RowIndex + 2, m_ColumnIndex, board.GetRowsCount());
+	move.Flag = MovesFlag::KingSideCastling;
+	outMoves.Add(move);
 }
 

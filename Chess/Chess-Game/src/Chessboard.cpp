@@ -120,12 +120,18 @@ bool Chessboard::MoveToNewCell(int pieceID, const glm::vec2& newPosition)
 	// No need to calculate the possiblemoves again!!
 	Array possibleMoves = piece->GetPossibleMoves(*this);
 
-	for (const auto& cell : possibleMoves)
+	for (const auto& move : possibleMoves)
 	{
-		if (cell == targetCell)
+		if (move.TargetCell == targetCell)
 		{
 			m_Cells[pieceID] = nullptr; // Clear orginal cell
 			MoveToNewCell(piece, targetCell, indices);
+
+			switch (move.Flag)
+			{
+				case MovesFlag::KingSideCastling:
+				case MovesFlag::QueenSideCastling: HandleCastling(move.Flag, targetCell, piece); break;
+			}
 
 			return true;
 		}
@@ -164,6 +170,36 @@ glm::vec2 Chessboard::GetRowAndColumnIndex(double mouseX, double mouseY) const
 	int safeColumnIndex = glm::min(m_Columns - 1, columnIndex);
 
 	return glm::vec2(safeRowIndex, safeColumnIndex);
+}
+
+void Chessboard::HandleCastling(const MovesFlag& flag, int kingTargetCell, ChessPiece* king)
+{
+	int rookRow = -1;
+	int rookColumn = king->GetColumnIndex();
+
+	int targetRow = -1;
+
+	//King is allready moved
+	switch (flag)
+	{
+		case MovesFlag::KingSideCastling:
+		rookRow = king->GetRowIndex() + 1; // one cell right from King
+		targetRow = king->GetRowIndex() - 1; // one cell left from King
+		break;
+
+		case MovesFlag::QueenSideCastling:
+		rookRow = king->GetRowIndex() - 2;// tow cells right from King
+		targetRow = king->GetRowIndex() + 1;// one cell right from King
+		break;
+	}
+
+	int rookIndex = rookColumn * m_Rows + rookRow;
+	int rookTargetCell = rookColumn * m_Rows + targetRow;
+
+	//Move Rook
+	ChessPiece* rook = m_Cells[rookIndex];
+	m_Cells[rookIndex] = nullptr;// Clear orginal cell
+	MoveToNewCell(rook, rookTargetCell, { targetRow,rookColumn });
 }
 
 glm::vec2 Chessboard::CalcCellScreenPosition(int row, int column) const

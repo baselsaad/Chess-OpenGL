@@ -35,7 +35,8 @@ public:
 private:
 	void MoveToNewCell(ChessPiece* piece, int targetCell, const glm::vec2& rowAndColumnIndex);
 	glm::vec2 GetRowAndColumnIndex(double mouseX, double mouseY) const;
-	
+
+	void HandleCastling(const MovesFlag& flag, int kingTargetCell, ChessPiece* king);
 
 private:
 	int m_Rows;

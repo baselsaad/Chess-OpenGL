@@ -17,28 +17,16 @@ const Array Knight::GetPossibleMoves(const Chessboard& board) const
 		std::pair(+2, (-1 * moveDir)),	// L-Down-Right
 	};
 
-	/**
-			**	**	**	**	
-						**
-						**
-						**
-	*/
+	
 	for (const auto& target : possibleMoves)
 	{
 		TryToAddMoves(target.first, target.second, board, outMoves);
 	}
 
-	/*
-			**
-			**
-			**
-			**  **
-	*/
 	for (const auto& target : possibleMoves)
 	{
 		TryToAddMoves(target.second, target.first, board, outMoves);
 	}
-
 
 	return outMoves;
 }
@@ -55,7 +43,6 @@ void Knight::TryToAddMoves(int row, int column, const Chessboard& board, Array& 
 	const ChessPiece* piece = board.GetChessPiece(targetCell);
 	if (piece && piece->GetTeamColor() == GetTeamColor())
 		return;
-
 
 	outMoves.Add(targetCell);
 }
