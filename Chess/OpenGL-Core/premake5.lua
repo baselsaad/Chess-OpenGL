@@ -43,8 +43,8 @@ project "OpenGL-Core"
 
 	links 
 	{ 
-		"vendor/GLFW/lib/glfw3_mt.lib",
-		"vendor/GLEW/lib/glew32s.lib",
+		"GLFW",
+		"GLEW",
 		"opengl32.lib"
 	}
 
