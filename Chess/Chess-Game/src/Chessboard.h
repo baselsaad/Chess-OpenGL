@@ -18,7 +18,7 @@ public:
 	void OnUpdateViewPort();
 
 	void AddNewChessPiece(ChessPiece* piece, int rowIndex, int colIndex);
-	bool MoveToNewCell(int pieceID, const glm::vec2& newPosition);
+	bool MoveToNewCell(int pieceID, const glm::vec2& newPosition, const Array& possibleMoves);
 	const Array GetPossibleMoves(int pieceID);
 
 	ChessPiece* GetChessPiece(double mouseX, double mouseY, int& outpieceID);

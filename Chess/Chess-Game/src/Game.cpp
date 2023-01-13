@@ -214,7 +214,7 @@ void Game::OnDeselect(float xPos, float yPos)
 	if (s_DragDropData.SelectedPiece != nullptr)
 	{
 		glm::vec2 targetLocation(xPos, yPos);
-		bool success = m_Chessboard.MoveToNewCell(s_DragDropData.PieceID, targetLocation);
+		bool success = m_Chessboard.MoveToNewCell(s_DragDropData.PieceID, targetLocation, s_DragDropData.PossibleMovesToDraw);
 
 		if (success)
 		{

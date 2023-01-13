@@ -107,7 +107,7 @@ const CellState Chessboard::GetCellState(int cellIndex) const
 		return CellState::OccupiedCell;
 }
 
-bool Chessboard::MoveToNewCell(int pieceID, const glm::vec2& newPosition)
+bool Chessboard::MoveToNewCell(int pieceID, const glm::vec2& newPosition, const Array& possibleMoves)
 {
 	ASSERT(pieceID >= 0 && pieceID < m_Cells.size(), "Invalid Entity ID!!");
 
@@ -116,9 +116,6 @@ bool Chessboard::MoveToNewCell(int pieceID, const glm::vec2& newPosition)
 	// Calculate the target cell based on the position where the mouse drops the piece
 	glm::vec2 indices = GetRowAndColumnIndex(newPosition.x, newPosition.y);
 	int targetCell = indices.y * m_Rows + indices.x;
-
-	// No need to calculate the possiblemoves again!!
-	Array possibleMoves = piece->GetPossibleMoves(*this);
 
 	for (const auto& move : possibleMoves)
 	{
