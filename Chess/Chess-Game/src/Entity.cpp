@@ -2,7 +2,7 @@
 #include "OpenGL-Core.h"
 #include "Entity.h"
 
-#include "Renderer\Defaults.h"
+#include "Renderer/Defaults.h"
 
 Entity::Entity(const glm::vec3& position, const glm::vec3& scale)
 	: m_Position(position)

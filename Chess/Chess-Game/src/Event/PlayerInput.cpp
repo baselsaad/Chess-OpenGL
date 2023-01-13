@@ -2,7 +2,7 @@
 #include "OpenGL-Core.h"
 #include "PlayerInput.h"
 
-#include "Utilities\Timer.h"
+#include "Utilities/Timer.h"
 
 void PlayerInput::OnEvent(Event& e)
 {

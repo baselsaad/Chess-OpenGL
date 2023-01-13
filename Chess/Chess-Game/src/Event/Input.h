@@ -1,6 +1,6 @@
 #pragma once
 #include "Event.h"
-#include "glm\vec2.hpp"
+#include "glm/vec2.hpp"
 
 class OpenGLWindow;
 

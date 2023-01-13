@@ -1,6 +1,6 @@
 #pragma once
-#include "Utilities\DeltaTime.h"
-#include "Event\PlayerInput.h"
+#include "Utilities/DeltaTime.h"
+#include "Event/PlayerInput.h"
 
 class OpenGLWindow;
 class Event;

@@ -2,7 +2,7 @@
 #include "OpenGL-Core.h"
 #include "Input.h"
 
-#include "Utilities\Debug.h"
+#include "Utilities/Debug.h"
 
 static OpenGLWindow* s_Window;
 

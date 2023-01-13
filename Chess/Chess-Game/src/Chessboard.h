@@ -1,5 +1,5 @@
 #pragma once
-#include "ChessPieces\ChessPiece.h"
+#include "ChessPieces/ChessPiece.h"
 
 class Chessboard
 {

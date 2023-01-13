@@ -2,23 +2,23 @@
 #include "OpenGL-Core.h"
 #include "Game.h"
 
-#include "Renderer\Defaults.h"
-#include "Utilities\DeltaTime.h"
-#include "Utilities\Log.h"
-#include "Utilities\Debug.h"
-#include "Utilities\Timer.h"
+#include "Renderer/Defaults.h"
+#include "Utilities/DeltaTime.h"
+#include "Utilities/Log.h"
+#include "Utilities/Debug.h"
+#include "Utilities/Timer.h"
 
-#include "Event\Event.h"
-#include "Event\Input.h"
-#include "Event\PlayerInput.h"
+#include "Event/Event.h"
+#include "Event/Input.h"
+#include "Event/PlayerInput.h"
 
-#include "ChessPieces\ChessPiece.h"
-#include "ChessPieces\Pawn.h"
-#include "ChessPieces\King.h"
-#include "ChessPieces\Queen.h"
-#include "ChessPieces\Bishop.h"
-#include "ChessPieces\Rook.h"
-#include "ChessPieces\Knight.h"
+#include "ChessPieces/ChessPiece.h"
+#include "ChessPieces/Pawn.h"
+#include "ChessPieces/King.h"
+#include "ChessPieces/Queen.h"
+#include "ChessPieces/Bishop.h"
+#include "ChessPieces/Rook.h"
+#include "ChessPieces/Knight.h"
 
 ChessTextures::ChessTextures(const Color& color)
 	: SelectedColor(color)

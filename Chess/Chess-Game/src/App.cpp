@@ -2,13 +2,13 @@
 #include "OpenGL-Core.h"
 #include "App.h"
 
-#include "Event\Input.h"
-#include "Event\Event.h"
+#include "Event/Input.h"
+#include "Event/Event.h"
 #include "Game.h"
-#include "Renderer\Defaults.h"
-#include "Utilities\Log.h"
-#include "Utilities\Debug.h"
-#include "Utilities\Timer.h"
+#include "Renderer/Defaults.h"
+#include "Utilities/Log.h"
+#include "Utilities/Debug.h"
+#include "Utilities/Timer.h"
 
 static bool s_Running = false;
 
