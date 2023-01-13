@@ -2,7 +2,7 @@
 #include "OpenGL-Core.h"
 #include "Defaults.h"
 
-#include "Utilities\Debug.h"
+#include "Utilities/Debug.h"
 
 VertexArray::VertexArray()
 	: m_RendererID(0)
