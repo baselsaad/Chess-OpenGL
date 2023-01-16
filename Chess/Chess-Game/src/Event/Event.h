@@ -1,14 +1,6 @@
 #pragma once
 #include <GLFW/glfw3.h>
 
-class Renderer;
-
-#define BIND_FUN(obj, fun)											\
-[&] (auto&&... args)												\
-{																	\
-	obj->fun(std::forward<decltype(args)>(args)...);				\
-}
-
 enum class MouseButtonKey : int
 {
 	Left = GLFW_MOUSE_BUTTON_LEFT, Right = GLFW_MOUSE_BUTTON_RIGHT, UnSupported

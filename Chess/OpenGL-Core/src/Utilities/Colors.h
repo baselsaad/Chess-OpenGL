@@ -52,7 +52,7 @@ namespace Colors
 
 	static const RGBA HighLightColor{ 0.77f, 0.12f, 0.23f, 0.4f };
 
-	const std::vector<RGBA> ColorsArray =
+	static const std::vector<RGBA> ColorsArray =
 	{
 	  Red
 	, Dark_Magenta

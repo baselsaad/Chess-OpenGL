@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "OpenGL-Core.h"
-#include "Utilities\Debug.h"
+#include "Utilities/Debug.h"
 
 
 VertexBuffer::VertexBuffer(const void* data, uint32_t size)

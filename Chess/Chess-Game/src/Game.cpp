@@ -13,12 +13,7 @@
 #include "Event/PlayerInput.h"
 
 #include "ChessPieces/ChessPiece.h"
-#include "ChessPieces/Pawn.h"
-#include "ChessPieces/King.h"
-#include "ChessPieces/Queen.h"
-#include "ChessPieces/Bishop.h"
-#include "ChessPieces/Rook.h"
-#include "ChessPieces/Knight.h"
+#include "ChessPieces/MovesGen.h"
 
 ChessTextures::ChessTextures(const Color& color)
 	: SelectedColor(color)
@@ -35,7 +30,7 @@ ChessTextures::ChessTextures(const Color& color)
 struct DragAndDrop
 {
 	glm::vec3 OrginalPosition = { 0.0f,0.0f,0.0f };
-	Array PossibleMovesToDraw;
+	MovesGen::Array PossibleMovesToDraw;
 
 	int PieceID = Chessboard::INVALID;
 	ChessPiece* SelectedPiece = nullptr;
@@ -90,46 +85,36 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 		if (i == 0 || i == 7) //Rook
 		{
 			// Create New Entity and bind the move function in constructur
-			Rook* rook = container.CreateNewEntity<Rook>();
-			rook->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
+			ChessPiece* rook = container.CreateNewEntity(color, PieceType::Rook);
 			rook->SetTexture(&textures.Rook);
-			rook->SetTeamColor(color);
 
 			m_Chessboard.AddNewChessPiece(rook, i, rest);
 		}
 		else if (i == 1 || i == 6) //Knight
 		{
-			Knight* knight = container.CreateNewEntity<Knight>();
-			knight->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
+			ChessPiece* knight = container.CreateNewEntity(color, PieceType::Knight);
 			knight->SetTexture(&textures.Knight);
-			knight->SetTeamColor(color);
 
 			m_Chessboard.AddNewChessPiece(knight, i, rest);
 		}
 		else if (i == 2 || i == 5) //Bishop
 		{
-			Bishop* bishop = container.CreateNewEntity<Bishop>();
-			bishop->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
+			ChessPiece* bishop = container.CreateNewEntity(color, PieceType::Bishop);
 			bishop->SetTexture(&textures.Bishop);
-			bishop->SetTeamColor(color);
 
 			m_Chessboard.AddNewChessPiece(bishop, i, rest);
 		}
 		else if (i == 3) // Queen
 		{
-			Queen* queen = container.CreateNewEntity<Queen>();
-			queen->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
+			ChessPiece* queen = container.CreateNewEntity(color, PieceType::Queen);
 			queen->SetTexture(&textures.Queen);
-			queen->SetTeamColor(color);
 
 			m_Chessboard.AddNewChessPiece(queen, i, rest);
 		}
 		else if (i == 4) //King
 		{
-			King* king = container.CreateNewEntity<King>();
-			king->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
+			ChessPiece* king = container.CreateNewEntity(color, PieceType::King);
 			king->SetTexture(&textures.King);
-			king->SetTeamColor(color);
 
 			m_Chessboard.AddNewChessPiece(king, i, rest);
 		}
@@ -138,10 +123,8 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 	// Pawns
 	for (int i = 0; i < 8; i++)
 	{
-		Pawn* pawn = container.CreateNewEntity<Pawn>();
-		pawn->SetTransform(Defaults::DefaultPosition, Defaults::DefaultScale);
+		ChessPiece* pawn = container.CreateNewEntity(color, PieceType::Pawn);
 		pawn->SetTexture(&textures.Pawn);
-		pawn->SetTeamColor(color);
 
 		m_Chessboard.AddNewChessPiece(pawn, i, pawns);
 	}
@@ -201,7 +184,7 @@ void Game::OnSelect(float xPos, float yPos)
 	if (s_DragDropData.SelectedPiece != nullptr && s_DragDropData.SelectedPiece->GetTeamColor() == s_DragDropData.CurrentTurn)
 	{
 		s_DragDropData.OrginalPosition = s_DragDropData.SelectedPiece->GetPositionCenteredInScreenSpace();
-		s_DragDropData.PossibleMovesToDraw = s_DragDropData.SelectedPiece->GetPossibleMoves(m_Chessboard);
+		s_DragDropData.PossibleMovesToDraw = MovesGen::GetPossibleMoves(s_DragDropData.SelectedPiece, m_Chessboard);
 	}
 	else
 	{

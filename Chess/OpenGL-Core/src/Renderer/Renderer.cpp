@@ -8,10 +8,10 @@ static struct RenderData* s_Data = nullptr;
 
 struct RenderData
 {
-	VertexArray VertexArray;
-	VertexBuffer VetexBuffer;
+	VertexArray VA;
+	VertexBuffer VB;
 	VertexBufferLayout Layout;
-	IndexBuffer IndexBuffer;
+	IndexBuffer IB;
 
 	Shader TextureShader;
 	Shader ColorShader;
@@ -20,15 +20,15 @@ struct RenderData
 	glm::mat4 ProjectionView;
 
 	RenderData(int width, int height)
-		: VetexBuffer(Defaults::Positions, Defaults::PositionsSize)
-		, IndexBuffer(Defaults::Indices, Defaults::IndicesCount)
+		: VB(Defaults::Positions, Defaults::PositionsSize)
+		, IB(Defaults::Indices, Defaults::IndicesCount)
 		, TextureShader("res/shaders/Texture.shader")
 		, ColorShader("res/shaders/Color.shader")
 		, Viewport(width, height)
 	{
 		Layout.Push<float>(2);
 		Layout.Push<float>(2);
-		VertexArray.AddBuffer(VetexBuffer, Layout);
+		VA.AddBuffer(VB, Layout);
 
 		CalculateProjectionViewMatrix();
 	}
@@ -75,7 +75,7 @@ void Renderer::Draw(const glm::mat4& transform, const Texture* texture)
 	s_Data->TextureShader.SetUniformMat4f("u_MVP", mvp);
 	s_Data->TextureShader.SetUniform1i("u_Texture", 0);
 
-	Draw(s_Data->VertexArray, s_Data->IndexBuffer);
+	Draw(s_Data->VA, s_Data->IB);
 }
 
 void Renderer::Draw(const glm::mat4& transform, const Colors::RGBA& color)
@@ -87,7 +87,7 @@ void Renderer::Draw(const glm::mat4& transform, const Colors::RGBA& color)
 	s_Data->ColorShader.SetUniformMat4f("u_MVP", mvp);
 	s_Data->ColorShader.SetUniform4f("u_Color", color);
 
-	Draw(s_Data->VertexArray, s_Data->IndexBuffer);
+	Draw(s_Data->VA, s_Data->IB);
 }
 
 void Renderer::Draw(const glm::vec3& position, const glm::vec3& scale, const Texture* texture)

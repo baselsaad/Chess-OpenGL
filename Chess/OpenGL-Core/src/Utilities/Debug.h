@@ -1,7 +1,14 @@
 #pragma once
+#include <stdlib.h>
 #include "Utilities/Log.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#if _MSC_VER
+#define DEBUG_BREAK __debugbreak
+#else
+#define DEBUG_BREAK throw std::exception
+#endif
 
 #if DEBUG
 
@@ -9,13 +16,11 @@
 		if (!(x))									\
 		{											\
 			ASSERT_ERROR(Msg);						\
-			__debugbreak();							\
+			DEBUG_BREAK();							\
 		}
 #else
 #define ASSERT(x,MSG)
 #endif
-
-#define CHECK(x) if (!(x)) __debugbreak();
 
 static void OpenGLMessageCallback(unsigned source, unsigned type, unsigned id, unsigned severity,
 	int length, const char* message, const void* userParam)
@@ -36,3 +41,4 @@ static void GLFWErrorCallback(int error, const char* desc)
 {
 	Debug::Error("Error {0}: {1}", error, desc);
 }
+

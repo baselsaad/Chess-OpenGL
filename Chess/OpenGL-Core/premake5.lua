@@ -21,9 +21,9 @@ project "OpenGL-Core"
 		"vendor/glm/**.hpp",
 		"vendor/glm/**.inl",
 		
-		"vendor/spdlog/inlcude/spdlog/spdlog.h",
-		"vendor/spdlog/inlcude/spdlog/fmt/ostr.h",
-		"vendor/spdlog/inlcude/spdlog/sinks/stdout_color_sinks.h"
+		"vendor/spdlog/include/spdlog/spdlog.h",
+		"vendor/spdlog/include/spdlog/fmt/ostr.h",
+		"vendor/spdlog/include/spdlog/sinks/stdout_color_sinks.h"
 	}
 
 	defines
@@ -34,6 +34,7 @@ project "OpenGL-Core"
 	includedirs
 	{
 		"src",
+		"vendor/",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLEW}",

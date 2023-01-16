@@ -9,8 +9,7 @@ Chessboard::Chessboard(int rowsCount, int columnsCount)
 	, m_Columns(columnsCount)
 {
 	m_Cells.resize(rowsCount * columnsCount);
-
-	std::memset(&m_Cells[0], NULL, rowsCount * columnsCount);
+	std::fill(&m_Cells[0], &m_Cells[0] + rowsCount * columnsCount, nullptr);
 }
 
 Chessboard::~Chessboard()
@@ -19,12 +18,18 @@ Chessboard::~Chessboard()
 
 void Chessboard::OnUpdateViewPort()
 {
+	// width and height are the Top-Right Position of the first Cell in Screen Space
+	m_RowWidth = Renderer::GetViewport().x / m_Rows;
+	m_ColHeight = Renderer::GetViewport().y / m_Columns;
+
 	for (auto& piece : m_Cells)
 	{
 		if (piece == nullptr)
 			continue;
 
-		const glm::vec2 center = CalcCellScreenPosition(piece->GetRowIndex(), piece->GetColumnIndex());
+		glm::vec2 center = CalcCellScreenPosition(piece->GetRowIndex(), piece->GetColumnIndex());
+		center = CalcCellCenterPosition(center.x, center.y);
+
 		piece->OnDragToNewPosition(center);
 	}
 }
@@ -43,12 +48,13 @@ void Chessboard::AddNewChessPiece(ChessPiece* entity, int rowIndex, int colIndex
 
 	// Get Cell Center-Position
 	glm::vec2 newPosition = CalcCellScreenPosition(rowIndex, colIndex);
+	glm::vec2 center = CalcCellCenterPosition(newPosition.x, newPosition.y);
 
 	// Translate Entity
 	auto& translation = entity->GetPosition();
 	auto& entityOrgin = entity->GetPositionCenteredInScreenSpace();
-	translation.x += newPosition.x - entityOrgin.x;
-	translation.y += newPosition.y - entityOrgin.y;
+	translation.x += center.x - entityOrgin.x;
+	translation.y += center.y - entityOrgin.y;
 }
 
 ChessPiece* Chessboard::GetChessPiece(double mouseX, double mouseY, int& outPieceID)
@@ -92,11 +98,6 @@ const ChessPiece* Chessboard::GetChessPiece(int cellIndex) const
 	return m_Cells[cellIndex];
 }
 
-const Array Chessboard::GetPossibleMoves(int entityID)
-{
-	return m_Cells[entityID]->GetPossibleMoves(*this);
-}
-
 const CellState Chessboard::GetCellState(int cellIndex) const
 {
 	if (cellIndex < 0 || cellIndex > m_Cells.size())
@@ -107,7 +108,7 @@ const CellState Chessboard::GetCellState(int cellIndex) const
 		return CellState::OccupiedCell;
 }
 
-bool Chessboard::MoveToNewCell(int pieceID, const glm::vec2& newPosition, const Array& possibleMoves)
+bool Chessboard::MoveToNewCell(int pieceID, const glm::vec2& newPosition, const MovesGen::Array& possibleMoves)
 {
 	ASSERT(pieceID >= 0 && pieceID < m_Cells.size(), "Invalid Entity ID!!");
 
@@ -126,8 +127,8 @@ bool Chessboard::MoveToNewCell(int pieceID, const glm::vec2& newPosition, const 
 
 			switch (move.Flag)
 			{
-				case MovesFlag::KingSideCastling:
-				case MovesFlag::QueenSideCastling: HandleCastling(move.Flag, targetCell, piece); break;
+				case MovesGen::MovesFlag::KingSideCastling:
+				case MovesGen::MovesFlag::QueenSideCastling: HandleCastling(move.Flag, targetCell, piece); break;
 			}
 
 			return true;
@@ -140,9 +141,10 @@ bool Chessboard::MoveToNewCell(int pieceID, const glm::vec2& newPosition, const 
 void Chessboard::MoveToNewCell(ChessPiece* piece, int targetCell, const glm::vec2& rowAndColumnIndex)
 {
 	const glm::vec2 cell = CalcCellScreenPosition(rowAndColumnIndex.x, rowAndColumnIndex.y);
+	const glm::vec2 center = CalcCellCenterPosition(cell.x, cell.y);
 
 	// Translate Entity
-	piece->OnMoveToNewPosition(glm::vec2(cell.x, cell.y));
+	piece->OnMoveToNewPosition(center);
 
 	// Kill
 	if (m_Cells[targetCell] != nullptr)
@@ -157,11 +159,8 @@ void Chessboard::MoveToNewCell(ChessPiece* piece, int targetCell, const glm::vec
 
 glm::vec2 Chessboard::GetRowAndColumnIndex(double mouseX, double mouseY) const
 {
-	float rowWidth = Renderer::GetViewport().x / m_Rows;
-	float colHeight = Renderer::GetViewport().y / m_Columns;
-
-	int rowIndex = mouseX / rowWidth;
-	int columnIndex = mouseY / colHeight;
+	int rowIndex = mouseX / m_RowWidth;
+	int columnIndex = mouseY / m_ColHeight;
 
 	int safeRowIndex = glm::min(m_Rows - 1, rowIndex);
 	int safeColumnIndex = glm::min(m_Columns - 1, columnIndex);
@@ -169,8 +168,10 @@ glm::vec2 Chessboard::GetRowAndColumnIndex(double mouseX, double mouseY) const
 	return glm::vec2(safeRowIndex, safeColumnIndex);
 }
 
-void Chessboard::HandleCastling(const MovesFlag& flag, int kingTargetCell, ChessPiece* king)
+void Chessboard::HandleCastling(const MovesGen::MovesFlag& flag, int kingTargetCell, ChessPiece* king)
 {
+	using namespace MovesGen;
+
 	int rookRow = -1;
 	int rookColumn = king->GetColumnIndex();
 
@@ -201,17 +202,18 @@ void Chessboard::HandleCastling(const MovesFlag& flag, int kingTargetCell, Chess
 
 glm::vec2 Chessboard::CalcCellScreenPosition(int row, int column) const
 {
-	// width and height are the Top-Right Position of the first Cell in Screen Space
-	float rowWidth = Renderer::GetViewport().x / m_Rows;
-	float colHeight = Renderer::GetViewport().y / m_Columns;
-
 	// Top-Right Position of the selected cell (Screen Space)
-	float selectedRightPosition = (rowWidth * row);
-	float selectedTopPosition = (colHeight * column);
+	float selectedRightPosition = (m_RowWidth * row);
+	float selectedTopPosition = (m_ColHeight * column);
 
+	return glm::vec2(selectedRightPosition, selectedTopPosition);
+}
+
+glm::vec2 Chessboard::CalcCellCenterPosition(float xPos, float yPos)
+{
 	// Center Position of the wanted cell (Screen Space)
-	float centerPosX = selectedRightPosition + (rowWidth / 2.0f);
-	float centerPosY = selectedTopPosition + (colHeight / 2.0f);
+	float centerPosX = xPos + (m_RowWidth / 2.0f);
+	float centerPosY = yPos + (m_ColHeight / 2.0f);
 
 	return glm::vec2(centerPosX, centerPosY);
 }
@@ -223,13 +225,5 @@ glm::vec2 Chessboard::CalcCellScreenPosition(int cellIndex) const
 	int row = cellIndex % m_Columns;
 	int col = cellIndex / m_Columns;
 
-	// width and height are the Top-Right Position of the first Cell in Screen Space
-	float rowWidth = Renderer::GetViewport().x / m_Rows;
-	float colHeight = Renderer::GetViewport().y / m_Columns;
-
-	// Top-Right Position of the selected cell (Screen Space)
-	float selectedRightPosition = (rowWidth * row);
-	float selectedTopPosition = (colHeight * col);
-
-	return glm::vec2(selectedRightPosition, selectedTopPosition);
+	return CalcCellScreenPosition(row, col);
 }

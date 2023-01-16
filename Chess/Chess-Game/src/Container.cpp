@@ -2,7 +2,7 @@
 #include "OpenGL-Core.h"
 #include "Container.h"
 
-#include "Entity.h"
+
 
 EntityContainer::EntityContainer()
 	: m_EntityCount(0)
@@ -12,15 +12,15 @@ EntityContainer::EntityContainer()
 
 EntityContainer::~EntityContainer()
 {
-	for (Entity* entity : m_EntityPool)
-		delete entity;
+	//for (Entity* entity : m_EntityPool)
+	//	delete entity;
 }
 
 void EntityContainer::OnRender()
 {
-	for (Entity* entity : m_EntityPool)
+	for (Entity& entity : m_EntityPool)
 	{
-		if (entity->IsActive())
-			Renderer::Draw(entity->GetTransformationMatrix(), entity->GetTexture());
+		if (entity.IsActive())
+			Renderer::Draw(entity.GetTransformationMatrix(), entity.GetTexture());
 	}
 }
