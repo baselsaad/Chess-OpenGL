@@ -33,39 +33,29 @@ public:
 	inline int GetRowsCount() const { return m_Rows; }
 	inline int GetColumnCount() const { return m_Columns; }
 
-	inline const ChessPiece* GetKing(TeamColor color)
-	{
-		switch (color)
-		{
-			case TeamColor::White: return m_WhiteKing;
-			case TeamColor::Black: return m_BlackKing;
-		}
-	}
+	inline const ChessPiece* GetKing(TeamColor color) { return color == TeamColor::Black ? m_BlackKing : m_WhiteKing; }
+	inline void SetKing(TeamColor color, ChessPiece* piece) { color == TeamColor::Black ? m_BlackKing = piece : m_WhiteKing = piece; }
 
-	inline void SetKing(TeamColor color, ChessPiece* piece)
-	{
-		switch (color)
-		{
-			case TeamColor::White: m_WhiteKing = piece; return;
-			case TeamColor::Black: m_BlackKing = piece; return;
-		}
-	}
+	inline void SetKingCheckCell(int cell) { m_KingInCheck = cell; }
+	inline int IsThereKingInCheck() const { return m_KingInCheck; }
 
 private:
 	void MoveToNewCell(ChessPiece* piece, int targetCell, const glm::vec2& rowAndColumnIndex);
 	glm::vec2 GetRowAndColumnIndex(double mouseX, double mouseY) const;
 
 	void HandleCastling(const MovesGen::MovesFlag& flag, int kingTargetCell, ChessPiece* king);
-	bool IsCheckAfterMoving(int startCell, int targetCell);
+	bool IsCheckAfterMoving(int startCell, const MovesGen::Move& flag);
 
 private:
 	int m_Rows;
 	int m_Columns;
 
-	float m_RowWidth , m_ColHeight;
+	float m_RowWidth, m_ColHeight;
 
 	std::vector<ChessPiece*> m_Cells; // contains only a pointer to an existing entity
 
 	ChessPiece* m_WhiteKing;
 	ChessPiece* m_BlackKing;
+
+	int m_KingInCheck = Chessboard::INVALID; //keep the cell index of the king that in check or invalid
 };

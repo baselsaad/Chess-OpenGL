@@ -314,30 +314,71 @@ namespace MovesGen
 		int yKing = king->GetColumnIndex();
 
 		// check horizontal and vertical spaces
-		for (int i = -1; i <= 1; i++)
 		{
-			for (int j = -1; j <= 1; j++)
-			{
-				if (i == 0 && j == 0)
-					continue;
 
-				int x = xKing + (i * moveDir);
-				int y = yKing + (j * moveDir);
-				int cell = GetCellIndex(x, y, maxRows);
-				if (board.GetCellState(cell) != CellState::NotValidCell)
+			std::array<std::pair<int, int>, 4> possibleMoves =
+			{
+				std::pair(0, (+1 * moveDir)),	// Up
+				std::pair(-1, 0),				// Left
+				std::pair(+1, 0),				// Right
+				std::pair(0, (-1 * moveDir)),	// Down
+			};
+
+			auto check = [&xKing, &yKing, &board, &maxRows, &king](int row, int column) -> bool
+			{
+				int targetRow = king->GetRowIndex() + row;
+				int targetCol = king->GetColumnIndex() + column;
+				int targetCell = GetCellIndex(targetRow, targetCol, maxRows);
+
+				while (board.GetCellState(targetCell) != CellState::NotValidCell)
 				{
-					const ChessPiece* piece = board.GetChessPiece(cell);
-					if (piece)
+					const ChessPiece* piece = board.GetChessPiece(targetCell);
+					if (piece != nullptr)// => there is a piece and we can not move anymore
 					{
 						if (piece->GetTeamColor() == king->GetTeamColor())
-							break;
+							return false;
 
-						if (piece->GetPieceType() == PieceType::Queen || piece->GetPieceType() == PieceType::Rook)
+						if (piece->GetPieceType() == PieceType::Rook || piece->GetPieceType() == PieceType::Queen)
 							return true;
 					}
+
+					targetRow += row;
+					targetCol += column;
+					targetCell = GetCellIndex(targetRow, targetCol, board.GetRowsCount());
 				}
+
+				return false;
+			};
+
+			for (auto& i : possibleMoves)
+			{
+				if (check(i.first, i.second))
+					return true;
 			}
 		}
+
+
+		// check pawn attacks
+		{
+			int pawnX = xKing + moveDir;
+			int pawnY = yKing + 1;
+			int pawnCell = GetCellIndex(pawnX, pawnY, maxRows);
+			if (board.GetCellState(pawnCell) != CellState::NotValidCell)
+			{
+				const ChessPiece* piece = board.GetChessPiece(pawnCell);
+				if (piece && piece->GetTeamColor() != king->GetTeamColor() && piece->GetPieceType() == PieceType::Pawn)
+					return true;
+			}
+			pawnY = yKing - 1;
+			pawnCell = GetCellIndex(pawnX, pawnY, maxRows);
+			if (board.GetCellState(pawnCell) != CellState::NotValidCell)
+			{
+				const ChessPiece* piece = board.GetChessPiece(pawnCell);
+				if (piece && piece->GetTeamColor() != king->GetTeamColor() && piece->GetPieceType() == PieceType::Pawn)
+					return true;
+			}
+		}
+
 
 		// check diagonal spaces
 		for (int i = -1; i <= 1; i += 2)
@@ -371,7 +412,6 @@ namespace MovesGen
 		{
 			for (int j = -2; j <= 2; j++)
 			{
-
 				if (glm::abs(i) == glm::abs(j) || i == 0 || j == 0)
 					continue;
 
@@ -392,6 +432,8 @@ namespace MovesGen
 				}
 			}
 		}
+
+
 		return false;
 	}
 }

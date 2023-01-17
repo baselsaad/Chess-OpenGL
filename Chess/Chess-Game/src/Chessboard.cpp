@@ -91,7 +91,6 @@ const ChessPiece* Chessboard::GetChessPiece(double mouseX, double mouseY) const
 	if (index <  0 || index > m_Cells.size())
 		return nullptr;
 
-
 	return m_Cells[index];
 }
 
@@ -127,10 +126,10 @@ bool Chessboard::MoveToNewCell(int startCell, const glm::vec2& newPosition, cons
 	{
 		if (move.TargetCell == targetCell)
 		{
-			if (IsCheckAfterMoving(startCell, targetCell))
+			if (IsCheckAfterMoving(startCell, move))
 				return false;
 
-			m_Cells[startCell] = nullptr;
+			m_Cells[startCell] = nullptr;//Clean orginal cell
 			MoveToNewCell(piece, targetCell, indices);
 
 			switch (move.Flag)
@@ -208,23 +207,23 @@ void Chessboard::HandleCastling(const MovesGen::MovesFlag& flag, int kingTargetC
 	MoveToNewCell(rook, rookTargetCell, { targetRow,rookColumn });
 }
 
-bool Chessboard::IsCheckAfterMoving(int startCell, int targetCell)
+bool Chessboard::IsCheckAfterMoving(int startCell, const MovesGen::Move& moveFlag)
 {
 	// Copy the start and target values
 	ChessPiece* startPiece = m_Cells[startCell];
-	ChessPiece* targetPiece = m_Cells[targetCell];
+	ChessPiece* targetPiece = m_Cells[moveFlag.TargetCell];
 
 	int startPieceX = m_Cells[startCell]->GetRowIndex();
 	int startPieceY = m_Cells[startCell]->GetColumnIndex();
 
-	int targetPieceX = targetCell % m_Columns;
-	int targetPieceY = targetCell / m_Columns;
+	int targetPieceX = moveFlag.TargetCell % m_Columns;
+	int targetPieceY = moveFlag.TargetCell / m_Columns;
 
 	const ChessPiece* king = GetKing(startPiece->GetTeamColor());
 
 	// Simulate the move and check if king in check 
 	m_Cells[startCell] = nullptr;
-	m_Cells[targetCell] = startPiece;
+	m_Cells[moveFlag.TargetCell] = startPiece;
 	startPiece->SetRowIndex(targetPieceX);
 	startPiece->SetColumnIndex(targetPieceY);
 
@@ -232,7 +231,7 @@ bool Chessboard::IsCheckAfterMoving(int startCell, int targetCell)
 
 	//Undo
 	m_Cells[startCell] = startPiece;
-	m_Cells[targetCell] = targetPiece;
+	m_Cells[moveFlag.TargetCell] = targetPiece;
 	startPiece->SetRowIndex(startPieceX);
 	startPiece->SetColumnIndex(startPieceY);
 
