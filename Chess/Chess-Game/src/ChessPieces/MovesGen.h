@@ -96,4 +96,6 @@ namespace MovesGen
 	Array GenerateQueenMoves(const ChessPiece* piece, Chessboard& board);
 	Array GenerateKingMoves(const ChessPiece* piece, Chessboard& board);
 	Array GenerateBishopMoves(const ChessPiece* piece, Chessboard& board);
+
+	bool IsKingInCheck(Chessboard& board, const ChessPiece* king);
 }

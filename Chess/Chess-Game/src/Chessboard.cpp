@@ -1,12 +1,17 @@
 #include "pch.h"
 #include "OpenGL-Core.h"
 #include "Chessboard.h"
+#include "Utilities/Timer.h"
 
 using CellState = Chessboard::CellState;
 
 Chessboard::Chessboard(int rowsCount, int columnsCount)
 	: m_Rows(rowsCount)
 	, m_Columns(columnsCount)
+	, m_RowWidth(Renderer::GetViewport().x / rowsCount)
+	, m_ColHeight(Renderer::GetViewport().y / columnsCount)
+	, m_WhiteKing(nullptr)
+	, m_BlackKing(nullptr)
 {
 	m_Cells.resize(rowsCount * columnsCount);
 	std::fill(&m_Cells[0], &m_Cells[0] + rowsCount * columnsCount, nullptr);
@@ -108,11 +113,11 @@ const CellState Chessboard::GetCellState(int cellIndex) const
 		return CellState::OccupiedCell;
 }
 
-bool Chessboard::MoveToNewCell(int pieceID, const glm::vec2& newPosition, const MovesGen::Array& possibleMoves)
+bool Chessboard::MoveToNewCell(int startCell, const glm::vec2& newPosition, const MovesGen::Array& possibleMoves)
 {
-	ASSERT(pieceID >= 0 && pieceID < m_Cells.size(), "Invalid Entity ID!!");
+	ASSERT(startCell >= 0 && startCell < m_Cells.size(), "Invalid Entity ID!!");
 
-	ChessPiece* piece = m_Cells[pieceID];
+	ChessPiece* piece = m_Cells[startCell];
 
 	// Calculate the target cell based on the position where the mouse drops the piece
 	glm::vec2 indices = GetRowAndColumnIndex(newPosition.x, newPosition.y);
@@ -122,7 +127,10 @@ bool Chessboard::MoveToNewCell(int pieceID, const glm::vec2& newPosition, const 
 	{
 		if (move.TargetCell == targetCell)
 		{
-			m_Cells[pieceID] = nullptr; // Clear orginal cell
+			if (IsCheckAfterMoving(startCell, targetCell))
+				return false;
+
+			m_Cells[startCell] = nullptr;
 			MoveToNewCell(piece, targetCell, indices);
 
 			switch (move.Flag)
@@ -198,6 +206,37 @@ void Chessboard::HandleCastling(const MovesGen::MovesFlag& flag, int kingTargetC
 	ChessPiece* rook = m_Cells[rookIndex];
 	m_Cells[rookIndex] = nullptr;// Clear orginal cell
 	MoveToNewCell(rook, rookTargetCell, { targetRow,rookColumn });
+}
+
+bool Chessboard::IsCheckAfterMoving(int startCell, int targetCell)
+{
+	// Copy the start and target values
+	ChessPiece* startPiece = m_Cells[startCell];
+	ChessPiece* targetPiece = m_Cells[targetCell];
+
+	int startPieceX = m_Cells[startCell]->GetRowIndex();
+	int startPieceY = m_Cells[startCell]->GetColumnIndex();
+
+	int targetPieceX = targetCell % m_Columns;
+	int targetPieceY = targetCell / m_Columns;
+
+	const ChessPiece* king = GetKing(startPiece->GetTeamColor());
+
+	// Simulate the move and check if king in check 
+	m_Cells[startCell] = nullptr;
+	m_Cells[targetCell] = startPiece;
+	startPiece->SetRowIndex(targetPieceX);
+	startPiece->SetColumnIndex(targetPieceY);
+
+	bool state = MovesGen::IsKingInCheck(*this, king);
+
+	//Undo
+	m_Cells[startCell] = startPiece;
+	m_Cells[targetCell] = targetPiece;
+	startPiece->SetRowIndex(startPieceX);
+	startPiece->SetColumnIndex(startPieceY);
+
+	return state;
 }
 
 glm::vec2 Chessboard::CalcCellScreenPosition(int row, int column) const

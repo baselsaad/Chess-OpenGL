@@ -68,7 +68,6 @@ void Game::SetupPlayerInput(PlayerInput& input)
 
 void Game::OnStart()
 {
-	m_Chessboard.OnUpdateViewPort();
 	m_BackgroundEntity.SetTexture(&m_BackgroundTexture);
 	AdjustBackgroundImage();
 
@@ -117,6 +116,7 @@ void Game::CreateChessPieces(const EntityContainer& container, ChessTextures& te
 			king->SetTexture(&textures.King);
 
 			m_Chessboard.AddNewChessPiece(king, i, rest);
+			m_Chessboard.SetKing(color, king);
 		}
 	}
 
@@ -199,15 +199,14 @@ void Game::OnDeselect(float xPos, float yPos)
 		glm::vec2 targetLocation(xPos, yPos);
 		bool success = m_Chessboard.MoveToNewCell(s_DragDropData.PieceID, targetLocation, s_DragDropData.PossibleMovesToDraw);
 
-		if (success)
-		{
-			s_DragDropData.ChangeTurn();
-			s_DragDropData.Reset();
-		}
-		else
+		if (!success)
 		{
 			s_DragDropData.SelectedPiece->OnDragToNewPosition(s_DragDropData.OrginalPosition);
+			return;
 		}
+
+		s_DragDropData.ChangeTurn();
+		s_DragDropData.Reset();
 	}
 }
 
