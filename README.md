@@ -9,12 +9,10 @@ Run (script/Build.bat) to generate visual studio solution and you can run the pr
 What's done?
 - Renderer (Basic rendering techniques There is no batch rendering or entity component system)
 - Event System
-- Entity Movement
-- Game loop and layer abstraction 
+- Drag and Drop
 
 What's next?
-- Game Logic 
-- AI
+- Game-Play (70% ready, maybe convert to chess engine or bitboard in the future)
 
 # Default Background:
 ![alt text](https://github.com/baselsaad/Chess-OpenGL/blob/main/Chess/Chess-Game/res/screenshots/Screenshot%202022-12-31%20145833.png)
