@@ -12,7 +12,7 @@ What's done?
 - Drag and Drop
 
 What's next?
-- Game-Play (70% ready, maybe convert to chess engine or bitboard in the future)
+- Game-Play (70% ready, maybe move to chess engine or bitboard in the future)
 
 # Default Background:
 ![alt text](https://github.com/baselsaad/Chess-OpenGL/blob/main/Chess/Chess-Game/res/screenshots/Screenshot%202022-12-31%20145833.png)
