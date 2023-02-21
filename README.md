@@ -9,7 +9,6 @@ Run (script/Build.bat) to generate visual studio solution and you can run the pr
 What's done?
 - Renderer (Basic rendering techniques There is no batch rendering or entity component system)
 - Event System
-- Drag and Drop
 
 What's next?
 - Game-Play (70% ready, maybe move to chess engine or bitboard in the future)
