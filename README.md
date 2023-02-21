@@ -7,7 +7,7 @@ Run (script/Build.bat) to generate visual studio solution and you can run the pr
 # In progress ...
 
 What's done?
-- Renderer (Basic rendering techniques There is no batch rendering or entity component system)
+- 2D Renderer (Basic rendering techniques There is no batch rendering or entity component system)
 - Event System
 
 What's next?
